@@ -55,6 +55,7 @@ lint:
 install-deps:
 	@GOBIN=$(LOCAL_BIN_PATH) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
 	@GOBIN=$(LOCAL_BIN_PATH) go install github.com/golang/mock/mockgen@v1.6.0
+	@GOBIN=$(LOCAL_BIN_PATH)  go install golang.org/x/perf/cmd/benchstat@latest
 	@go mod tidy
 
 # -------

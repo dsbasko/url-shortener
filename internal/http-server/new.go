@@ -11,8 +11,6 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 
-	_ "net/http/pprof"
-
 	"github.com/go-chi/chi/v5"
 	mwChi "github.com/go-chi/chi/v5/middleware"
 )

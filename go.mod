@@ -4,7 +4,9 @@ go 1.21
 
 require (
 	github.com/go-chi/chi/v5 v5.0.11
+	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/golang/mock v1.6.0
+	github.com/google/uuid v1.5.0
 	github.com/ian-kent/gofigure v0.0.0-20170502192241-c9dc3a1359af
 	github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa
 	github.com/jackc/pgx/v5 v5.5.2
@@ -15,8 +17,6 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.0 // indirect
-	github.com/google/uuid v1.5.0 // indirect
 	github.com/ian-kent/envconf v0.0.0-20141026121121-c19809918c02 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect

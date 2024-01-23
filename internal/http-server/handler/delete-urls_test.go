@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
+	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 	"github.com/dsbasko/yandex-go-shortener/internal/http-server/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
 	"github.com/dsbasko/yandex-go-shortener/internal/storage"
@@ -115,14 +116,24 @@ func BenchmarkHandler_DeleteURLs(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().DeleteURLs(gomock.Any(), gomock.Any()).Return(nil, nil)
+		store.EXPECT().DeleteURLs(gomock.Any(), gomock.Any()).Return([]entities.URL{
+			{ID: "42", OriginalURL: "https://ya42.ru", ShortURL: "42"},
+			{ID: "43", OriginalURL: "https://ya43.ru", ShortURL: "43"},
+			{ID: "44", OriginalURL: "https://ya44.ru", ShortURL: "44"},
+			{ID: "45", OriginalURL: "https://ya45.ru", ShortURL: "45"},
+			{ID: "46", OriginalURL: "https://ya46.ru", ShortURL: "46"},
+			{ID: "47", OriginalURL: "https://ya47.ru", ShortURL: "47"},
+			{ID: "48", OriginalURL: "https://ya48.ru", ShortURL: "48"},
+			{ID: "49", OriginalURL: "https://ya49.ru", ShortURL: "49"},
+			{ID: "50", OriginalURL: "https://ya50.ru", ShortURL: "50"},
+		}, nil)
 		b.StartTimer()
 
 		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{
 			Method:      "DELETE",
 			Path:        "/api/user/urls",
 			ContentType: "application/json",
-			Body:        []byte(`["42"]`),
+			Body:        []byte(`["42", "43", "44", "45", "46", "47", "48", "49", "50"]`),
 			Cookie:      mockCookie,
 		})
 		resp.Body.Close()

@@ -188,7 +188,23 @@ func BenchmarkHandler_CreateURLManyJSON(b *testing.B) {
 			Method:      "POST",
 			Path:        "/api/shorten/batch",
 			ContentType: "application/json",
-			Body:        []byte(`[{"url":"https://ya.ru/"}]`),
+			Body: []byte(`[
+				{"url":"https://ya1.ru/"},
+				{"url":"https://ya2.ru/"},
+				{"url":"https://ya3.ru/"},
+				{"url":"https://ya4.ru/"},
+				{"url":"https://ya5.ru/"},
+				{"url":"https://ya6.ru/"},
+				{"url":"https://ya7.ru/"},
+				{"url":"https://ya8.ru/"},
+				{"url":"https://ya9.ru/"},
+				{"url":"https://ya10.ru/"},
+				{"url":"https://ya11.ru/"},
+				{"url":"https://ya12.ru/"},
+				{"url":"https://ya13.ru/"},
+				{"url":"https://ya14.ru/"},
+				{"url":"https://ya15.ru/"},
+			]`),
 		})
 		resp.Body.Close()
 	}

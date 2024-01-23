@@ -21,7 +21,7 @@ func (u *URLs) DeleteURLs(userID string, shortURLs []string) error {
 			return
 		}
 
-		var urls []string
+		urls := make([]string, 0, len(urlsToDelete))
 		for _, url := range urlsToDelete {
 			urls = append(urls, url.ShortURL)
 		}

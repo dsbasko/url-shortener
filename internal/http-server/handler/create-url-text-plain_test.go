@@ -129,9 +129,19 @@ func BenchmarkHandler_CreateURLOnceTextPlain(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		if i%2 == 0 {
-			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{}, false, nil)
+			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{
+				ID:          "42",
+				ShortURL:    "42",
+				OriginalURL: "https://ya.ru/",
+				UserID:      "42",
+			}, false, nil)
 		} else {
-			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{}, true, nil)
+			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{
+				ID:          "42",
+				ShortURL:    "42",
+				OriginalURL: "https://ya.ru/",
+				UserID:      "42",
+			}, true, nil)
 		}
 		b.StartTimer()
 

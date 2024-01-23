@@ -9,7 +9,7 @@ import (
 
 func (s *Storage) DeleteURLs(ctx context.Context, dto []entities.URL) (resp []entities.URL, err error) {
 	var userID string
-	var shortURLs []string
+	shortURLs := make([]string, 0, len(dto))
 
 	for _, url := range dto {
 		if userID == "" {

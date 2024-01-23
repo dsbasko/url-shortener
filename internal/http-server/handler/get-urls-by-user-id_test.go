@@ -148,7 +148,23 @@ func BenchmarkHandler_GetURLsByUserID(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().GetURLsByUserID(gomock.Any(), gomock.Any()).Return([]entities.URL{}, nil)
+		store.EXPECT().GetURLsByUserID(gomock.Any(), gomock.Any()).Return([]entities.URL{
+			{ID: "1", OriginalURL: "https://ya1.ru", ShortURL: "1"},
+			{ID: "2", OriginalURL: "https://ya2.ru", ShortURL: "2"},
+			{ID: "3", OriginalURL: "https://ya3.ru", ShortURL: "3"},
+			{ID: "4", OriginalURL: "https://ya4.ru", ShortURL: "4"},
+			{ID: "5", OriginalURL: "https://ya5.ru", ShortURL: "5"},
+			{ID: "6", OriginalURL: "https://ya6.ru", ShortURL: "6"},
+			{ID: "7", OriginalURL: "https://ya7.ru", ShortURL: "7"},
+			{ID: "8", OriginalURL: "https://ya8.ru", ShortURL: "8"},
+			{ID: "9", OriginalURL: "https://ya9.ru", ShortURL: "9"},
+			{ID: "10", OriginalURL: "https://ya10.ru", ShortURL: "10"},
+			{ID: "11", OriginalURL: "https://ya11.ru", ShortURL: "11"},
+			{ID: "12", OriginalURL: "https://ya12.ru", ShortURL: "12"},
+			{ID: "13", OriginalURL: "https://ya13.ru", ShortURL: "13"},
+			{ID: "14", OriginalURL: "https://ya14.ru", ShortURL: "14"},
+			{ID: "15", OriginalURL: "https://ya15.ru", ShortURL: "15"},
+		}, nil)
 		b.StartTimer()
 
 		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{

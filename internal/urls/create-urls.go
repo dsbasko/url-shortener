@@ -15,9 +15,6 @@ func (u *URLs) CreateURLs(
 	ctx context.Context,
 	dto []api.CreateURLsRequest,
 ) ([]api.CreateURLsResponse, error) {
-	var response []api.CreateURLsResponse
-	var urlEntities []entities.URL
-
 	token, err := jwt.GetFromContext(ctx)
 	if err != nil {
 		return []api.CreateURLsResponse{}, fmt.Errorf("failed to get token from context: %w", err)
@@ -25,8 +22,11 @@ func (u *URLs) CreateURLs(
 
 	userID := jwt.TokenToUserID(token)
 
+	response := make([]api.CreateURLsResponse, 0, len(dto))
+	urlEntities := make([]entities.URL, 0, len(dto))
+
 	for _, url := range dto {
-		if _, err := goURL.ParseRequestURI(url.OriginalURL); err != nil {
+		if _, err = goURL.ParseRequestURI(url.OriginalURL); err != nil {
 			return []api.CreateURLsResponse{}, fmt.Errorf("failed to parse url: %w", ErrInvalidURL)
 		}
 
@@ -45,7 +45,7 @@ func (u *URLs) CreateURLs(
 	}
 
 	if len(urlEntities) > 0 {
-		if _, err := u.storage.CreateURLs(ctx, urlEntities); err != nil {
+		if _, err = u.storage.CreateURLs(ctx, urlEntities); err != nil {
 			return []api.CreateURLsResponse{}, fmt.Errorf("failed to create a url in the storage: %w", err)
 		}
 	}

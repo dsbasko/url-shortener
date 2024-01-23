@@ -88,7 +88,12 @@ func BenchmarkHandler_Redirect(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().GetURLByShortURL(gomock.Any(), gomock.Any()).Return(entities.URL{}, nil)
+		store.EXPECT().GetURLByShortURL(gomock.Any(), gomock.Any()).Return(entities.URL{
+			ID:          "42",
+			ShortURL:    "42",
+			OriginalURL: "https://ya.ru/",
+			UserID:      "42",
+		}, nil)
 		b.StartTimer()
 
 		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{
