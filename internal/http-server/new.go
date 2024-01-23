@@ -11,6 +11,8 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 
+	_ "net/http/pprof"
+
 	"github.com/go-chi/chi/v5"
 	mwChi "github.com/go-chi/chi/v5/middleware"
 )
@@ -26,6 +28,8 @@ func New(ctx context.Context, log *logger.Logger, storage interfaces.Storage, ur
 	router.Use(mw.JWT)
 	router.Use(mw.RequestID)
 	router.Use(mw.CompressEncoding)
+
+	router.Mount("/debug", mwChi.Profiler())
 
 	h := handler.New(log, storage, urlService)
 	router.Get("/ping", h.Ping)

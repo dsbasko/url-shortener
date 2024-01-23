@@ -163,3 +163,33 @@ func TestHandler_CreateURLManyJSON(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkHandler_CreateURLManyJSON(b *testing.B) {
+	config.Init() //nolint:errcheck
+	log := logger.NewMock()
+	store := storage.NewMock(&testing.T{})
+	urlsService := urls.New(log, store)
+	router := chi.NewRouter()
+	h := New(log, store, urlsService)
+	mw := middlewares.New(log)
+	router.
+		With(mw.JWT).
+		Post("/api/shorten/batch", h.CreateURLsJSON)
+	ts := httptest.NewServer(router)
+	defer ts.Close()
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		store.EXPECT().CreateURLs(gomock.Any(), gomock.Any()).Return([]entities.URL{}, nil)
+		b.StartTimer()
+
+		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{
+			Method:      "POST",
+			Path:        "/api/shorten/batch",
+			ContentType: "application/json",
+			Body:        []byte(`[{"url":"https://ya.ru/"}]`),
+		})
+		resp.Body.Close()
+	}
+}

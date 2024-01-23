@@ -93,3 +93,38 @@ func TestHandler_DeleteURLs(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkHandler_DeleteURLs(b *testing.B) {
+	config.Init() //nolint:errcheck
+	log := logger.NewMock()
+	store := storage.NewMock(&testing.T{})
+	urlsService := urls.New(log, store)
+	router := chi.NewRouter()
+	h := New(log, store, urlsService)
+	mw := middlewares.New(log)
+	router.
+		With(mw.JWT).
+		Delete("/api/user/urls", h.DeleteURLs)
+	ts := httptest.NewServer(router)
+	defer ts.Close()
+
+	token, err := jwt.GenerateToken()
+	assert.NoError(b, err)
+	mockCookie := &http.Cookie{Name: jwt.CookieKey, Value: token}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		store.EXPECT().DeleteURLs(gomock.Any(), gomock.Any()).Return(nil, nil)
+		b.StartTimer()
+
+		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{
+			Method:      "DELETE",
+			Path:        "/api/user/urls",
+			ContentType: "application/json",
+			Body:        []byte(`["42"]`),
+			Cookie:      mockCookie,
+		})
+		resp.Body.Close()
+	}
+}

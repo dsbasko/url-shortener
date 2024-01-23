@@ -127,3 +127,35 @@ func TestHandler_GetURLsByUserID(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkHandler_GetURLsByUserID(b *testing.B) {
+	config.Init() //nolint:errcheck
+	log := logger.NewMock()
+	store := storage.NewMock(&testing.T{})
+	urlsService := urls.New(log, store)
+	router := chi.NewRouter()
+	h := New(log, store, urlsService)
+	mw := middlewares.New(log)
+	router.
+		With(mw.JWT).
+		Get("/api/user/urls", h.GetURLsByUserID)
+	ts := httptest.NewServer(router)
+	defer ts.Close()
+
+	token, err := jwt.GenerateToken()
+	assert.NoError(b, err)
+	mockCookie := &http.Cookie{Name: jwt.CookieKey, Value: token}
+
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		store.EXPECT().GetURLsByUserID(gomock.Any(), gomock.Any()).Return([]entities.URL{}, nil)
+		b.StartTimer()
+
+		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{
+			Method: "GET",
+			Path:   "/api/user/urls",
+			Cookie: mockCookie,
+		})
+		resp.Body.Close()
+	}
+}

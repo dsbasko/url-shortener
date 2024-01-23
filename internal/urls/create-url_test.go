@@ -148,3 +148,29 @@ func TestURLs_CreateShortURL(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkURLs_CreateShortURL(b *testing.B) {
+	config.Init() //nolint:errcheck
+	log := logger.NewMock()
+	store := storage.NewMock(&testing.T{})
+	service := New(log, store)
+
+	token, err := jwt.GenerateToken()
+	assert.NoError(b, err)
+	ctxWithToken := context.WithValue(context.Background(), jwt.ContextKey, token)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		store.EXPECT().
+			CreateURL(gomock.Any(), gomock.Any()).
+			Return(entities.URL{
+				ID:          "42",
+				ShortURL:    "42",
+				OriginalURL: "https://ya.ru/",
+			}, false, nil)
+
+		b.StartTimer()
+		_, _, _ = service.CreateURL(ctxWithToken, "https://ya.ru/")
+	}
+}

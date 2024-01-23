@@ -20,5 +20,5 @@ type Storage interface {
 	DeleteURLs(ctx context.Context, dto []entities.URL) (resp []entities.URL, err error)
 }
 
-// Генерация хранилище для тестов
+// Generate mocks for tests.
 //go:generate ../../bin/mockgen -destination=../storage/mock/mock.go -package=mock github.com/dsbasko/yandex-go-shortener/internal/interfaces Storage

@@ -110,7 +110,7 @@ func (mr *MockStorageMockRecorder) GetURLByOriginalURL(arg0, arg1 interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetURLByOriginalURL", reflect.TypeOf((*MockStorage)(nil).GetURLByOriginalURL), arg0, arg1)
 }
 
-// GetURLByShortURL mocks base method.
+// GetURLByShortURL Mocks base method.
 func (m *MockStorage) GetURLByShortURL(arg0 context.Context, arg1 string) (entities.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetURLByShortURL", arg0, arg1)
@@ -119,13 +119,13 @@ func (m *MockStorage) GetURLByShortURL(arg0 context.Context, arg1 string) (entit
 	return ret0, ret1
 }
 
-// GetURLByShortURL indicates an expected call of GetURLByShortURL.
+// GetURLByShortURL Indicates an expected call of GetURLByShortURL.
 func (mr *MockStorageMockRecorder) GetURLByShortURL(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetURLByShortURL", reflect.TypeOf((*MockStorage)(nil).GetURLByShortURL), arg0, arg1)
 }
 
-// GetURLsByUserID mocks base method.
+// GetURLsByUserID Mocks base method.
 func (m *MockStorage) GetURLsByUserID(arg0 context.Context, arg1 string) ([]entities.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetURLsByUserID", arg0, arg1)
@@ -134,13 +134,13 @@ func (m *MockStorage) GetURLsByUserID(arg0 context.Context, arg1 string) ([]enti
 	return ret0, ret1
 }
 
-// GetURLsByUserID indicates an expected call of GetURLsByUserID.
+// GetURLsByUserID Indicates an expected call of GetURLsByUserID.
 func (mr *MockStorageMockRecorder) GetURLsByUserID(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetURLsByUserID", reflect.TypeOf((*MockStorage)(nil).GetURLsByUserID), arg0, arg1)
 }
 
-// Ping mocks base method.
+// Ping Mocks base method.
 func (m *MockStorage) Ping(arg0 context.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Ping", arg0)
@@ -148,7 +148,7 @@ func (m *MockStorage) Ping(arg0 context.Context) error {
 	return ret0
 }
 
-// Ping indicates an expected call of Ping.
+// Ping Indicates an expected call of Ping.
 func (mr *MockStorageMockRecorder) Ping(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ping", reflect.TypeOf((*MockStorage)(nil).Ping), arg0)

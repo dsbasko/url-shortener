@@ -141,3 +141,37 @@ func TestHandler_CreateURLJSON(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkHandler_CreateURLJSON(b *testing.B) {
+	config.Init() //nolint:errcheck
+	log := logger.NewMock()
+	store := storage.NewMock(&testing.T{})
+	urlsService := urls.New(log, store)
+	router := chi.NewRouter()
+	h := New(log, store, urlsService)
+	mw := middlewares.New(log)
+	router.
+		With(mw.JWT).
+		Post("/api/shorten", h.CreateURLJSON)
+	ts := httptest.NewServer(router)
+	defer ts.Close()
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		if i%2 == 0 {
+			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{}, false, nil)
+		} else {
+			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{}, true, nil)
+		}
+		b.StartTimer()
+
+		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{
+			Method:      "POST",
+			Path:        "/api/shorten",
+			ContentType: "application/json",
+			Body:        []byte(`{"url":"https://ya.ru/"}`),
+		})
+		resp.Body.Close()
+	}
+}

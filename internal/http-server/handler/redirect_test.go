@@ -74,3 +74,27 @@ func TestHandler_Redirect(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkHandler_Redirect(b *testing.B) {
+	config.Init() //nolint:errcheck
+	log := logger.NewMock()
+	store := storage.NewMock(&testing.T{})
+	urlsService := urls.New(log, store)
+	router := chi.NewRouter()
+	h := New(log, store, urlsService)
+	router.Get("/{short_url}", h.Redirect)
+	ts := httptest.NewServer(router)
+	defer ts.Close()
+
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		store.EXPECT().GetURLByShortURL(gomock.Any(), gomock.Any()).Return(entities.URL{}, nil)
+		b.StartTimer()
+
+		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{
+			Method: "GET",
+			Path:   "/42",
+		})
+		resp.Body.Close()
+	}
+}
