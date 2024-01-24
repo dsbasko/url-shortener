@@ -7,6 +7,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 )
 
+// DeleteURLs deletes URLs.
 func (s *Storage) DeleteURLs(ctx context.Context, dto []entities.URL) (resp []entities.URL, err error) {
 	var userID string
 	shortURLs := make([]string, 0, len(dto))

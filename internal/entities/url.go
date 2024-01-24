@@ -1,5 +1,6 @@
 package entities
 
+// URL a url entity.
 type URL struct {
 	ID          string `json:"id,omitempty" db:"id"`
 	UserID      string `json:"user_id" db:"user_id"`

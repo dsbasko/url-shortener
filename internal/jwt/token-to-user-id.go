@@ -6,6 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// TokenToUserID parses jwt token and returns user ID.
 func TokenToUserID(tokenString string) string {
 	claims := &entities.JWTClaims{}
 

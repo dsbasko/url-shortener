@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// ParseServerAddress parses server address.
 func ParseServerAddress(serverAddress string) (string, error) {
 	if !strings.Contains(serverAddress, "://") {
 		serverAddress = "https://" + serverAddress
@@ -20,6 +21,7 @@ func ParseServerAddress(serverAddress string) (string, error) {
 	return parsedURL.Host, nil
 }
 
+// ParseBaseURL parses base url.
 func ParseBaseURL(baseURL string) (string, error) {
 	if baseURL[0] == ':' {
 		return "", errors.New("need host before the port")

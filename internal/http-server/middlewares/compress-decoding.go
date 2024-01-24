@@ -10,6 +10,7 @@ import (
 	middlewareChi "github.com/go-chi/chi/v5/middleware"
 )
 
+// CompressDecoding decompresses request.
 func (m *Middlewares) CompressDecoding(next http.Handler) http.Handler {
 	m.log.Debug("compress decoding middlewares enabled")
 

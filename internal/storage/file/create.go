@@ -10,6 +10,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 )
 
+// CreateURL creates a new URL.
 func (s *Storage) CreateURL(
 	ctx context.Context,
 	dto entities.URL,
@@ -48,6 +49,7 @@ func (s *Storage) CreateURL(
 	return resp, true, nil
 }
 
+// CreateURLs creates URLs.
 func (s *Storage) CreateURLs(
 	ctx context.Context,
 	dto []entities.URL,

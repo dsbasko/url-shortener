@@ -12,6 +12,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
+// Storage a file storage.
 type Storage struct {
 	mu     sync.RWMutex
 	log    *logger.Logger
@@ -19,8 +20,10 @@ type Storage struct {
 	writer *bufio.Writer
 }
 
+// Ensure that Storage implements the Storage interface.
 var _ interfaces.Storage = (*Storage)(nil)
 
+// New creates a new instance of the file storage.
 func New(_ context.Context, log *logger.Logger) (interfaces.Storage, error) {
 	file, err := os.OpenFile(config.GetStoragePath(), os.O_RDWR|os.O_CREATE|os.O_APPEND|os.O_SYNC, 0666) //nolint:gomnd
 	if err != nil {

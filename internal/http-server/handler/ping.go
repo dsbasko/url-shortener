@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// Ping returns pong if the server alive.
 func (h *Handler) Ping(w http.ResponseWriter, r *http.Request) {
 	log := h.log.With("request_id", middleware.GetReqID(r.Context()))
 

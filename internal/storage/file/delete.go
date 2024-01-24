@@ -10,6 +10,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 )
 
+// GetURLByOriginalURL returns a URL by original URL.
 func (s *Storage) DeleteURLs(
 	ctx context.Context,
 	dto []entities.URL,

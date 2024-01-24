@@ -6,6 +6,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 )
 
+// GetURLByOriginalURL returns a URL by original URL.
 func (s *Storage) GetURLByOriginalURL(
 	_ context.Context,
 	originalURL string,
@@ -22,6 +23,7 @@ func (s *Storage) GetURLByOriginalURL(
 	return entities.URL{}, nil
 }
 
+// GetURLByShortURL returns a URL by short URL.
 func (s *Storage) GetURLByShortURL(
 	_ context.Context,
 	shortURL string,
@@ -36,6 +38,7 @@ func (s *Storage) GetURLByShortURL(
 	return entities.URL{}, nil
 }
 
+// GetURLsByUserID returns URLs by user ID.
 func (s *Storage) GetURLsByUserID(
 	_ context.Context,
 	userID string,

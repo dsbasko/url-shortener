@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// Redirect redirects to original url.
 func (h *Handler) Redirect(w http.ResponseWriter, r *http.Request) {
 	log := h.log.With("request_id", middleware.GetReqID(r.Context()))
 	shortURL := chi.URLParam(r, "short_url")

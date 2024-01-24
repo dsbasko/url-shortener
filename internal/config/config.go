@@ -8,6 +8,7 @@ import (
 	"github.com/ian-kent/gofigure"
 )
 
+// config a config struct.
 type config struct {
 	gofigure         interface{} `order:"flag,env"`                                                                                                        //nolint:lll,gofmt,unused
 	Env              string      `env:"ENV" flag:"env" flagDesc:"run mode (prod|dev|local)"`                                                               //nolint:lll
@@ -28,6 +29,7 @@ var (
 	err  error
 )
 
+// Init singleton config initialization.
 func Init() error {
 	once.Do(func() {
 		cfg = config{
@@ -65,42 +67,52 @@ func Init() error {
 	return err
 }
 
+// GetEnv returns run mode (dev|prod).
 func GetEnv() string {
 	return cfg.Env
 }
 
+// GetServerAddress returns http rest server address.
 func GetServerAddress() string {
 	return cfg.ServerAddress
 }
 
+// GetBaseURL returns base url address.
 func GetBaseURL() string {
 	return cfg.BaseURL
 }
 
+// GetShortURLLen returns short url length.
 func GetShortURLLen() int {
 	return cfg.ShortURLLen
 }
 
+// GetStoragePath returns full path of the json repositories file.
 func GetStoragePath() string {
 	return cfg.StoragePath
 }
 
+// GetPsqlDSN returns string for connecting to database.
 func GetPsqlDSN() string {
 	return cfg.PsqlDSN
 }
 
+// GetRestReadTimeout returns wait timeout for reading request on the http rest server.
 func GetRestReadTimeout() time.Duration {
 	return time.Duration(cfg.RestReadTimeout) * time.Millisecond
 }
 
+// GetRestWriteTimeout returns wait timeout for writing response on the http rest server.
 func GetRestWriteTimeout() time.Duration {
 	return time.Duration(cfg.RestWriteTimeout) * time.Millisecond
 }
 
+// GetPsqlMaxConns returns max connections to database.
 func GetPsqlMaxConns() int {
 	return cfg.PsqlMaxConns
 }
 
+// GetJWTSecret returns jwt secret.
 func GetJWTSecret() []byte {
 	return []byte(cfg.JWTSecret)
 }

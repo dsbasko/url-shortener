@@ -11,13 +11,16 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// Storage a postgresql storage.
 type Storage struct {
 	log  *logger.Logger
 	conn *sqlx.DB
 }
 
+// Ensure that Storage implements the Storage interface.
 var _ interfaces.Storage = (*Storage)(nil)
 
+// New creates a new instance of the postgresql storage.
 func New(ctx context.Context, log *logger.Logger) (interfaces.Storage, error) {
 	conn, err := sqlx.ConnectContext(ctx, "pgx", config.GetPsqlDSN())
 	if err != nil {

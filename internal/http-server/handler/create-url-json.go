@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// CreateURLsJSON creates url with json body.
 func (h *Handler) CreateURLJSON(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var dto api.CreateURLRequest

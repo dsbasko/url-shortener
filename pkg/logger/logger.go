@@ -8,8 +8,10 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// Logger is a sugared logger.
 type Logger = zap.SugaredLogger
 
+// New creates a new logger.
 func New(env, serviceName string) (*Logger, error) {
 	var logger *zap.SugaredLogger
 	var zapConfig zap.Config

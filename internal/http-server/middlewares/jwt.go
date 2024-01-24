@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// JWT adds jwt token to request context.
 func (m *Middlewares) JWT(next http.Handler) http.Handler {
 	m.log.Debug("Cookie request enrichment with an identifier is enabled")
 

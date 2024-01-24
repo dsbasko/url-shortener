@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// RandomString generates a random string of the given length.
 func RandomString(length int) string {
 	if length < 1 {
 		return ""

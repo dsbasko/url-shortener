@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// GetFromCookie gets jwt token from cookie.
 func GetFromCookie(r *http.Request) (string, error) {
 	token, err := r.Cookie(CookieKey)
 

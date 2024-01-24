@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// CreateURLTextPlain creates url with text/plain body.
 func (h *Handler) CreateURLTextPlain(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 

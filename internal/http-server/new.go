@@ -15,6 +15,7 @@ import (
 	mwChi "github.com/go-chi/chi/v5/middleware"
 )
 
+// New creates a new http server.
 func New(ctx context.Context, log *logger.Logger, storage interfaces.Storage, urlService urls.URLs) error {
 	router := chi.NewRouter()
 

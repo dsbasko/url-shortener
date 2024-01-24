@@ -9,15 +9,18 @@ import (
 	middlewareChi "github.com/go-chi/chi/v5/middleware"
 )
 
+// compressGzipWriter is a response logger.
 type compressGzipWriter struct {
 	http.ResponseWriter
 	Writer io.Writer
 }
 
+// Write writes response.
 func (w compressGzipWriter) Write(b []byte) (int, error) {
 	return w.Writer.Write(b)
 }
 
+// CompressEncoding compresses response.
 func (m *Middlewares) CompressEncoding(next http.Handler) http.Handler {
 	m.log.Debug("compress encoding middlewares enabled")
 

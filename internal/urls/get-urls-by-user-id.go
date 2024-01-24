@@ -8,6 +8,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 )
 
+// GetURLsByUserID returns all URLs by user ID.
 func (u *URLs) GetURLsByUserID(ctx context.Context, userID string) ([]entities.URL, error) {
 	storeResp, err := u.storage.GetURLsByUserID(ctx, userID)
 	if err != nil {

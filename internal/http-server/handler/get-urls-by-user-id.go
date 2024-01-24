@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// GetURLsByUserID returns all urls by user id.
 func (h *Handler) GetURLsByUserID(w http.ResponseWriter, r *http.Request) {
 	log := h.log.With("request_id", middleware.GetReqID(r.Context()))
 

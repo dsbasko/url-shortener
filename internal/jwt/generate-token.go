@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// GenerateToken generates jwt token.
 func GenerateToken() (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, entities.JWTClaims{
 		UserID: uuid.New().String(),

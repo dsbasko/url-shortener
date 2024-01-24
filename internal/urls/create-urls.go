@@ -11,6 +11,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/api"
 )
 
+// CreateURLs creates a new short url.
 func (u *URLs) CreateURLs(
 	ctx context.Context,
 	dto []api.CreateURLsRequest,

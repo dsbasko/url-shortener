@@ -14,6 +14,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
+// New creates a new instance of the storage.
 func New(ctx context.Context, log *logger.Logger) (interfaces.Storage, error) {
 	if len(config.GetPsqlDSN()) > 0 {
 		return psql.New(ctx, log)
@@ -26,6 +27,7 @@ func New(ctx context.Context, log *logger.Logger) (interfaces.Storage, error) {
 	return memory.New(ctx, log)
 }
 
+// NewMock creates a new instance of the mock storage.
 func NewMock(t *testing.T) *mock.MockStorage {
 	controller := gomock.NewController(t)
 	defer controller.Finish()

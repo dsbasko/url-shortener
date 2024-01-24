@@ -11,6 +11,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
+// Run initializes the dependencies and starts the application.
 func Run() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

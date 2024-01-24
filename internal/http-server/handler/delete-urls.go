@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// DeleteURLs deletes urls by user id.
 func (h *Handler) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 	log := h.log.With("request_id", middleware.GetReqID(r.Context()))
 
