@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
+	"github.com/dsbasko/yandex-go-shortener/internal/http-server/handler"
+	"github.com/dsbasko/yandex-go-shortener/internal/http-server/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
 	"github.com/dsbasko/yandex-go-shortener/internal/urls"
-	"github.com/dsbasko/yandex-go-shortener/pkg/http-server/handler"
-	"github.com/dsbasko/yandex-go-shortener/pkg/http-server/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 
 	"github.com/go-chi/chi/v5"
