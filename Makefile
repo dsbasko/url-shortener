@@ -27,7 +27,8 @@ start-prod:
 
 
 start-psql:
-	@docker run -d \
+	@docker stop shortener_psql || true
+	@docker run -d --rm \
 		--name shortener_psql \
 		-p 3001:5432 \
 		-e POSTGRES_USER=root \

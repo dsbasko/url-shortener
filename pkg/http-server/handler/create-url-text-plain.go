@@ -30,7 +30,7 @@ func (h *Handler) CreateURLTextPlain(w http.ResponseWriter, r *http.Request) {
 	createdURL, unique, err := h.urls.CreateURL(r.Context(), string(originalURL))
 	if err != nil {
 		log.Errorw(fmt.Errorf("failed to create link in urls: %w", err).Error())
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 

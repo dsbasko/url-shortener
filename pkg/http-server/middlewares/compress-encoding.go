@@ -33,7 +33,7 @@ func (m *Middlewares) CompressEncoding(next http.Handler) http.Handler {
 		gzWriter, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
 		if err != nil {
 			m.log.Errorw(err.Error(), "request_id", middlewareChi.GetReqID(r.Context()))
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		defer func() {

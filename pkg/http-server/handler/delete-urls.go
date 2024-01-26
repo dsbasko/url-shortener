@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
@@ -28,15 +27,8 @@ func (h *Handler) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		log.Errorw(fmt.Errorf("failed to read request body: %w", err).Error())
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	var deleteURLs []string
-	err = json.Unmarshal(body, &deleteURLs)
+	err = json.NewDecoder(r.Body).Decode(&deleteURLs)
 	if err != nil {
 		log.Errorw(fmt.Errorf("failed to unmarshal request body: %w", err).Error())
 		w.WriteHeader(http.StatusBadRequest)

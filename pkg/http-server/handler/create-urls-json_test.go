@@ -10,10 +10,10 @@ import (
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
-	"github.com/dsbasko/yandex-go-shortener/internal/http-server/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/storage"
 	"github.com/dsbasko/yandex-go-shortener/internal/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/api"
+	"github.com/dsbasko/yandex-go-shortener/pkg/http-server/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 	"github.com/dsbasko/yandex-go-shortener/pkg/test"
 	"github.com/go-chi/chi/v5"
@@ -77,7 +77,7 @@ func TestHandler_CreateURLManyJSON(t *testing.T) {
 					CreateURLs(gomock.Any(), gomock.Any()).
 					Return(nil, serviceErr)
 			},
-			wantStatusCode: http.StatusInternalServerError,
+			wantStatusCode: http.StatusBadRequest,
 			wantBody:       nil,
 		},
 		{

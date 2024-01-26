@@ -35,7 +35,7 @@ func (h *Handler) GetURLsByUserID(w http.ResponseWriter, r *http.Request) {
 	urlsBytes, err := json.Marshal(urlsResp)
 	if err != nil {
 		log.Errorf("failed to marshal urls: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -43,7 +43,7 @@ func (h *Handler) GetURLsByUserID(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	if _, err = w.Write(urlsBytes); err != nil {
 		log.Errorf("failed to write response: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 }

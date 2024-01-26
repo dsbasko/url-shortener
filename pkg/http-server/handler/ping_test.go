@@ -36,7 +36,7 @@ func TestHandler_Ping(t *testing.T) {
 			storeCfg: func() {
 				store.EXPECT().Ping(gomock.Any()).Return(errors.New(""))
 			},
-			wantStatusCode: http.StatusInternalServerError,
+			wantStatusCode: http.StatusBadRequest,
 			wantBody:       func() string { return "" },
 		},
 		{
