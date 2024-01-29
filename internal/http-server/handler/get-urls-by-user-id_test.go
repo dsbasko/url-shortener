@@ -107,7 +107,7 @@ func TestHandler_GetURLsByUserID(t *testing.T) {
 						OriginalURL: "https://ya.ru",
 					},
 				})
-				return string(respBytes)
+				return fmt.Sprintf("%s\n", respBytes)
 			},
 		},
 	}

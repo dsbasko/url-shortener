@@ -46,13 +46,6 @@ func (h *Handler) CreateURLJSON(w http.ResponseWriter, r *http.Request) {
 		Result: createdURL.ShortURL,
 	}
 
-	responseBytes, responseErr := json.Marshal(response)
-	if responseErr != nil {
-		log.Errorw(fmt.Errorf("failed to assemble the structure into json: %w", responseErr).Error())
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	if unique {
 		w.WriteHeader(http.StatusCreated)
@@ -60,7 +53,7 @@ func (h *Handler) CreateURLJSON(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusConflict)
 	}
 
-	if _, err = w.Write(responseBytes); err != nil {
+	if err = json.NewEncoder(w).Encode(response); err != nil {
 		log.Errorw(fmt.Errorf("failed to return response body: %w", err).Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return

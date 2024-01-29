@@ -96,7 +96,7 @@ func TestHandler_CreateURLJSON(t *testing.T) {
 				resBytes, _ := json.Marshal(api.CreateURLResponse{
 					Result: fmt.Sprintf("%s42", config.GetBaseURL()),
 				})
-				return string(resBytes)
+				return fmt.Sprintf("%s\n", resBytes)
 			},
 		},
 		{
@@ -120,7 +120,7 @@ func TestHandler_CreateURLJSON(t *testing.T) {
 				resBytes, _ := json.Marshal(api.CreateURLResponse{
 					Result: fmt.Sprintf("%s42", config.GetBaseURL()),
 				})
-				return string(resBytes)
+				return fmt.Sprintf("%s\n", resBytes)
 			},
 		},
 	}

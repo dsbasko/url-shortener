@@ -42,16 +42,9 @@ func (h *Handler) CreateURLsJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseBytes, responseErr := json.Marshal(createdURLs)
-	if responseErr != nil {
-		log.Errorw(fmt.Errorf("failed to assemble the structure into json: %w", responseErr).Error())
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if _, err = w.Write(responseBytes); err != nil {
+	if err = json.NewEncoder(w).Encode(createdURLs); err != nil {
 		log.Errorw(fmt.Errorf("failed to return response body: %w", err).Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
