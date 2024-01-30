@@ -11,7 +11,6 @@ import (
 
 // CreateURLsJSON creates urls with json body.
 func (h *Handler) CreateURLsJSON(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
 	var dto []api.CreateURLsRequest
 
 	log := h.log.With("request_id", middleware.GetReqID(r.Context()))

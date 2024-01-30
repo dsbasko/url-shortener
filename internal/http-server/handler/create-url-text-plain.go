@@ -10,8 +10,6 @@ import (
 
 // CreateURLTextPlain creates url with text/plain body.
 func (h *Handler) CreateURLTextPlain(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
 	log := h.log.With("request_id", middleware.GetReqID(r.Context()))
 
 	if r.ContentLength <= 4 { //nolint:gomnd
