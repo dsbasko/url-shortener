@@ -36,6 +36,9 @@ start-psql:
 		-e POSTGRES_DB=shortener \
 		postgres:15.4-alpine3.17
 
+build-staticlint:
+	@go build -o $(LOCAL_BIN_PATH)/staticlint ./cmd/staticlint/main.go
+
 test:
 	go test ./... --cover
 
