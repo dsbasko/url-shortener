@@ -1,8 +1,7 @@
-package handler
+package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -22,24 +21,8 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/test"
 )
 
-func TestHandler_GetURLsByUserID(t *testing.T) {
-	config.Init() //nolint:errcheck
-	log := logger.NewMock()
-	store := storage.NewMock(t)
-	urlsService := urls.New(log, store)
-	router := chi.NewRouter()
-	h := New(log, store, urlsService)
-	mw := middlewares.New(log)
-	router.
-		With(mw.JWT).
-		Get("/api/user/urls", h.GetURLsByUserID)
-	ts := httptest.NewServer(router)
-	defer ts.Close()
-
-	token, err := jwt.GenerateToken()
-	assert.NoError(t, err)
-	mockCookie := &http.Cookie{Name: jwt.CookieKey, Value: token}
-	serviceError := errors.New("service error")
+func (s *SuiteHandlers) Test_GetURLsByUserID() {
+	t := s.T()
 
 	tests := []struct {
 		name           string
@@ -60,11 +43,11 @@ func TestHandler_GetURLsByUserID(t *testing.T) {
 		{
 			name: "Service Error",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
-					Return(nil, serviceError)
+					Return(nil, s.attr.errService)
 			},
-			cookie:         mockCookie,
+			cookie:         s.attr.cookie,
 			wantStatusCode: http.StatusBadRequest,
 			wantBody: func() string {
 				return ""
@@ -73,11 +56,11 @@ func TestHandler_GetURLsByUserID(t *testing.T) {
 		{
 			name: "Not Found",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
 					Return([]entities.URL{}, nil)
 			},
-			cookie:         mockCookie,
+			cookie:         s.attr.cookie,
 			wantStatusCode: http.StatusNoContent,
 			wantBody: func() string {
 				return ""
@@ -86,7 +69,7 @@ func TestHandler_GetURLsByUserID(t *testing.T) {
 		{
 			name: "Success",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
 					Return([]entities.URL{
 						{
@@ -97,7 +80,7 @@ func TestHandler_GetURLsByUserID(t *testing.T) {
 						},
 					}, nil)
 			},
-			cookie:         mockCookie,
+			cookie:         s.attr.cookie,
 			wantStatusCode: http.StatusOK,
 			wantBody: func() string {
 				respBytes, _ := json.Marshal([]entities.URL{
@@ -116,7 +99,7 @@ func TestHandler_GetURLsByUserID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.storeCfg()
-			resp, body := test.Request(t, ts, &test.RequestArgs{
+			resp, body := test.Request(t, s.attr.ts, &test.RequestArgs{
 				Method: "GET",
 				Path:   "/api/user/urls",
 				Cookie: tt.cookie,

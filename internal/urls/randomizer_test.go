@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRandomString(t *testing.T) {
+func Test_URLs_RandomString(t *testing.T) {
 	tests := []struct {
 		name    string
 		length  int

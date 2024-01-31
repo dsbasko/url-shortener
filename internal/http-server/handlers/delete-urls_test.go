@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"net/http"
@@ -19,23 +19,8 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/test"
 )
 
-func TestHandler_DeleteURLs(t *testing.T) {
-	config.Init() //nolint:errcheck
-	log := logger.NewMock()
-	store := storage.NewMock(t)
-	urlsService := urls.New(log, store)
-	router := chi.NewRouter()
-	h := New(log, store, urlsService)
-	mw := middlewares.New(log)
-	router.
-		With(mw.JWT).
-		Delete("/api/user/urls", h.DeleteURLs)
-	ts := httptest.NewServer(router)
-	defer ts.Close()
-
-	token, err := jwt.GenerateToken()
-	assert.NoError(t, err)
-	mockCookie := &http.Cookie{Name: jwt.CookieKey, Value: token}
+func (s *SuiteHandlers) Test_DeleteURLs() {
+	t := s.T()
 
 	tests := []struct {
 		name           string
@@ -57,7 +42,7 @@ func TestHandler_DeleteURLs(t *testing.T) {
 			contentType:    "application/json",
 			body:           []byte(""),
 			storeCfg:       func() {},
-			cookie:         mockCookie,
+			cookie:         s.attr.cookie,
 			wantStatusCode: http.StatusBadRequest,
 		},
 		{
@@ -65,7 +50,7 @@ func TestHandler_DeleteURLs(t *testing.T) {
 			contentType:    "application/json",
 			body:           []byte("42[],,"),
 			storeCfg:       func() {},
-			cookie:         mockCookie,
+			cookie:         s.attr.cookie,
 			wantStatusCode: http.StatusBadRequest,
 		},
 		{
@@ -73,9 +58,9 @@ func TestHandler_DeleteURLs(t *testing.T) {
 			body:        []byte(`["42"]`),
 			contentType: "application/json",
 			storeCfg: func() {
-				store.EXPECT().DeleteURLs(gomock.Any(), gomock.Any()).Return(nil, nil)
+				s.attr.store.EXPECT().DeleteURLs(gomock.Any(), gomock.Any()).Return(nil, nil)
 			},
-			cookie:         mockCookie,
+			cookie:         s.attr.cookie,
 			wantStatusCode: http.StatusAccepted,
 		},
 	}
@@ -83,7 +68,7 @@ func TestHandler_DeleteURLs(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.storeCfg()
-			resp, _ := test.Request(t, ts, &test.RequestArgs{
+			resp, _ := test.Request(t, s.attr.ts, &test.RequestArgs{
 				Method:      "DELETE",
 				Path:        "/api/user/urls",
 				ContentType: tt.contentType,

@@ -1,8 +1,7 @@
-package handler
+package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -22,21 +21,8 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/test"
 )
 
-func TestHandler_CreateURLManyJSON(t *testing.T) {
-	config.Init() //nolint:errcheck
-	log := logger.NewMock()
-	store := storage.NewMock(t)
-	urlsService := urls.New(log, store)
-	router := chi.NewRouter()
-	h := New(log, store, urlsService)
-	mw := middlewares.New(log)
-	router.
-		With(mw.JWT).
-		Post("/api/shorten/batch", h.CreateURLsJSON)
-	ts := httptest.NewServer(router)
-	defer ts.Close()
-
-	serviceErr := errors.New("service error")
+func (s *SuiteHandlers) Test_CreateURLs_JSON() {
+	t := s.T()
 
 	tests := []struct {
 		name           string
@@ -74,9 +60,9 @@ func TestHandler_CreateURLManyJSON(t *testing.T) {
 			},
 			contentType: "application/json",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
-					Return(nil, serviceErr)
+					Return(nil, s.attr.errService)
 			},
 			wantStatusCode: http.StatusBadRequest,
 			wantBody:       nil,
@@ -94,7 +80,7 @@ func TestHandler_CreateURLManyJSON(t *testing.T) {
 			},
 			contentType: "application/json",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
 					Return([]entities.URL{}, nil)
 			},
@@ -123,7 +109,7 @@ func TestHandler_CreateURLManyJSON(t *testing.T) {
 			},
 			contentType: "application/json",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
 					Return([]entities.URL{}, nil)
 			},
@@ -144,7 +130,7 @@ func TestHandler_CreateURLManyJSON(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.storeCfg()
-			resp, body := test.Request(t, ts, &test.RequestArgs{
+			resp, body := test.Request(t, s.attr.ts, &test.RequestArgs{
 				Method:      "POST",
 				Path:        "/api/shorten/batch",
 				ContentType: tt.contentType,

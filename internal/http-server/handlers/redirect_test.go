@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"errors"
@@ -19,16 +19,8 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/test"
 )
 
-func TestHandler_Redirect(t *testing.T) {
-	config.Init() //nolint:errcheck
-	log := logger.NewMock()
-	store := storage.NewMock(t)
-	urlsService := urls.New(log, store)
-	router := chi.NewRouter()
-	h := New(log, store, urlsService)
-	router.Get("/{short_url}", h.Redirect)
-	ts := httptest.NewServer(router)
-	defer ts.Close()
+func (s *SuiteHandlers) Test_Redirect() {
+	t := s.T()
 
 	tests := []struct {
 		name           string
@@ -40,7 +32,7 @@ func TestHandler_Redirect(t *testing.T) {
 			name:     "Not Found",
 			shortURL: "42",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{}, errors.New("not found"))
 			},
@@ -50,7 +42,7 @@ func TestHandler_Redirect(t *testing.T) {
 			name:     "Found",
 			shortURL: "42",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{
 						ID:          "42",
@@ -65,7 +57,7 @@ func TestHandler_Redirect(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.storeCfg()
-			resp, _ := test.Request(t, ts, &test.RequestArgs{
+			resp, _ := test.Request(t, s.attr.ts, &test.RequestArgs{
 				Method: "GET",
 				Path:   fmt.Sprintf("/%s", tt.shortURL),
 			})

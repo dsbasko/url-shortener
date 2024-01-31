@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"encoding/json"
@@ -10,9 +10,9 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/api"
 )
 
-// CreateURLsJSON creates url with json body.
-func (h *Handler) CreateURLJSON(w http.ResponseWriter, r *http.Request) {
-	var dto api.CreateURLRequest
+// CreateURLsJSON creates urls with json body.
+func (h *Handler) CreateURLsJSON(w http.ResponseWriter, r *http.Request) {
+	var dto []api.CreateURLsRequest
 
 	log := h.log.With("request_id", middleware.GetReqID(r.Context()))
 
@@ -35,25 +35,16 @@ func (h *Handler) CreateURLJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdURL, unique, err := h.urls.CreateURL(r.Context(), dto.URL)
+	createdURLs, err := h.urls.CreateURLs(r.Context(), dto)
 	if err != nil {
 		log.Errorw(fmt.Errorf("failed to create link in urls: %w", err).Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	response := api.CreateURLResponse{
-		Result: createdURL.ShortURL,
-	}
-
 	w.Header().Set("Content-Type", "application/json")
-	if unique {
-		w.WriteHeader(http.StatusCreated)
-	} else {
-		w.WriteHeader(http.StatusConflict)
-	}
-
-	if err = json.NewEncoder(w).Encode(response); err != nil {
+	w.WriteHeader(http.StatusCreated)
+	if err = json.NewEncoder(w).Encode(createdURLs); err != nil {
 		log.Errorw(fmt.Errorf("failed to return response body: %w", err).Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return

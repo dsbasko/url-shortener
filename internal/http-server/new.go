@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/http-server/handler"
+	"github.com/dsbasko/yandex-go-shortener/internal/http-server/handlers"
 	"github.com/dsbasko/yandex-go-shortener/internal/http-server/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
 	"github.com/dsbasko/yandex-go-shortener/internal/urls"
@@ -30,7 +30,7 @@ func New(ctx context.Context, log *logger.Logger, storage interfaces.Storage, ur
 
 	router.Mount("/debug", mwChi.Profiler())
 
-	h := handler.New(log, storage, urlService)
+	h := handlers.New(log, storage, urlService)
 	router.Get("/ping", h.Ping)
 	router.Get("/{short_url}", h.Redirect)
 	router.Get("/api/user/urls", h.GetURLsByUserID)

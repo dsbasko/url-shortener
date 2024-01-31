@@ -5,27 +5,16 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
-	"github.com/dsbasko/yandex-go-shortener/internal/storage"
 	"github.com/dsbasko/yandex-go-shortener/pkg/errors"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestURLs_CreateShortURL(t *testing.T) {
-	config.Init() //nolint:errcheck
-	log := logger.NewMock()
-	store := storage.NewMock(t)
-	service := New(log, store)
-	storeErr := fmt.Errorf("storage error")
-
-	token, err := jwt.GenerateToken()
-	assert.NoError(t, err)
-	ctxWithToken := context.WithValue(context.Background(), jwt.ContextKey, token)
+func (s *SuiteURLs) Test_CreateURL() {
+	t := s.T()
 
 	type args struct {
 		ctx         context.Context
@@ -58,27 +47,27 @@ func TestURLs_CreateShortURL(t *testing.T) {
 		{
 			name: "Storage Error",
 			args: args{
-				ctx:         ctxWithToken,
+				ctx:         s.attr.ctxWithToken,
 				originalURL: "https://ya.ru/",
 			},
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{}, false, storeErr)
+					Return(entities.URL{}, false, s.attr.errStore)
 			},
 			want: want{
 				resp: entities.URL{},
-				err:  storeErr,
+				err:  s.attr.errStore,
 			},
 		},
 		{
 			name: "Success Unique",
 			args: args{
-				ctx:         ctxWithToken,
+				ctx:         s.attr.ctxWithToken,
 				originalURL: "https://ya.ru/",
 			},
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{
 						ID:          "42",
@@ -99,11 +88,11 @@ func TestURLs_CreateShortURL(t *testing.T) {
 		{
 			name: "Success NotUnique",
 			args: args{
-				ctx:         ctxWithToken,
+				ctx:         s.attr.ctxWithToken,
 				originalURL: "https://ya.ru/",
 			},
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{
 						ID:          "42",
@@ -128,9 +117,9 @@ func TestURLs_CreateShortURL(t *testing.T) {
 				originalURL: "https://ya.ru/",
 			},
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{}, false, storeErr)
+					Return(entities.URL{}, false, s.attr.errStore)
 			},
 			want: want{
 				resp: entities.URL{},
@@ -141,7 +130,7 @@ func TestURLs_CreateShortURL(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.storeCfg()
-			resp, uniq, err := service.CreateURL(tt.args.ctx, tt.args.originalURL)
+			resp, uniq, err := s.attr.service.CreateURL(tt.args.ctx, tt.args.originalURL)
 
 			assert.Equal(t, tt.want.resp, resp)
 			assert.Equal(t, tt.want.uniq, uniq)

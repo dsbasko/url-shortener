@@ -1,30 +1,18 @@
-package handler
+package handlers
 
 import (
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/storage"
-	"github.com/dsbasko/yandex-go-shortener/internal/urls"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 	"github.com/dsbasko/yandex-go-shortener/pkg/test"
 )
 
-func TestHandler_Ping(t *testing.T) {
-	log := logger.NewMock()
-	store := storage.NewMock(t)
-	urlsService := urls.New(log, store)
-	router := chi.NewRouter()
-	h := New(log, store, urlsService)
-	router.Get("/", h.Ping)
-	ts := httptest.NewServer(router)
-	defer ts.Close()
+func (s *SuiteHandlers) Test_Ping() {
+	t := s.T()
 
 	tests := []struct {
 		name           string
@@ -35,7 +23,7 @@ func TestHandler_Ping(t *testing.T) {
 		{
 			name: "Error",
 			storeCfg: func() {
-				store.EXPECT().Ping(gomock.Any()).Return(errors.New(""))
+				s.attr.store.EXPECT().Ping(gomock.Any()).Return(errors.New(""))
 			},
 			wantStatusCode: http.StatusBadRequest,
 			wantBody:       func() string { return "" },
@@ -43,7 +31,7 @@ func TestHandler_Ping(t *testing.T) {
 		{
 			name: "Success",
 			storeCfg: func() {
-				store.EXPECT().Ping(gomock.Any()).Return(nil)
+				s.attr.store.EXPECT().Ping(gomock.Any()).Return(nil)
 			},
 			wantStatusCode: http.StatusOK,
 			wantBody:       func() string { return "pong" },
@@ -52,9 +40,9 @@ func TestHandler_Ping(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.storeCfg()
-			resp, body := test.Request(t, ts, &test.RequestArgs{
+			resp, body := test.Request(t, s.attr.ts, &test.RequestArgs{
 				Method: "GET",
-				Path:   "/",
+				Path:   "/ping",
 			})
 			defer resp.Body.Close()
 

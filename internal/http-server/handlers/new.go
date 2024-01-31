@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
@@ -14,8 +14,8 @@ type Handler struct {
 }
 
 // New creates a new handler constructor.
-func New(log *logger.Logger, storage interfaces.Storage, urlService urls.URLs) *Handler {
-	return &Handler{
+func New(log *logger.Logger, storage interfaces.Storage, urlService urls.URLs) Handler {
+	return Handler{
 		log:     log,
 		storage: storage,
 		urls:    urlService,

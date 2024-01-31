@@ -1,7 +1,7 @@
-package handler
+package handlers
 
 import (
-	"errors"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -16,35 +16,32 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/http-server/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/storage"
 	"github.com/dsbasko/yandex-go-shortener/internal/urls"
+	"github.com/dsbasko/yandex-go-shortener/pkg/api"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 	"github.com/dsbasko/yandex-go-shortener/pkg/test"
 )
 
-func TestHandler_CreateURLOnceTextPlain(t *testing.T) {
-	config.Init() //nolint:errcheck
-	log := logger.NewMock()
-	store := storage.NewMock(t)
-	urlsService := urls.New(log, store)
-	router := chi.NewRouter()
-	h := New(log, store, urlsService)
-	mw := middlewares.New(log)
-	router.
-		With(mw.JWT).
-		Post("/", h.CreateURLTextPlain)
-	ts := httptest.NewServer(router)
-	defer ts.Close()
-
-	serviceErr := errors.New("service error")
+func (s *SuiteHandlers) Test_CreateURL_JSON() {
+	t := s.T()
 
 	tests := []struct {
 		name           string
+		contentType    string
 		body           func() []byte
 		storeCfg       func()
 		wantStatusCode int
 		wantBody       func() string
 	}{
 		{
+			name:           "Wrong Content-Type",
+			body:           func() []byte { return []byte("") },
+			storeCfg:       func() {},
+			wantStatusCode: http.StatusBadRequest,
+			wantBody:       func() string { return "" },
+		},
+		{
 			name:           "Empty Body",
+			contentType:    "application/json",
 			body:           func() []byte { return []byte("") },
 			storeCfg:       func() {},
 			wantStatusCode: http.StatusBadRequest,
@@ -52,57 +49,77 @@ func TestHandler_CreateURLOnceTextPlain(t *testing.T) {
 		},
 		{
 			name: "Service Error",
-			body: func() []byte { return []byte("https://ya.ru/") },
+			body: func() []byte {
+				dtoBytes, _ := json.Marshal(api.CreateURLRequest{URL: "https://ya.ru/"})
+				return dtoBytes
+			},
+			contentType: "application/json",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{}, false, serviceErr)
+					Return(entities.URL{}, false, s.attr.errService)
 			},
 			wantStatusCode: http.StatusBadRequest,
 			wantBody:       func() string { return "" },
 		},
 		{
 			name: "Success Unique",
-			body: func() []byte { return []byte("https://ya.ru/") },
+			body: func() []byte {
+				dtoBytes, _ := json.Marshal(api.CreateURLRequest{URL: "https://ya.ru/"})
+				return dtoBytes
+			},
+			contentType: "application/json",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{
 						ID:          "42",
 						ShortURL:    "42",
-						OriginalURL: "https://ya.ru/",
+						OriginalURL: "https://ya2.ru/",
 					}, true, nil)
 			},
 			wantStatusCode: http.StatusCreated,
 			wantBody: func() string {
-				return fmt.Sprintf("%s42", config.GetBaseURL())
+				resBytes, _ := json.Marshal(api.CreateURLResponse{
+					Result: fmt.Sprintf("%s42", config.GetBaseURL()),
+				})
+				return fmt.Sprintf("%s\n", resBytes)
 			},
 		},
 		{
 			name: "Success NotUnique",
-			body: func() []byte { return []byte("https://ya.ru/") },
+			body: func() []byte {
+				dtoBytes, _ := json.Marshal(api.CreateURLRequest{URL: "https://ya.ru/"})
+				return dtoBytes
+			},
+			contentType: "application/json",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{
 						ID:          "42",
 						ShortURL:    "42",
-						OriginalURL: "https://ya.ru/",
+						OriginalURL: "https://ya3.ru/",
 					}, false, nil)
 			},
 			wantStatusCode: http.StatusConflict,
 			wantBody: func() string {
-				return fmt.Sprintf("%s42", config.GetBaseURL())
+				resBytes, _ := json.Marshal(api.CreateURLResponse{
+					Result: fmt.Sprintf("%s42", config.GetBaseURL()),
+				})
+				return fmt.Sprintf("%s\n", resBytes)
 			},
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.storeCfg()
-			resp, body := test.Request(t, ts, &test.RequestArgs{
-				Method: "POST",
-				Path:   "/",
-				Body:   tt.body(),
+			resp, body := test.Request(t, s.attr.ts, &test.RequestArgs{
+				Method:      "POST",
+				Path:        "/api/shorten",
+				ContentType: tt.contentType,
+				Body:        tt.body(),
 			})
 			defer resp.Body.Close()
 
@@ -112,7 +129,7 @@ func TestHandler_CreateURLOnceTextPlain(t *testing.T) {
 	}
 }
 
-func BenchmarkHandler_CreateURLOnceTextPlain(b *testing.B) {
+func BenchmarkHandler_CreateURLJSON(b *testing.B) {
 	config.Init() //nolint:errcheck
 	log := logger.NewMock()
 	store := storage.NewMock(&testing.T{})
@@ -122,7 +139,7 @@ func BenchmarkHandler_CreateURLOnceTextPlain(b *testing.B) {
 	mw := middlewares.New(log)
 	router.
 		With(mw.JWT).
-		Post("/", h.CreateURLTextPlain)
+		Post("/api/shorten", h.CreateURLJSON)
 	ts := httptest.NewServer(router)
 	defer ts.Close()
 
@@ -147,9 +164,10 @@ func BenchmarkHandler_CreateURLOnceTextPlain(b *testing.B) {
 		b.StartTimer()
 
 		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{
-			Method: "POST",
-			Path:   "/",
-			Body:   []byte("https://ya.ru/"),
+			Method:      "POST",
+			Path:        "/api/shorten",
+			ContentType: "application/json",
+			Body:        []byte(`{"url":"https://ya.ru/"}`),
 		})
 		resp.Body.Close()
 	}

@@ -2,23 +2,17 @@ package urls
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
-	"github.com/dsbasko/yandex-go-shortener/internal/storage"
 	"github.com/dsbasko/yandex-go-shortener/pkg/errors"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
-func TestURLs_GetURL(t *testing.T) {
-	log := logger.NewMock()
-	store := storage.NewMock(t)
-	service := New(log, store)
-	ErrNotFound := fmt.Errorf("not found")
+func (s *SuiteURLs) Test_GetURL() {
+	t := s.T()
 
 	type want struct {
 		resp entities.URL
@@ -35,20 +29,20 @@ func TestURLs_GetURL(t *testing.T) {
 			name:     "Not Found",
 			shortURL: "42",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{}, ErrNotFound)
+					Return(entities.URL{}, s.attr.errNotFound)
 			},
 			want: want{
 				resp: entities.URL{},
-				err:  ErrNotFound,
+				err:  s.attr.errNotFound,
 			},
 		},
 		{
 			name:     "Found",
 			shortURL: "42",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{
 						ID:          "42",
@@ -70,7 +64,7 @@ func TestURLs_GetURL(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.storeCfg()
-			resp, err := service.GetURL(context.Background(), tt.shortURL)
+			resp, err := s.attr.service.GetURL(context.Background(), tt.shortURL)
 
 			assert.Equal(t, tt.want.resp, resp)
 			assert.Equal(t, tt.want.err, errors.UnwrapAll(err))

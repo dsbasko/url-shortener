@@ -10,16 +10,11 @@ import (
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
-	"github.com/dsbasko/yandex-go-shortener/internal/storage"
 	"github.com/dsbasko/yandex-go-shortener/pkg/errors"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
-func TestURLs_GetURLsByUserID(t *testing.T) {
-	log := logger.NewMock()
-	store := storage.NewMock(t)
-	service := New(log, store)
-	ErrNotFound := fmt.Errorf("not found")
+func (s *SuiteURLs) Test_GetURLsByUserID() {
+	t := s.T()
 
 	type want struct {
 		resp []entities.URL
@@ -36,20 +31,20 @@ func TestURLs_GetURLsByUserID(t *testing.T) {
 			name:   "Not Found",
 			userID: "42",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
-					Return([]entities.URL{}, ErrNotFound)
+					Return([]entities.URL{}, s.attr.errNotFound)
 			},
 			want: want{
 				resp: []entities.URL{},
-				err:  ErrNotFound,
+				err:  s.attr.errNotFound,
 			},
 		},
 		{
 			name:   "Found",
 			userID: "42",
 			storeCfg: func() {
-				store.EXPECT().
+				s.attr.store.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
 					Return([]entities.URL{
 						{
@@ -75,7 +70,7 @@ func TestURLs_GetURLsByUserID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.storeCfg()
-			resp, err := service.GetURLsByUserID(context.Background(), tt.userID)
+			resp, err := s.attr.service.GetURLsByUserID(context.Background(), tt.userID)
 
 			assert.Equal(t, tt.want.resp, resp)
 			assert.Equal(t, tt.want.err, errors.UnwrapAll(err))
