@@ -13,9 +13,9 @@ func ParseServerAddress(serverAddress string) (string, error) {
 		serverAddress = "https://" + serverAddress
 	}
 
-	parsedURL, err := url.ParseRequestURI(serverAddress)
-	if err != nil {
-		return "", fmt.Errorf("url.ParseRequestURI: %w", err)
+	parsedURL, errParse := url.ParseRequestURI(serverAddress)
+	if errParse != nil {
+		return "", fmt.Errorf("url.ParseRequestURI: %w", errParse)
 	}
 
 	return parsedURL.Host, nil
@@ -31,9 +31,9 @@ func ParseBaseURL(baseURL string) (string, error) {
 		baseURL = "https://" + baseURL
 	}
 
-	_, err := url.ParseRequestURI(baseURL)
-	if err != nil {
-		return "", fmt.Errorf("url.ParseRequestURI: %w", err)
+	_, errParse := url.ParseRequestURI(baseURL)
+	if errParse != nil {
+		return "", fmt.Errorf("url.ParseRequestURI: %w", errParse)
 	}
 
 	if !strings.HasSuffix(baseURL, "/") {

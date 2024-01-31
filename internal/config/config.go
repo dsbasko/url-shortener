@@ -8,7 +8,6 @@ import (
 	"github.com/ian-kent/gofigure"
 )
 
-// config a config struct.
 type config struct {
 	gofigure         interface{} `order:"flag,env"`                                                                                                        //nolint:lll,gofmt,unused
 	Env              string      `env:"ENV" flag:"env" flagDesc:"run mode (prod|dev|local)"`                                                               //nolint:lll

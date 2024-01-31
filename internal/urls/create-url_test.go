@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
 	"github.com/dsbasko/yandex-go-shortener/pkg/errors"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
 )
 
 func (s *SuiteURLs) Test_CreateURL() {
