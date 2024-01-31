@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dsbasko/yandex-go-shortener/pkg/api"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/dsbasko/yandex-go-shortener/pkg/api"
 )
 
 // CreateURLsJSON creates urls with json body.

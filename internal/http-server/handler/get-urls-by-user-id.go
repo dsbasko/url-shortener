@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
 )
 
 // GetURLsByUserID returns all urls by user id.

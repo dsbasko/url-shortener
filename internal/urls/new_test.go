@@ -3,9 +3,10 @@ package urls
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/dsbasko/yandex-go-shortener/internal/storage"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {

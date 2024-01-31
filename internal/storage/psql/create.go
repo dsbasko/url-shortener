@@ -5,9 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
+
+	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 )
 
 // CreateURL creates a URL.

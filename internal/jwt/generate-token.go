@@ -3,10 +3,11 @@ package jwt
 import (
 	"fmt"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+
+	"github.com/dsbasko/yandex-go-shortener/internal/config"
+	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 )
 
 // GenerateToken generates jwt token.

@@ -1,8 +1,9 @@
 package jwt
 
 import (
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/golang-jwt/jwt/v5"
+
+	"github.com/dsbasko/yandex-go-shortener/internal/config"
 )
 
 // TokenValidate validates jwt token.

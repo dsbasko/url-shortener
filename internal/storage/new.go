@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
 	"github.com/dsbasko/yandex-go-shortener/internal/storage/file"
@@ -11,7 +13,6 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/storage/mock"
 	"github.com/dsbasko/yandex-go-shortener/internal/storage/psql"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
-	"github.com/golang/mock/gomock"
 )
 
 // New creates a new instance of the storage.

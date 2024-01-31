@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jmoiron/sqlx"
+
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
-	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/jmoiron/sqlx"
 )
 
 // Storage a postgresql storage.

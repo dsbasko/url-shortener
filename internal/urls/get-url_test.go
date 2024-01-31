@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 	"github.com/dsbasko/yandex-go-shortener/internal/storage"
 	"github.com/dsbasko/yandex-go-shortener/pkg/errors"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestURLs_GetURL(t *testing.T) {

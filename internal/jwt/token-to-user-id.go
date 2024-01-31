@@ -1,9 +1,10 @@
 package jwt
 
 import (
+	"github.com/golang-jwt/jwt/v5"
+
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 // TokenToUserID parses jwt token and returns user ID.
