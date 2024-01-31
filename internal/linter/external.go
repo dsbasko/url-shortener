@@ -1,4 +1,4 @@
-package lint
+package linter
 
 import (
 	"github.com/jingyugao/rowserrcheck/passes/rowserr"
