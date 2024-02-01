@@ -5,6 +5,7 @@ import (
 	"honnef.co/go/tools/stylecheck"
 )
 
+// GetStyleCheckAnalyzers returns a list of stylecheck analyzers.
 func GetStyleCheckAnalyzers() []*analysis.Analyzer {
 	var response []*analysis.Analyzer
 

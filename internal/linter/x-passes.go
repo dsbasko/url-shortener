@@ -48,6 +48,7 @@ import (
 	"honnef.co/go/tools/analysis/facts/nilness"
 )
 
+// GetXPassesAnalyzers returns a list of x/tools/go/analysis/passes analyzers.
 func GetXPassesAnalyzers() []*analysis.Analyzer {
 	return []*analysis.Analyzer{
 		asmdecl.Analyzer,

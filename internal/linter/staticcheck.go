@@ -5,6 +5,7 @@ import (
 	"honnef.co/go/tools/staticcheck"
 )
 
+// GetStaticCheckAnalyzers returns a list of staticcheck analyzers.
 func GetStaticCheckAnalyzers() []*analysis.Analyzer {
 	var response []*analysis.Analyzer
 

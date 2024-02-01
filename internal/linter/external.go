@@ -6,6 +6,7 @@ import (
 	"golang.org/x/tools/go/analysis"
 )
 
+// GetExternalAnalyzers returns a list of external analyzers.
 func GetExternalAnalyzers() []*analysis.Analyzer {
 	return []*analysis.Analyzer{
 		bodyclose.Analyzer,
