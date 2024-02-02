@@ -10,6 +10,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
 )
 
+// CreateURL creates a new short url.
 func (u *URLs) CreateURL(
 	ctx context.Context,
 	originalURL string,

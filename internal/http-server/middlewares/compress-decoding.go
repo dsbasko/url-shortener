@@ -10,6 +10,7 @@ import (
 	middlewareChi "github.com/go-chi/chi/v5/middleware"
 )
 
+// CompressDecoding decompresses request.
 func (m *Middlewares) CompressDecoding(next http.Handler) http.Handler {
 	m.log.Debug("compress decoding middlewares enabled")
 
@@ -22,7 +23,7 @@ func (m *Middlewares) CompressDecoding(next http.Handler) http.Handler {
 		gz, err := gzip.NewReader(r.Body)
 		if err != nil {
 			m.log.Errorw(err.Error(), "request_id", middlewareChi.GetReqID(r.Context()))
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		defer func() {
@@ -34,7 +35,7 @@ func (m *Middlewares) CompressDecoding(next http.Handler) http.Handler {
 		body, err := io.ReadAll(gz)
 		if err != nil {
 			m.log.Errorw(err.Error(), "request_id", middlewareChi.GetReqID(r.Context()))
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		r.Body = io.NopCloser(bytes.NewReader(body))

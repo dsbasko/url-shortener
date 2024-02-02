@@ -35,7 +35,7 @@ linters-settings:
       - pattern: 'interface{}'
         replacement: 'any'
   goimports:
-    local-prefixes: github.com/golangci/golangci-lint
+    local-prefixes: github.com/dsbasko/yandex-go-shortener
   gomnd:
     checks:
       - argument
@@ -114,6 +114,13 @@ issues:
     - path: _test\.go
       linters:
         - gomnd
+
+    - path: example_test.go
+      linters:
+        - noctx
+        - nolintlint
+        - govet
+        - staticcheck
 
     - path: pkg/golinters/errcheck.go
       text: "SA1019: errCfg.Exclude is deprecated: use ExcludeFunctions instead"

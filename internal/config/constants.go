@@ -1,5 +1,6 @@
 package config
 
+// Def* constants are default values for config.
 const (
 	DefEnv              = "prod"
 	DefPort             = "8080"

@@ -5,10 +5,12 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
 )
 
+// JWT adds jwt token to request context.
 func (m *Middlewares) JWT(next http.Handler) http.Handler {
 	m.log.Debug("Cookie request enrichment with an identifier is enabled")
 

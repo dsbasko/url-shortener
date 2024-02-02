@@ -7,6 +7,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
 )
 
+// GetURL returns URL by short URL.
 func (u *URLs) GetURL(ctx context.Context, shortURL string) (entities.URL, error) {
 	if shortURL == "" {
 		return entities.URL{}, ErrInvalidURL

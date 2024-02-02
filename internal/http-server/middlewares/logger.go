@@ -11,16 +11,19 @@ import (
 	middlewareChi "github.com/go-chi/chi/v5/middleware"
 )
 
+// responseLogger is a response logger.
 type responseLogger struct {
 	http.ResponseWriter
 	buf *bytes.Buffer
 }
 
+// Write writes response.
 func (r *responseLogger) Write(b []byte) (int, error) {
 	r.buf.Write(b)
 	return r.ResponseWriter.Write(b)
 }
 
+// Logger sends request and response info to logger.
 func (m *Middlewares) Logger(next http.Handler) http.Handler {
 	m.log.Debug("logger middlewares enabled")
 

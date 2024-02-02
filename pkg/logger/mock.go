@@ -6,6 +6,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// NewMock create a new mock logger.
 func NewMock() *Logger {
 	var logger *zap.SugaredLogger
 	zapConfig := zap.Config{

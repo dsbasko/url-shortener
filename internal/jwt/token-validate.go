@@ -1,10 +1,12 @@
 package jwt
 
 import (
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/golang-jwt/jwt/v5"
+
+	"github.com/dsbasko/yandex-go-shortener/internal/config"
 )
 
+// TokenValidate validates jwt token.
 func TokenValidate(tokenString string) bool {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		return config.GetJWTSecret(), nil
