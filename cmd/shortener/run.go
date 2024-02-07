@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	rest "github.com/dsbasko/yandex-go-shortener/internal/http-server"
+	"github.com/dsbasko/yandex-go-shortener/internal/rest"
 	"github.com/dsbasko/yandex-go-shortener/internal/storage"
 	"github.com/dsbasko/yandex-go-shortener/internal/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"

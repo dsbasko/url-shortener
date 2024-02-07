@@ -11,8 +11,8 @@ import (
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
-	"github.com/dsbasko/yandex-go-shortener/internal/http-server/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
+	"github.com/dsbasko/yandex-go-shortener/internal/rest/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/storage"
 	"github.com/dsbasko/yandex-go-shortener/internal/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"

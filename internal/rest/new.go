@@ -1,13 +1,13 @@
-package httpserver
+package rest
 
 import (
 	"context"
 	"net/http"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/http-server/handlers"
-	"github.com/dsbasko/yandex-go-shortener/internal/http-server/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
+	"github.com/dsbasko/yandex-go-shortener/internal/rest/handlers"
+	"github.com/dsbasko/yandex-go-shortener/internal/rest/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 
@@ -56,6 +56,7 @@ func New(ctx context.Context, log *logger.Logger, storage interfaces.Storage, ur
 	go func() {
 		<-ctx.Done()
 		log.Info("shutdown rest server")
+		server.SetKeepAlivesEnabled(false)
 		err := server.Shutdown(context.Background())
 		if err != nil {
 			log.Errorf("a signal has been received to terminate the http server: %v", err)
