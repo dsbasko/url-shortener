@@ -1,18 +1,17 @@
-package app
+package main
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	httpServer "github.com/dsbasko/yandex-go-shortener/internal/http-server"
+	rest "github.com/dsbasko/yandex-go-shortener/internal/http-server"
 	"github.com/dsbasko/yandex-go-shortener/internal/storage"
 	"github.com/dsbasko/yandex-go-shortener/internal/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
-// Run initializes the dependencies and starts the application.
-func Run() error {
+func run() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -26,6 +25,8 @@ func Run() error {
 		return fmt.Errorf("failed to load the logger: %w", err)
 	}
 
+	printGreeting(log)
+
 	store, err := storage.New(ctx, log)
 	if err != nil {
 		return fmt.Errorf("storage could not be started: %w", err)
@@ -33,7 +34,7 @@ func Run() error {
 
 	urlService := urls.New(log, store)
 
-	if err = httpServer.New(ctx, log, store, urlService); err != nil {
+	if err = rest.New(ctx, log, store, urlService); err != nil {
 		return fmt.Errorf("http server stopped with an error: %w", err)
 	}
 
