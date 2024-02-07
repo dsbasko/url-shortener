@@ -29,13 +29,6 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 		wantBody       func() string
 	}{
 		{
-			name:           "Empty Body",
-			body:           func() []byte { return []byte("") },
-			storeCfg:       func() {},
-			wantStatusCode: http.StatusBadRequest,
-			wantBody:       func() string { return "" },
-		},
-		{
 			name: "Service Error",
 			body: func() []byte { return []byte("https://ya.ru/") },
 			storeCfg: func() {
@@ -89,7 +82,8 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 				Path:   "/",
 				Body:   tt.body(),
 			})
-			defer resp.Body.Close()
+			err := resp.Body.Close()
+			assert.NoError(t, err)
 
 			assert.Equal(t, tt.wantStatusCode, resp.StatusCode)
 			assert.Equal(t, tt.wantBody(), body)
@@ -98,7 +92,8 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 }
 
 func BenchmarkHandler_CreateURLOnceTextPlain(b *testing.B) {
-	config.Init() //nolint:errcheck
+	err := config.Init()
+	assert.NoError(b, err)
 	log := logger.NewMock()
 	store := storage.NewMock(&testing.T{})
 	urlsService := urls.New(log, store)
@@ -136,6 +131,7 @@ func BenchmarkHandler_CreateURLOnceTextPlain(b *testing.B) {
 			Path:   "/",
 			Body:   []byte("https://ya.ru/"),
 		})
-		resp.Body.Close()
+		err = resp.Body.Close()
+		assert.NoError(b, err)
 	}
 }

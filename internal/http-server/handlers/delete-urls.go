@@ -22,12 +22,6 @@ func (h *Handler) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 
 	userID := jwt.TokenToUserID(token)
 
-	if r.ContentLength <= 4 { //nolint:gomnd
-		h.log.Error(ErrEmptyBody)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	var deleteURLs []string
 	err = json.NewDecoder(r.Body).Decode(&deleteURLs)
 	if err != nil {

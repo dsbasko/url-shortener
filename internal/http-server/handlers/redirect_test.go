@@ -61,7 +61,8 @@ func (s *SuiteHandlers) Test_Redirect() {
 				Method: "GET",
 				Path:   fmt.Sprintf("/%s", tt.shortURL),
 			})
-			defer resp.Body.Close()
+			err := resp.Body.Close()
+			assert.NoError(t, err)
 
 			assert.Equal(t, tt.wantStatusCode, resp.StatusCode)
 		})
@@ -69,7 +70,8 @@ func (s *SuiteHandlers) Test_Redirect() {
 }
 
 func BenchmarkHandler_Redirect(b *testing.B) {
-	config.Init() //nolint:errcheck
+	err := config.Init()
+	assert.NoError(b, err)
 	log := logger.NewMock()
 	store := storage.NewMock(&testing.T{})
 	urlsService := urls.New(log, store)
@@ -93,6 +95,7 @@ func BenchmarkHandler_Redirect(b *testing.B) {
 			Method: "GET",
 			Path:   "/42",
 		})
-		resp.Body.Close()
+		err = resp.Body.Close()
+		assert.NoError(b, err)
 	}
 }

@@ -31,7 +31,8 @@ type SuiteURLs struct {
 func (s *SuiteURLs) SetupSuite() {
 	t := s.T()
 
-	config.Init() //nolint:errcheck
+	err := config.Init()
+	assert.NoError(t, err)
 	s.attr.log = logger.NewMock()
 	s.attr.store = storage.NewMock(t)
 	s.attr.service = New(s.attr.log, s.attr.store)

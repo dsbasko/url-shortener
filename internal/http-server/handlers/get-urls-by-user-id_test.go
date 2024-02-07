@@ -104,7 +104,8 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 				Path:   "/api/user/urls",
 				Cookie: tt.cookie,
 			})
-			defer resp.Body.Close()
+			err := resp.Body.Close()
+			assert.NoError(t, err)
 
 			assert.Equal(t, tt.wantStatusCode, resp.StatusCode)
 			assert.Equal(t, tt.wantBody(), body)
@@ -113,7 +114,8 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 }
 
 func BenchmarkHandler_GetURLsByUserID(b *testing.B) {
-	config.Init() //nolint:errcheck
+	err := config.Init()
+	assert.NoError(b, err)
 	log := logger.NewMock()
 	store := storage.NewMock(&testing.T{})
 	urlsService := urls.New(log, store)
@@ -156,6 +158,7 @@ func BenchmarkHandler_GetURLsByUserID(b *testing.B) {
 			Path:   "/api/user/urls",
 			Cookie: mockCookie,
 		})
-		resp.Body.Close()
+		err = resp.Body.Close()
+		assert.NoError(b, err)
 	}
 }

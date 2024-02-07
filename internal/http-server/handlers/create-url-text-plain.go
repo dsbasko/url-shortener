@@ -12,12 +12,6 @@ import (
 func (h *Handler) CreateURLTextPlain(w http.ResponseWriter, r *http.Request) {
 	log := h.log.With("request_id", middleware.GetReqID(r.Context()))
 
-	if r.ContentLength <= 4 { //nolint:gomnd
-		h.log.Error(ErrEmptyBody)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	originalURL, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Errorw(fmt.Errorf("failed to read request body: %w", err).Error())

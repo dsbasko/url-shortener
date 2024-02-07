@@ -10,23 +10,11 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/api"
 )
 
-// CreateURLsJSON creates url with json body.
+// CreateURLJSON creates url with json body.
 func (h *Handler) CreateURLJSON(w http.ResponseWriter, r *http.Request) {
 	var dto api.CreateURLRequest
 
 	log := h.log.With("request_id", middleware.GetReqID(r.Context()))
-
-	if r.Header.Get("Content-Type") != "application/json" {
-		h.log.Error(ErrWrongContentType)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	if r.ContentLength <= 4 { //nolint:gomnd
-		h.log.Error(ErrEmptyBody)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {

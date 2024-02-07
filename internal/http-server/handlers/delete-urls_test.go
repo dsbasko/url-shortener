@@ -38,14 +38,6 @@ func (s *SuiteHandlers) Test_DeleteURLs() {
 			wantStatusCode: http.StatusUnauthorized,
 		},
 		{
-			name:           "Empty Body",
-			contentType:    "application/json",
-			body:           []byte(""),
-			storeCfg:       func() {},
-			cookie:         s.attr.cookie,
-			wantStatusCode: http.StatusBadRequest,
-		},
-		{
 			name:           "JSON Marshal Error",
 			contentType:    "application/json",
 			body:           []byte("42[],,"),
@@ -75,14 +67,17 @@ func (s *SuiteHandlers) Test_DeleteURLs() {
 				Body:        tt.body,
 				Cookie:      tt.cookie,
 			})
-			defer resp.Body.Close()
+			err := resp.Body.Close()
+			assert.NoError(t, err)
+
 			assert.Equal(t, tt.wantStatusCode, resp.StatusCode)
 		})
 	}
 }
 
 func BenchmarkHandler_DeleteURLs(b *testing.B) {
-	config.Init() //nolint:errcheck
+	err := config.Init()
+	assert.NoError(b, err)
 	log := logger.NewMock()
 	store := storage.NewMock(&testing.T{})
 	urlsService := urls.New(log, store)
@@ -122,6 +117,7 @@ func BenchmarkHandler_DeleteURLs(b *testing.B) {
 			Body:        []byte(`["42", "43", "44", "45", "46", "47", "48", "49", "50"]`),
 			Cookie:      mockCookie,
 		})
-		resp.Body.Close()
+		err = resp.Body.Close()
+		assert.NoError(b, err)
 	}
 }

@@ -33,21 +33,6 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 		wantBody       []api.CreateURLsResponse
 	}{
 		{
-			name:           "Wrong Content-Type",
-			body:           func() []byte { return []byte("") },
-			storeCfg:       func() {},
-			wantStatusCode: http.StatusBadRequest,
-			wantBody:       nil,
-		},
-		{
-			name:           "Empty Body",
-			contentType:    "application/json",
-			body:           func() []byte { return []byte("") },
-			storeCfg:       func() {},
-			wantStatusCode: http.StatusBadRequest,
-			wantBody:       nil,
-		},
-		{
 			name: "Service Error",
 			body: func() []byte {
 				dtoBytes, _ := json.Marshal([]api.CreateURLsRequest{
@@ -136,11 +121,12 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 				ContentType: tt.contentType,
 				Body:        tt.body(),
 			})
-			defer resp.Body.Close()
+			err := resp.Body.Close()
+			assert.NoError(t, err)
 
 			if resp.ContentLength > 4 || tt.wantBody != nil {
 				var bodyStruct []api.CreateURLsResponse
-				err := json.Unmarshal([]byte(body), &bodyStruct)
+				err = json.Unmarshal([]byte(body), &bodyStruct)
 				assert.NoError(t, err)
 				assert.Equal(t, len(tt.wantBody), len(bodyStruct))
 				assert.True(t, strings.Contains(bodyStruct[0].ShortURL, config.GetBaseURL()))
@@ -152,7 +138,8 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 }
 
 func BenchmarkHandler_CreateURLManyJSON(b *testing.B) {
-	config.Init() //nolint:errcheck
+	err := config.Init()
+	assert.NoError(b, err)
 	log := logger.NewMock()
 	store := storage.NewMock(&testing.T{})
 	urlsService := urls.New(log, store)
@@ -193,6 +180,7 @@ func BenchmarkHandler_CreateURLManyJSON(b *testing.B) {
 				{"url":"https://ya15.ru/"},
 			]`),
 		})
-		resp.Body.Close()
+		err = resp.Body.Close()
+		assert.NoError(b, err)
 	}
 }

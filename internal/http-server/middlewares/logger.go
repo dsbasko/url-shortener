@@ -35,12 +35,9 @@ func (m *Middlewares) Logger(next http.Handler) http.Handler {
 			"request_id", middlewareChi.GetReqID(r.Context()),
 		}
 
-		if r.Body != nil {
-			body, err := io.ReadAll(r.Body)
-			if err == nil {
-				args = append(args, "request_body", string(body))
-				r.Body = io.NopCloser(bytes.NewBuffer(body))
-			}
+		if body, err := io.ReadAll(r.Body); err == nil {
+			args = append(args, "request_body", string(body))
+			r.Body = io.NopCloser(bytes.NewBuffer(body))
 		}
 
 		buf := bytes.NewBuffer(nil)
@@ -59,13 +56,28 @@ func (m *Middlewares) Logger(next http.Handler) http.Handler {
 				responseBuf := bytes.NewBuffer(nil)
 
 				if strings.Contains(ww.Header().Get("Content-Encoding"), "gzip") {
-					reader, err := gzip.NewReader(buf)
-					if err == nil {
-						defer reader.Close()
-						if _, err = io.Copy(responseBuf, reader); err != nil { //nolint:gosec
-							next.ServeHTTP(ww, r)
-						}
+					reader, errGZIP := gzip.NewReader(buf)
+					if errGZIP != nil {
+						m.log.Warnw("failed to create gzip reader", "error", errGZIP)
+						next.ServeHTTP(ww, r)
 					}
+
+					defer func() {
+						if err := reader.Close(); err != nil {
+							m.log.Errorw("failed to close gzip reader", "error", err)
+						}
+					}()
+
+					if _, err := io.Copy(responseBuf, reader); err != nil { //nolint:gosec
+						m.log.Warnw("failed to copy gzip reader", "error", err)
+						next.ServeHTTP(ww, r)
+					}
+
+					defer func(reader *gzip.Reader) {
+						if err := reader.Close(); err != nil {
+							m.log.Errorw("failed to close gzip reader", "error", err)
+						}
+					}(reader)
 				} else {
 					if _, err := io.Copy(responseBuf, buf); err != nil {
 						next.ServeHTTP(ww, r)

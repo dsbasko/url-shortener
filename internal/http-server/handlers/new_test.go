@@ -38,7 +38,8 @@ type SuiteHandlers struct {
 
 func (s *SuiteHandlers) SetupSuite() {
 	t := s.T()
-	config.Init() //nolint:errcheck
+	err := config.Init()
+	assert.NoError(t, err)
 	s.attr.log = logger.NewMock()
 	s.attr.store = storage.NewMock(t)
 	s.attr.urls = urls.New(s.attr.log, s.attr.store)

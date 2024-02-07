@@ -44,7 +44,8 @@ func (s *SuiteHandlers) Test_Ping() {
 				Method: "GET",
 				Path:   "/ping",
 			})
-			defer resp.Body.Close()
+			err := resp.Body.Close()
+			assert.NoError(t, err)
 
 			assert.Equal(t, tt.wantStatusCode, resp.StatusCode)
 			assert.Equal(t, tt.wantBody(), body)

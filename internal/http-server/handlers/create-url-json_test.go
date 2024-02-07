@@ -33,21 +33,6 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 		wantBody       func() string
 	}{
 		{
-			name:           "Wrong Content-Type",
-			body:           func() []byte { return []byte("") },
-			storeCfg:       func() {},
-			wantStatusCode: http.StatusBadRequest,
-			wantBody:       func() string { return "" },
-		},
-		{
-			name:           "Empty Body",
-			contentType:    "application/json",
-			body:           func() []byte { return []byte("") },
-			storeCfg:       func() {},
-			wantStatusCode: http.StatusBadRequest,
-			wantBody:       func() string { return "" },
-		},
-		{
 			name: "Service Error",
 			body: func() []byte {
 				dtoBytes, _ := json.Marshal(api.CreateURLRequest{URL: "https://ya.ru/"})
@@ -121,7 +106,8 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 				ContentType: tt.contentType,
 				Body:        tt.body(),
 			})
-			defer resp.Body.Close()
+			err := resp.Body.Close()
+			assert.NoError(t, err)
 
 			assert.Equal(t, tt.wantStatusCode, resp.StatusCode)
 			assert.Equal(t, tt.wantBody(), body)
@@ -130,7 +116,8 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 }
 
 func BenchmarkHandler_CreateURLJSON(b *testing.B) {
-	config.Init() //nolint:errcheck
+	err := config.Init()
+	assert.NoError(b, err)
 	log := logger.NewMock()
 	store := storage.NewMock(&testing.T{})
 	urlsService := urls.New(log, store)
@@ -146,21 +133,12 @@ func BenchmarkHandler_CreateURLJSON(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		if i%2 == 0 {
-			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{
-				ID:          "42",
-				ShortURL:    "42",
-				OriginalURL: "https://ya.ru/",
-				UserID:      "42",
-			}, false, nil)
-		} else {
-			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{
-				ID:          "42",
-				ShortURL:    "42",
-				OriginalURL: "https://ya.ru/",
-				UserID:      "42",
-			}, true, nil)
-		}
+		store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{
+			ID:          "42",
+			ShortURL:    "42",
+			OriginalURL: "https://ya.ru/",
+			UserID:      "42",
+		}, false, nil)
 		b.StartTimer()
 
 		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{
@@ -169,6 +147,7 @@ func BenchmarkHandler_CreateURLJSON(b *testing.B) {
 			ContentType: "application/json",
 			Body:        []byte(`{"url":"https://ya.ru/"}`),
 		})
-		resp.Body.Close()
+		err = resp.Body.Close()
+		assert.NoError(b, err)
 	}
 }
