@@ -30,7 +30,21 @@ func New(ctx context.Context, log *logger.Logger) (interfaces.Storage, error) {
 
 	conn.SetMaxOpenConns(config.GetPsqlMaxConns())
 
-	if _, err = conn.ExecContext(ctx, `
+	if err = createTable(ctx, conn); err != nil {
+		return nil, fmt.Errorf("failed to create table: %w", err)
+	}
+
+	log.Infof("postgresql storage initialized")
+
+	return &Storage{
+		log:  log,
+		conn: conn,
+	}, nil
+}
+
+// createTable creates the table if it does not exist and creates the necessary indexes.
+func createTable(ctx context.Context, conn *sqlx.DB) error {
+	if _, err := conn.ExecContext(ctx, `
 		CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 		CREATE TABLE IF NOT EXISTS urls (
@@ -45,13 +59,8 @@ func New(ctx context.Context, log *logger.Logger) (interfaces.Storage, error) {
 	
 		CREATE INDEX IF NOT EXISTS original_url ON urls (original_url);
 	`); err != nil {
-		return nil, fmt.Errorf("the database query could not be executed: %w", err)
+		return fmt.Errorf("the database query could not be executed: %w", err)
 	}
 
-	log.Infof("postgresql storage initialized")
-
-	return &Storage{
-		log:  log,
-		conn: conn,
-	}, nil
+	return nil
 }
