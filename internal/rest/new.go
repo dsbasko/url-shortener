@@ -25,7 +25,6 @@ func New(ctx context.Context, log *logger.Logger, storage interfaces.Storage, ur
 	router.Use(mw.CompressDecoding)
 	router.Use(mw.Logger)
 	router.Use(mw.JWT)
-	router.Use(mw.RequestID)
 	router.Use(mw.CompressEncoding)
 
 	router.Mount("/debug", mwChi.Profiler())
