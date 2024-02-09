@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
-	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
@@ -16,11 +15,8 @@ type Storage struct {
 	store map[string]entities.URL
 }
 
-// Ensure that Storage implements the Storage interface.
-var _ interfaces.Storage = (*Storage)(nil)
-
 // New creates a new instance of the memory storage.
-func New(_ context.Context, log *logger.Logger) (interfaces.Storage, error) {
+func New(_ context.Context, log *logger.Logger) (*Storage, error) {
 	log.Infof("memory storage initialized")
 
 	return &Storage{

@@ -10,13 +10,14 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"go.uber.org/mock/gomock"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
+	mockHandlers "github.com/dsbasko/yandex-go-shortener/internal/controller/rest/handlers/mocks"
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage"
-	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mock"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
+	mockURLs "github.com/dsbasko/yandex-go-shortener/internal/service/urls/mocks"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
@@ -25,8 +26,10 @@ type SuiteHandlers struct {
 
 	attr struct {
 		log          *logger.Logger
-		store        *mock.MockStorage
+		pinger       *mockHandlers.MockPinger
 		urls         urls.URLs
+		urlsProvider *mockURLs.MockURLProvider
+		urlsMutator  *mockURLs.MockURLMutator
 		handler      Handler
 		errService   error
 		errNotFound  error
@@ -38,13 +41,18 @@ type SuiteHandlers struct {
 
 func (s *SuiteHandlers) SetupSuite() {
 	t := s.T()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
 	err := config.Init()
 	assert.NoError(t, err)
 	s.attr.log = logger.NewMock()
-	s.attr.store = storage.NewMock(t)
-	s.attr.urls = urls.New(s.attr.log, s.attr.store)
+	s.attr.pinger = mockHandlers.NewMockPinger(ctrl)
+	s.attr.urlsProvider = mockURLs.NewMockURLProvider(ctrl)
+	s.attr.urlsMutator = mockURLs.NewMockURLMutator(ctrl)
+	s.attr.urls = urls.New(s.attr.log, s.attr.urlsProvider, s.attr.urlsMutator)
 	router := chi.NewRouter()
-	s.attr.handler = New(s.attr.log, s.attr.store, s.attr.urls)
+	s.attr.handler = New(s.attr.log, s.attr.pinger, s.attr.urls)
 	mw := middlewares.New(s.attr.log)
 	token, err := jwt.GenerateToken()
 	assert.NoError(t, err)
@@ -74,7 +82,7 @@ func (s *SuiteHandlers) Test_New() {
 		assert.NotNil(t, s.attr.handler)
 		assert.Equal(
 			t,
-			Handler{log: s.attr.log, storage: s.attr.store, urls: s.attr.urls},
+			Handler{log: s.attr.log, pinger: s.attr.pinger, urls: s.attr.urls},
 			s.attr.handler,
 		)
 	})

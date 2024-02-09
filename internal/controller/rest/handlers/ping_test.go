@@ -23,7 +23,7 @@ func (s *SuiteHandlers) Test_Ping() {
 		{
 			name: "Error",
 			storeCfg: func() {
-				s.attr.store.EXPECT().Ping(gomock.Any()).Return(errors.New(""))
+				s.attr.pinger.EXPECT().Ping(gomock.Any()).Return(errors.New(""))
 			},
 			wantStatusCode: http.StatusBadRequest,
 			wantBody:       func() string { return "" },
@@ -31,7 +31,7 @@ func (s *SuiteHandlers) Test_Ping() {
 		{
 			name: "Success",
 			storeCfg: func() {
-				s.attr.store.EXPECT().Ping(gomock.Any()).Return(nil)
+				s.attr.pinger.EXPECT().Ping(gomock.Any()).Return(nil)
 			},
 			wantStatusCode: http.StatusOK,
 			wantBody:       func() string { return "pong" },

@@ -8,7 +8,6 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
@@ -18,11 +17,8 @@ type Storage struct {
 	conn *sqlx.DB
 }
 
-// Ensure that Storage implements the Storage interface.
-var _ interfaces.Storage = (*Storage)(nil)
-
 // New creates a new instance of the postgresql storage.
-func New(ctx context.Context, log *logger.Logger) (interfaces.Storage, error) {
+func New(ctx context.Context, log *logger.Logger) (*Storage, error) {
 	conn, err := sqlx.ConnectContext(ctx, "pgx", config.GetPsqlDSN())
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to the database: %w", err)

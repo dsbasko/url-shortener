@@ -7,11 +7,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"go.uber.org/mock/gomock"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage"
-	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mock"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
+	mockUrls "github.com/dsbasko/yandex-go-shortener/internal/service/urls/mocks"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
@@ -20,7 +20,8 @@ type SuiteURLs struct {
 
 	attr struct {
 		log          *logger.Logger
-		store        *mock.MockStorage
+		urlProvider  *mockUrls.MockURLProvider
+		urlMutator   *mockUrls.MockURLMutator
 		service      URLs
 		errStore     error
 		errNotFound  error
@@ -30,12 +31,15 @@ type SuiteURLs struct {
 
 func (s *SuiteURLs) SetupSuite() {
 	t := s.T()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	err := config.Init()
 	assert.NoError(t, err)
 	s.attr.log = logger.NewMock()
-	s.attr.store = storage.NewMock(t)
-	s.attr.service = New(s.attr.log, s.attr.store)
+	s.attr.urlProvider = mockUrls.NewMockURLProvider(ctrl)
+	s.attr.urlMutator = mockUrls.NewMockURLMutator(ctrl)
+	s.attr.service = New(s.attr.log, s.attr.urlProvider, s.attr.urlMutator)
 	s.attr.errStore = fmt.Errorf("storage error")
 	s.attr.errNotFound = fmt.Errorf("not found")
 
@@ -51,7 +55,7 @@ func (s *SuiteURLs) Test_New() {
 		assert.NotNil(t, s.attr.service)
 		assert.Equal(
 			t,
-			URLs{log: s.attr.log, storage: s.attr.store},
+			URLs{log: s.attr.log, urlProvider: s.attr.urlProvider, urlMutator: s.attr.urlMutator},
 			s.attr.service,
 		)
 	})

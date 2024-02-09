@@ -32,7 +32,7 @@ func run() error {
 		return fmt.Errorf("storage could not be started: %w", err)
 	}
 
-	urlService := urls.New(log, store)
+	urlService := urls.New(log, store, store)
 
 	if err = rest.New(ctx, log, store, urlService); err != nil {
 		return fmt.Errorf("http server stopped with an error: %w", err)

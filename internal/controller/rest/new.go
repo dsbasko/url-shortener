@@ -10,13 +10,17 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/handlers"
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
 // New creates a new http server.
-func New(ctx context.Context, log *logger.Logger, storage interfaces.Storage, urlService urls.URLs) error {
+func New(
+	ctx context.Context,
+	log *logger.Logger,
+	pinger handlers.Pinger,
+	urlService urls.URLs,
+) error {
 	router := chi.NewRouter()
 
 	mw := middlewares.New(log)
@@ -29,7 +33,7 @@ func New(ctx context.Context, log *logger.Logger, storage interfaces.Storage, ur
 
 	router.Mount("/debug", mwChi.Profiler())
 
-	h := handlers.New(log, storage, urlService)
+	h := handlers.New(log, pinger, urlService)
 	router.Get("/ping", h.Ping)
 	router.Get("/{short_url}", h.Redirect)
 	router.Get("/api/user/urls", h.GetURLsByUserID)

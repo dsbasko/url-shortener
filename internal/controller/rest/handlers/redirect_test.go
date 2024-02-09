@@ -8,12 +8,12 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
-	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage"
+	mockStorage "github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mocks"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 	"github.com/dsbasko/yandex-go-shortener/pkg/test"
@@ -32,7 +32,7 @@ func (s *SuiteHandlers) Test_Redirect() {
 			name:     "Not Found",
 			shortURL: "42",
 			storeCfg: func() {
-				s.attr.store.EXPECT().
+				s.attr.urlsProvider.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{}, errors.New("not found"))
 			},
@@ -42,7 +42,7 @@ func (s *SuiteHandlers) Test_Redirect() {
 			name:     "Found",
 			shortURL: "42",
 			storeCfg: func() {
-				s.attr.store.EXPECT().
+				s.attr.urlsProvider.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{
 						ID:          "42",
@@ -70,11 +70,15 @@ func (s *SuiteHandlers) Test_Redirect() {
 }
 
 func BenchmarkHandler_Redirect(b *testing.B) {
+	t := testing.T{}
+	ctrl := gomock.NewController(&t)
+	defer ctrl.Finish()
+
 	err := config.Init()
 	assert.NoError(b, err)
 	log := logger.NewMock()
-	store := storage.NewMock(&testing.T{})
-	urlsService := urls.New(log, store)
+	store := mockStorage.NewMockStorage(ctrl)
+	urlsService := urls.New(log, store, store)
 	router := chi.NewRouter()
 	h := New(log, store, urlsService)
 	router.Get("/{short_url}", h.Redirect)

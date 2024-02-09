@@ -7,13 +7,13 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
-	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage"
+	mockStorage "github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mocks"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 	"github.com/dsbasko/yandex-go-shortener/pkg/test"
@@ -32,7 +32,7 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 			name: "Service Error",
 			body: func() []byte { return []byte("https://ya.ru/") },
 			storeCfg: func() {
-				s.attr.store.EXPECT().
+				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{}, false, s.attr.errService)
 			},
@@ -43,7 +43,7 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 			name: "Success Unique",
 			body: func() []byte { return []byte("https://ya.ru/") },
 			storeCfg: func() {
-				s.attr.store.EXPECT().
+				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{
 						ID:          "42",
@@ -60,7 +60,7 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 			name: "Success NotUnique",
 			body: func() []byte { return []byte("https://ya.ru/") },
 			storeCfg: func() {
-				s.attr.store.EXPECT().
+				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entities.URL{
 						ID:          "42",
@@ -92,11 +92,15 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 }
 
 func BenchmarkHandler_CreateURLOnceTextPlain(b *testing.B) {
+	t := testing.T{}
+	ctrl := gomock.NewController(&t)
+	defer ctrl.Finish()
+
 	err := config.Init()
 	assert.NoError(b, err)
 	log := logger.NewMock()
-	store := storage.NewMock(&testing.T{})
-	urlsService := urls.New(log, store)
+	store := mockStorage.NewMockStorage(ctrl)
+	urlsService := urls.New(log, store, store)
 	router := chi.NewRouter()
 	h := New(log, store, urlsService)
 	mw := middlewares.New(log)
