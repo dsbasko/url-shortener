@@ -12,7 +12,7 @@ import (
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 	mockStorage "github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mocks"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
@@ -34,7 +34,7 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 			storeCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{}, false, s.attr.errService)
+					Return(entity.URL{}, false, s.attr.errService)
 			},
 			wantStatusCode: http.StatusBadRequest,
 			wantBody:       func() string { return "" },
@@ -45,7 +45,7 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 			storeCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{
+					Return(entity.URL{
 						ID:          "42",
 						ShortURL:    "42",
 						OriginalURL: "https://ya.ru/",
@@ -62,7 +62,7 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 			storeCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{
+					Return(entity.URL{
 						ID:          "42",
 						ShortURL:    "42",
 						OriginalURL: "https://ya.ru/",
@@ -114,14 +114,14 @@ func BenchmarkHandler_CreateURLOnceTextPlain(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		if i%2 == 0 {
-			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{
+			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entity.URL{
 				ID:          "42",
 				ShortURL:    "42",
 				OriginalURL: "https://ya.ru/",
 				UserID:      "42",
 			}, false, nil)
 		} else {
-			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{
+			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entity.URL{
 				ID:          "42",
 				ShortURL:    "42",
 				OriginalURL: "https://ya.ru/",

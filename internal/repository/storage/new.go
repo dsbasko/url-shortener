@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/file"
 	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/memory"
 	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/psql"
@@ -20,22 +20,22 @@ type Storage interface {
 	Close() error
 
 	// GetURLByOriginalURL gets URL by original URL.
-	GetURLByOriginalURL(ctx context.Context, originalURL string) (resp entities.URL, err error)
+	GetURLByOriginalURL(ctx context.Context, originalURL string) (resp entity.URL, err error)
 
 	// GetURLByShortURL gets URL by short URL.
-	GetURLByShortURL(ctx context.Context, shortURL string) (resp entities.URL, err error)
+	GetURLByShortURL(ctx context.Context, shortURL string) (resp entity.URL, err error)
 
 	// GetURLsByUserID gets URLs by user ID.
-	GetURLsByUserID(ctx context.Context, userID string) (resp []entities.URL, err error)
+	GetURLsByUserID(ctx context.Context, userID string) (resp []entity.URL, err error)
 
 	// CreateURL creates a new URL.
-	CreateURL(ctx context.Context, dto entities.URL) (resp entities.URL, unique bool, err error)
+	CreateURL(ctx context.Context, dto entity.URL) (resp entity.URL, unique bool, err error)
 
 	// CreateURLs creates URLs.
-	CreateURLs(ctx context.Context, dto []entities.URL) (resp []entities.URL, err error)
+	CreateURLs(ctx context.Context, dto []entity.URL) (resp []entity.URL, err error)
 
 	// DeleteURLs deletes URLs.
-	DeleteURLs(ctx context.Context, dto []entities.URL) (resp []entities.URL, err error)
+	DeleteURLs(ctx context.Context, dto []entity.URL) (resp []entity.URL, err error)
 }
 
 // New creates a new instance of the storage.

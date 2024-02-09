@@ -12,7 +12,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 	mockStorage "github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mocks"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
@@ -34,7 +34,7 @@ func (s *SuiteHandlers) Test_Redirect() {
 			storeCfg: func() {
 				s.attr.urlsProvider.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{}, errors.New("not found"))
+					Return(entity.URL{}, errors.New("not found"))
 			},
 			wantStatusCode: http.StatusBadRequest,
 		},
@@ -44,7 +44,7 @@ func (s *SuiteHandlers) Test_Redirect() {
 			storeCfg: func() {
 				s.attr.urlsProvider.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{
+					Return(entity.URL{
 						ID:          "42",
 						ShortURL:    "42",
 						OriginalURL: "https://ya.ru/",
@@ -87,7 +87,7 @@ func BenchmarkHandler_Redirect(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().GetURLByShortURL(gomock.Any(), gomock.Any()).Return(entities.URL{
+		store.EXPECT().GetURLByShortURL(gomock.Any(), gomock.Any()).Return(entity.URL{
 			ID:          "42",
 			ShortURL:    "42",
 			OriginalURL: "https://ya.ru/",

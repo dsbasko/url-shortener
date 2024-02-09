@@ -3,14 +3,14 @@ package memory
 import (
 	"context"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 )
 
 // GetURLByOriginalURL returns a URL by original URL.
 func (s *Storage) GetURLByOriginalURL(
 	_ context.Context,
 	originalURL string,
-) (resp entities.URL, err error) {
+) (resp entity.URL, err error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -20,14 +20,14 @@ func (s *Storage) GetURLByOriginalURL(
 		}
 	}
 
-	return entities.URL{}, nil
+	return entity.URL{}, nil
 }
 
 // GetURLByShortURL returns a URL by short URL.
 func (s *Storage) GetURLByShortURL(
 	_ context.Context,
 	shortURL string,
-) (resp entities.URL, err error) {
+) (resp entity.URL, err error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -35,14 +35,14 @@ func (s *Storage) GetURLByShortURL(
 		return url, nil
 	}
 
-	return entities.URL{}, nil
+	return entity.URL{}, nil
 }
 
 // GetURLsByUserID returns URLs by user ID.
 func (s *Storage) GetURLsByUserID(
 	_ context.Context,
 	userID string,
-) (resp []entities.URL, err error) {
+) (resp []entity.URL, err error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 

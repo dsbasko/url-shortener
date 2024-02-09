@@ -3,21 +3,21 @@ package memory
 import (
 	"context"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 )
 
 // DeleteURLs deletes URLs by user ID.
 func (s *Storage) DeleteURLs(
 	ctx context.Context,
-	dto []entities.URL,
-) (resp []entities.URL, err error) {
+	dto []entity.URL,
+) (resp []entity.URL, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	for _, url := range dto {
 		select {
 		case <-ctx.Done():
-			return []entities.URL{}, ctx.Err()
+			return []entity.URL{}, ctx.Err()
 		default:
 		}
 

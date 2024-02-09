@@ -13,7 +13,7 @@ import (
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 	mockStorage "github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mocks"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/api"
@@ -42,7 +42,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 			storeCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{}, false, s.attr.errService)
+					Return(entity.URL{}, false, s.attr.errService)
 			},
 			wantStatusCode: http.StatusBadRequest,
 			wantBody:       func() string { return "" },
@@ -57,7 +57,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 			storeCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{
+					Return(entity.URL{
 						ID:          "42",
 						ShortURL:    "42",
 						OriginalURL: "https://ya2.ru/",
@@ -81,7 +81,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 			storeCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{
+					Return(entity.URL{
 						ID:          "42",
 						ShortURL:    "42",
 						OriginalURL: "https://ya3.ru/",
@@ -137,7 +137,7 @@ func BenchmarkHandler_CreateURLJSON(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entities.URL{
+		store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entity.URL{
 			ID:          "42",
 			ShortURL:    "42",
 			OriginalURL: "https://ya.ru/",

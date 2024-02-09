@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 	"github.com/dsbasko/yandex-go-shortener/pkg/errors"
 )
 
@@ -17,7 +17,7 @@ func (s *SuiteURLs) Test_GetURL() {
 	t := s.T()
 
 	type want struct {
-		resp entities.URL
+		resp entity.URL
 		err  error
 	}
 
@@ -33,10 +33,10 @@ func (s *SuiteURLs) Test_GetURL() {
 			storeCfg: func() {
 				s.attr.urlProvider.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{}, s.attr.errNotFound)
+					Return(entity.URL{}, s.attr.errNotFound)
 			},
 			want: want{
-				resp: entities.URL{},
+				resp: entity.URL{},
 				err:  s.attr.errNotFound,
 			},
 		},
@@ -46,14 +46,14 @@ func (s *SuiteURLs) Test_GetURL() {
 			storeCfg: func() {
 				s.attr.urlProvider.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{
+					Return(entity.URL{
 						ID:          "42",
 						ShortURL:    "42",
 						OriginalURL: "https://ya.ru/",
 					}, nil)
 			},
 			want: want{
-				resp: entities.URL{
+				resp: entity.URL{
 					ID:          "42",
 					ShortURL:    "42",
 					OriginalURL: "https://ya.ru/",
@@ -78,7 +78,7 @@ func (s *SuiteURLs) Test_GetURLsByUserID() {
 	t := s.T()
 
 	type want struct {
-		resp []entities.URL
+		resp []entity.URL
 		err  error
 	}
 
@@ -94,10 +94,10 @@ func (s *SuiteURLs) Test_GetURLsByUserID() {
 			storeCfg: func() {
 				s.attr.urlProvider.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
-					Return([]entities.URL{}, s.attr.errNotFound)
+					Return([]entity.URL{}, s.attr.errNotFound)
 			},
 			want: want{
-				resp: []entities.URL{},
+				resp: []entity.URL{},
 				err:  s.attr.errNotFound,
 			},
 		},
@@ -107,7 +107,7 @@ func (s *SuiteURLs) Test_GetURLsByUserID() {
 			storeCfg: func() {
 				s.attr.urlProvider.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
-					Return([]entities.URL{
+					Return([]entity.URL{
 						{
 							ID:          "42",
 							ShortURL:    "42",
@@ -116,7 +116,7 @@ func (s *SuiteURLs) Test_GetURLsByUserID() {
 					}, nil)
 			},
 			want: want{
-				resp: []entities.URL{
+				resp: []entity.URL{
 					{
 						ID:          "42",
 						ShortURL:    fmt.Sprintf("%s42", config.GetBaseURL()),

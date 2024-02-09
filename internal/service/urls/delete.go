@@ -3,22 +3,22 @@ package urls
 import (
 	"context"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 )
 
 // URLDeleter is an interface for deleting URLs.
 type URLDeleter interface {
 	// DeleteURLs deletes URLs.
-	DeleteURLs(ctx context.Context, dto []entities.URL) (resp []entities.URL, err error)
+	DeleteURLs(ctx context.Context, dto []entity.URL) (resp []entity.URL, err error)
 }
 
 // DeleteURLs deletes urls from storage.
 func (u *URLs) DeleteURLs(userID string, shortURLs []string) error {
 	var urlDeleter URLDeleter = u.urlMutator
 
-	urlsToDelete := make([]entities.URL, 0, len(shortURLs))
+	urlsToDelete := make([]entity.URL, 0, len(shortURLs))
 	for _, url := range shortURLs {
-		urlsToDelete = append(urlsToDelete, entities.URL{
+		urlsToDelete = append(urlsToDelete, entity.URL{
 			ShortURL: url,
 			UserID:   userID,
 		})

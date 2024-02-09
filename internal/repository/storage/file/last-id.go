@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 )
 
 /*
@@ -37,7 +37,7 @@ func (s *Storage) getLastID() string {
 		lastLine = scanner.Text()
 	}
 
-	var dataJSON entities.URL
+	var dataJSON entity.URL
 	err = json.Unmarshal([]byte(lastLine), &dataJSON)
 	if err != nil {
 		s.log.Debug(fmt.Errorf("failed to unmarshal JSON data: %s", err))

@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 )
 
 // DeleteURLs deletes URLs.
-func (s *Storage) DeleteURLs(ctx context.Context, dto []entities.URL) (resp []entities.URL, err error) {
+func (s *Storage) DeleteURLs(ctx context.Context, dto []entity.URL) (resp []entity.URL, err error) {
 	var userID string
 	shortURLs := make([]string, 0, len(dto))
 
@@ -25,17 +25,17 @@ func (s *Storage) DeleteURLs(ctx context.Context, dto []entities.URL) (resp []en
 		shortURLs, userID,
 	)
 	if err != nil {
-		return []entities.URL{}, fmt.Errorf("failed to execute query: %w", err)
+		return []entity.URL{}, fmt.Errorf("failed to execute query: %w", err)
 	}
 
 	if rows.Err() != nil {
-		return []entities.URL{}, fmt.Errorf("failed to execute query: %w", rows.Err())
+		return []entity.URL{}, fmt.Errorf("failed to execute query: %w", rows.Err())
 	}
 
 	for rows.Next() {
-		var url entities.URL
+		var url entity.URL
 		if err = rows.StructScan(&url); err != nil {
-			return []entities.URL{}, fmt.Errorf("failed to scan response: %w", err)
+			return []entity.URL{}, fmt.Errorf("failed to scan response: %w", err)
 		}
 		resp = append(resp, url)
 	}

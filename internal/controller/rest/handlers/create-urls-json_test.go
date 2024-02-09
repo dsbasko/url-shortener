@@ -13,7 +13,7 @@ import (
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 	mockStorage "github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mocks"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/api"
@@ -67,7 +67,7 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 			storeCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
-					Return([]entities.URL{}, nil)
+					Return([]entity.URL{}, nil)
 			},
 			wantStatusCode: http.StatusCreated,
 			wantBody: []api.CreateURLsResponse{
@@ -96,7 +96,7 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 			storeCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
-					Return([]entities.URL{}, nil)
+					Return([]entity.URL{}, nil)
 			},
 			wantStatusCode: http.StatusCreated,
 			wantBody: []api.CreateURLsResponse{
@@ -159,7 +159,7 @@ func BenchmarkHandler_CreateURLManyJSON(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().CreateURLs(gomock.Any(), gomock.Any()).Return([]entities.URL{}, nil)
+		store.EXPECT().CreateURLs(gomock.Any(), gomock.Any()).Return([]entity.URL{}, nil)
 		b.StartTimer()
 
 		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{

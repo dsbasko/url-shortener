@@ -7,12 +7,12 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 )
 
 // GenerateToken generates jwt token.
 func GenerateToken() (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, entities.JWTClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, entity.JWTClaims{
 		UserID: uuid.New().String(),
 	})
 

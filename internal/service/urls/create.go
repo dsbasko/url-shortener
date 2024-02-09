@@ -6,7 +6,7 @@ import (
 	goURL "net/url"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
 	"github.com/dsbasko/yandex-go-shortener/pkg/api"
 )
@@ -14,27 +14,27 @@ import (
 // URLCreator is a service for creating URLs.
 type URLCreator interface {
 	// CreateURL creates a new URL.
-	CreateURL(ctx context.Context, dto entities.URL) (resp entities.URL, unique bool, err error)
+	CreateURL(ctx context.Context, dto entity.URL) (resp entity.URL, unique bool, err error)
 
 	// CreateURLs creates URLs.
-	CreateURLs(ctx context.Context, dto []entities.URL) (resp []entities.URL, err error)
+	CreateURLs(ctx context.Context, dto []entity.URL) (resp []entity.URL, err error)
 }
 
 // CreateURL creates a new short url.
 func (u *URLs) CreateURL(
 	ctx context.Context,
 	originalURL string,
-) (resp entities.URL, unique bool, err error) {
-	var dto entities.URL
+) (resp entity.URL, unique bool, err error) {
+	var dto entity.URL
 	var urlCreator URLCreator = u.urlMutator
 
 	if _, err = goURL.ParseRequestURI(originalURL); err != nil {
-		return entities.URL{}, false, fmt.Errorf("failed to parse url: %w", ErrInvalidURL)
+		return entity.URL{}, false, fmt.Errorf("failed to parse url: %w", ErrInvalidURL)
 	}
 
 	token, err := jwt.GetFromContext(ctx)
 	if err != nil {
-		return entities.URL{}, false, fmt.Errorf("failed to get token from context: %w", err)
+		return entity.URL{}, false, fmt.Errorf("failed to get token from context: %w", err)
 	}
 
 	userID := jwt.TokenToUserID(token)
@@ -45,7 +45,7 @@ func (u *URLs) CreateURL(
 
 	resp, uniq, err := urlCreator.CreateURL(ctx, dto)
 	if err != nil {
-		return entities.URL{}, false, fmt.Errorf("failed to create a url in the storage: %w", err)
+		return entity.URL{}, false, fmt.Errorf("failed to create a url in the storage: %w", err)
 	}
 
 	resp.ShortURL = fmt.Sprintf("%s%s", config.GetBaseURL(), resp.ShortURL)
@@ -67,7 +67,7 @@ func (u *URLs) CreateURLs(
 	userID := jwt.TokenToUserID(token)
 
 	response := make([]api.CreateURLsResponse, 0, len(dto))
-	urlEntities := make([]entities.URL, 0, len(dto))
+	urlEntities := make([]entity.URL, 0, len(dto))
 
 	for _, url := range dto {
 		if _, err = goURL.ParseRequestURI(url.OriginalURL); err != nil {
@@ -76,7 +76,7 @@ func (u *URLs) CreateURLs(
 
 		shortURL := RandomString(config.GetShortURLLen())
 
-		urlEntities = append(urlEntities, entities.URL{
+		urlEntities = append(urlEntities, entity.URL{
 			OriginalURL: url.OriginalURL,
 			ShortURL:    shortURL,
 			UserID:      userID,

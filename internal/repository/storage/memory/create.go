@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"maps"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 )
 
 // CreateURL creates a new URL.
 func (s *Storage) CreateURL(
 	ctx context.Context,
-	dto entities.URL,
-) (resp entities.URL, unique bool, err error) {
+	dto entity.URL,
+) (resp entity.URL, unique bool, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -36,12 +36,12 @@ func (s *Storage) CreateURL(
 // CreateURLs creates URLs.
 func (s *Storage) CreateURLs(
 	ctx context.Context,
-	dto []entities.URL,
-) (resp []entities.URL, err error) {
+	dto []entity.URL,
+) (resp []entity.URL, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	storeCopy := make(map[string]entities.URL, len(s.store)+len(dto))
+	storeCopy := make(map[string]entity.URL, len(s.store)+len(dto))
 	maps.Copy(storeCopy, s.store)
 
 	for _, url := range dto {
@@ -52,7 +52,7 @@ func (s *Storage) CreateURLs(
 		}
 
 		if _, ok := storeCopy[url.ShortURL]; ok {
-			return []entities.URL{}, fmt.Errorf("url %s already exists", url.ShortURL)
+			return []entity.URL{}, fmt.Errorf("url %s already exists", url.ShortURL)
 		}
 
 		storeCopy[url.ShortURL] = url

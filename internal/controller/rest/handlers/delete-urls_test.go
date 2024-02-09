@@ -11,7 +11,7 @@ import (
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 	mockStorage "github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mocks"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
@@ -101,7 +101,7 @@ func BenchmarkHandler_DeleteURLs(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().DeleteURLs(gomock.Any(), gomock.Any()).Return([]entities.URL{
+		store.EXPECT().DeleteURLs(gomock.Any(), gomock.Any()).Return([]entity.URL{
 			{ID: "42", OriginalURL: "https://ya42.ru", ShortURL: "42"},
 			{ID: "43", OriginalURL: "https://ya43.ru", ShortURL: "43"},
 			{ID: "44", OriginalURL: "https://ya44.ru", ShortURL: "44"},

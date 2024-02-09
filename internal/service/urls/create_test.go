@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
 	"github.com/dsbasko/yandex-go-shortener/pkg/api"
 	"github.com/dsbasko/yandex-go-shortener/pkg/errors"
@@ -24,7 +24,7 @@ func (s *SuiteURLs) Test_CreateURL() {
 		originalURL string
 	}
 	type want struct {
-		resp entities.URL
+		resp entity.URL
 		uniq bool
 		err  error
 	}
@@ -43,7 +43,7 @@ func (s *SuiteURLs) Test_CreateURL() {
 			},
 			storeCfg: func() {},
 			want: want{
-				resp: entities.URL{},
+				resp: entity.URL{},
 				err:  ErrInvalidURL,
 			},
 		},
@@ -56,10 +56,10 @@ func (s *SuiteURLs) Test_CreateURL() {
 			storeCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{}, false, s.attr.errStore)
+					Return(entity.URL{}, false, s.attr.errStore)
 			},
 			want: want{
-				resp: entities.URL{},
+				resp: entity.URL{},
 				err:  s.attr.errStore,
 			},
 		},
@@ -72,14 +72,14 @@ func (s *SuiteURLs) Test_CreateURL() {
 			storeCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{
+					Return(entity.URL{
 						ID:          "42",
 						ShortURL:    "42",
 						OriginalURL: "https://ya.ru/",
 					}, true, nil)
 			},
 			want: want{
-				resp: entities.URL{
+				resp: entity.URL{
 					ID:          "42",
 					ShortURL:    fmt.Sprintf("%s42", config.GetBaseURL()),
 					OriginalURL: "https://ya.ru/",
@@ -97,14 +97,14 @@ func (s *SuiteURLs) Test_CreateURL() {
 			storeCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{
+					Return(entity.URL{
 						ID:          "42",
 						ShortURL:    "42",
 						OriginalURL: "https://ya.ru/",
 					}, false, nil)
 			},
 			want: want{
-				resp: entities.URL{
+				resp: entity.URL{
 					ID:          "42",
 					ShortURL:    fmt.Sprintf("%s42", config.GetBaseURL()),
 					OriginalURL: "https://ya.ru/",
@@ -122,10 +122,10 @@ func (s *SuiteURLs) Test_CreateURL() {
 			storeCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entities.URL{}, false, s.attr.errStore)
+					Return(entity.URL{}, false, s.attr.errStore)
 			},
 			want: want{
-				resp: entities.URL{},
+				resp: entity.URL{},
 				err:  jwt.ErrNotFoundFromContext,
 			},
 		},
@@ -218,7 +218,7 @@ func (s *SuiteURLs) Test_CreateURLs() {
 			storeCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
-					Return([]entities.URL{
+					Return([]entity.URL{
 						{
 							OriginalURL: "https://ya.ru/",
 							ShortURL:    "42",

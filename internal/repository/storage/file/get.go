@@ -7,31 +7,31 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 )
 
 // GetURLByOriginalURL returns a URL by original URL.
 func (s *Storage) GetURLByOriginalURL(
 	ctx context.Context,
 	originalURL string,
-) (resp entities.URL, err error) {
+) (resp entity.URL, err error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	_, err = s.file.Seek(0, 0)
 	if err != nil {
-		return entities.URL{}, fmt.Errorf("failed to seek to the beginning of the file: %w", err)
+		return entity.URL{}, fmt.Errorf("failed to seek to the beginning of the file: %w", err)
 	}
 
 	scanner := bufio.NewScanner(s.file)
 	for scanner.Scan() {
 		if scanner.Err() != nil {
-			return entities.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
+			return entity.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
 		}
 
 		select {
 		case <-ctx.Done():
-			return entities.URL{}, ctx.Err()
+			return entity.URL{}, ctx.Err()
 		default:
 		}
 
@@ -40,12 +40,12 @@ func (s *Storage) GetURLByOriginalURL(
 		}
 
 		if err = json.Unmarshal(scanner.Bytes(), &resp); err != nil {
-			return entities.URL{}, fmt.Errorf("failed to unmarshal JSON data: %w", err)
+			return entity.URL{}, fmt.Errorf("failed to unmarshal JSON data: %w", err)
 		}
 	}
 
 	if resp.ShortURL == "" {
-		return entities.URL{}, ErrURLNotFound
+		return entity.URL{}, ErrURLNotFound
 	}
 
 	return resp, nil
@@ -55,24 +55,24 @@ func (s *Storage) GetURLByOriginalURL(
 func (s *Storage) GetURLByShortURL(
 	ctx context.Context,
 	shortURL string,
-) (resp entities.URL, err error) {
+) (resp entity.URL, err error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	_, err = s.file.Seek(0, 0)
 	if err != nil {
-		return entities.URL{}, fmt.Errorf("failed to seek to the beginning of the file: %w", err)
+		return entity.URL{}, fmt.Errorf("failed to seek to the beginning of the file: %w", err)
 	}
 
 	scanner := bufio.NewScanner(s.file)
 	for scanner.Scan() {
 		if scanner.Err() != nil {
-			return entities.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
+			return entity.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
 		}
 
 		select {
 		case <-ctx.Done():
-			return entities.URL{}, ctx.Err()
+			return entity.URL{}, ctx.Err()
 		default:
 		}
 
@@ -81,12 +81,12 @@ func (s *Storage) GetURLByShortURL(
 		}
 
 		if err = json.Unmarshal(scanner.Bytes(), &resp); err != nil {
-			return entities.URL{}, fmt.Errorf("failed to unmarshal JSON data: %w", err)
+			return entity.URL{}, fmt.Errorf("failed to unmarshal JSON data: %w", err)
 		}
 	}
 
 	if resp.ShortURL == "" {
-		return entities.URL{}, ErrURLNotFound
+		return entity.URL{}, ErrURLNotFound
 	}
 
 	return resp, nil
@@ -96,24 +96,24 @@ func (s *Storage) GetURLByShortURL(
 func (s *Storage) GetURLsByUserID(
 	ctx context.Context,
 	userID string,
-) (resp []entities.URL, err error) {
+) (resp []entity.URL, err error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	_, err = s.file.Seek(0, 0)
 	if err != nil {
-		return []entities.URL{}, fmt.Errorf("failed to seek to the beginning of the file: %w", err)
+		return []entity.URL{}, fmt.Errorf("failed to seek to the beginning of the file: %w", err)
 	}
 
 	scanner := bufio.NewScanner(s.file)
 	for scanner.Scan() {
 		if scanner.Err() != nil {
-			return []entities.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
+			return []entity.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
 		}
 
 		select {
 		case <-ctx.Done():
-			return []entities.URL{}, ctx.Err()
+			return []entity.URL{}, ctx.Err()
 		default:
 		}
 
@@ -121,16 +121,16 @@ func (s *Storage) GetURLsByUserID(
 			continue
 		}
 
-		found := entities.URL{}
+		found := entity.URL{}
 		if err = json.Unmarshal(scanner.Bytes(), &found); err != nil {
-			return []entities.URL{}, fmt.Errorf("failed to unmarshal JSON data: %w", err)
+			return []entity.URL{}, fmt.Errorf("failed to unmarshal JSON data: %w", err)
 		}
 
 		resp = append(resp, found)
 	}
 
 	if len(resp) == 0 {
-		return []entities.URL{}, ErrURLsNotFound
+		return []entity.URL{}, ErrURLsNotFound
 	}
 
 	return resp, nil

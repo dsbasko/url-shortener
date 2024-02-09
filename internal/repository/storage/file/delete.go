@@ -7,19 +7,19 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 )
 
 // DeleteURLs returns a URL by original URL.
 func (s *Storage) DeleteURLs(
 	ctx context.Context,
-	dto []entities.URL,
-) (resp []entities.URL, err error) {
+	dto []entity.URL,
+) (resp []entity.URL, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if _, err = s.file.Seek(0, 0); err != nil {
-		return []entities.URL{}, fmt.Errorf("failed to seek to the beginning of the file: %w", err)
+		return []entity.URL{}, fmt.Errorf("failed to seek to the beginning of the file: %w", err)
 	}
 
 	var data []string
@@ -29,12 +29,12 @@ func (s *Storage) DeleteURLs(
 	for scanner.Scan() {
 		select {
 		case <-ctx.Done():
-			return []entities.URL{}, ctx.Err()
+			return []entity.URL{}, ctx.Err()
 		default:
 		}
 
 		if scanner.Err() != nil {
-			return []entities.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
+			return []entity.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
 		}
 
 		dataText := scanner.Text()
@@ -46,12 +46,12 @@ func (s *Storage) DeleteURLs(
 				continue
 			}
 
-			var dataJSON entities.URL
+			var dataJSON entity.URL
 			dataText = strings.ReplaceAll(dataText, `"is_deleted":false`, `"is_deleted":true`)
 			found = true
 
 			if err = json.Unmarshal([]byte(dataText), &dataJSON); err != nil {
-				return []entities.URL{}, fmt.Errorf("failed to unmarshal JSON data: %w", err)
+				return []entity.URL{}, fmt.Errorf("failed to unmarshal JSON data: %w", err)
 			}
 
 			resp = append(resp, dataJSON)
@@ -61,25 +61,25 @@ func (s *Storage) DeleteURLs(
 	}
 
 	if !found {
-		return []entities.URL{}, nil
+		return []entity.URL{}, nil
 	}
 
 	if err = s.file.Truncate(0); err != nil {
-		return []entities.URL{}, fmt.Errorf("failed to truncate file: %w", err)
+		return []entity.URL{}, fmt.Errorf("failed to truncate file: %w", err)
 	}
 
 	if _, err = s.file.Seek(0, 0); err != nil {
-		return []entities.URL{}, fmt.Errorf("failed to seek to the beginning of the file: %w", err)
+		return []entity.URL{}, fmt.Errorf("failed to seek to the beginning of the file: %w", err)
 	}
 
 	for _, line := range data {
 		if _, err = s.writer.Write(append([]byte(line), '\n')); err != nil {
-			return []entities.URL{}, fmt.Errorf("failed to write data to file: %w", err)
+			return []entity.URL{}, fmt.Errorf("failed to write data to file: %w", err)
 		}
 	}
 
 	if err = s.writer.Flush(); err != nil {
-		return []entities.URL{}, fmt.Errorf("failed to flush writer: %w", err)
+		return []entity.URL{}, fmt.Errorf("failed to flush writer: %w", err)
 	}
 
 	return resp, nil

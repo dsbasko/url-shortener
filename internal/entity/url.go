@@ -1,4 +1,4 @@
-package entities
+package entity
 
 // URL a url entity.
 type URL struct {

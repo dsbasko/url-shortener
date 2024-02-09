@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	entities "github.com/dsbasko/yandex-go-shortener/internal/entities"
+	entities "github.com/dsbasko/yandex-go-shortener/internal/entity"
 	gomock "go.uber.org/mock/gomock"
 )
 

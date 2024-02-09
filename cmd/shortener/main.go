@@ -3,10 +3,18 @@ package main
 
 import (
 	"log"
+
+	"github.com/dsbasko/yandex-go-shortener/internal/app"
+)
+
+var (
+	buildVersion = "N/A"
+	buildDate    = "N/A"
+	buildCommit  = "N/A"
 )
 
 func main() {
-	if err := run(); err != nil {
+	if err := app.RunRESTServer(buildVersion, buildDate, buildCommit); err != nil {
 		log.Panic(err.Error())
 	}
 }

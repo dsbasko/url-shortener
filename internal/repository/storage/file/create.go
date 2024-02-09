@@ -7,38 +7,38 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 )
 
 // CreateURL creates a new URL.
 func (s *Storage) CreateURL(
 	ctx context.Context,
-	dto entities.URL,
-) (resp entities.URL, unique bool, err error) {
+	dto entity.URL,
+) (resp entity.URL, unique bool, err error) {
 	if foundURL, errURL := s.GetURLByOriginalURL(ctx, dto.OriginalURL); errURL == nil && len(foundURL.OriginalURL) > 0 {
 		return foundURL, false, nil
 	}
 
 	newID := s.getLastID()
-	data, err := json.Marshal(entities.URL{
+	data, err := json.Marshal(entity.URL{
 		ID:          newID,
 		ShortURL:    dto.ShortURL,
 		OriginalURL: dto.OriginalURL,
 		UserID:      dto.UserID,
 	})
 	if err != nil {
-		return entities.URL{}, false, fmt.Errorf("failed to marshal URL to JSON: %w", err)
+		return entity.URL{}, false, fmt.Errorf("failed to marshal URL to JSON: %w", err)
 	}
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if _, err = s.writer.Write(append(data, '\n')); err != nil {
-		return entities.URL{}, false, fmt.Errorf("failed to write data to file: %w", err)
+		return entity.URL{}, false, fmt.Errorf("failed to write data to file: %w", err)
 	}
 
 	if err = s.writer.Flush(); err != nil {
-		return entities.URL{}, false, fmt.Errorf("failed to flush writer: %w", err)
+		return entity.URL{}, false, fmt.Errorf("failed to flush writer: %w", err)
 	}
 
 	resp.ID = newID
@@ -52,17 +52,17 @@ func (s *Storage) CreateURL(
 // CreateURLs creates URLs.
 func (s *Storage) CreateURLs(
 	ctx context.Context,
-	dto []entities.URL,
-) (resp []entities.URL, err error) {
+	dto []entity.URL,
+) (resp []entity.URL, err error) {
 	s.mu.Lock()
 
 	if _, err = s.file.Seek(0, 0); err != nil {
-		return []entities.URL{}, fmt.Errorf("failed to seek file: %w", err)
+		return []entity.URL{}, fmt.Errorf("failed to seek file: %w", err)
 	}
 
 	data, err := io.ReadAll(s.file)
 	if err != nil {
-		return []entities.URL{}, fmt.Errorf("failed to read file: %w", err)
+		return []entity.URL{}, fmt.Errorf("failed to read file: %w", err)
 	}
 
 	backup := data
@@ -70,7 +70,7 @@ func (s *Storage) CreateURLs(
 
 	lastID, err := strconv.Atoi(s.getLastID())
 	if err != nil {
-		return []entities.URL{}, fmt.Errorf("failed to convert string to int: %w", err)
+		return []entity.URL{}, fmt.Errorf("failed to convert string to int: %w", err)
 	}
 
 	for _, url := range dto {
@@ -78,35 +78,35 @@ func (s *Storage) CreateURLs(
 
 		foundURL, errFor := s.GetURLByOriginalURL(ctx, url.OriginalURL)
 		if errFor == nil && foundURL.ShortURL != "" {
-			return []entities.URL{}, s.rollbackCreateURLMany(
+			return []entity.URL{}, s.rollbackCreateURLMany(
 				backup,
 				fmt.Errorf("%s: %s", ErrURLFoundDuplicate, url.OriginalURL),
 			)
 		}
 
 		s.mu.Lock()
-		data, err = json.Marshal(entities.URL{
+		data, err = json.Marshal(entity.URL{
 			ID:          lastIDString,
 			ShortURL:    url.ShortURL,
 			OriginalURL: url.OriginalURL,
 			UserID:      url.UserID,
 		})
 		if err != nil {
-			return []entities.URL{}, s.rollbackCreateURLMany(
+			return []entity.URL{}, s.rollbackCreateURLMany(
 				backup,
 				fmt.Errorf("failed to marshal URL to JSON: %w", err),
 			)
 		}
 
 		if _, err = s.writer.Write(append(data, '\n')); err != nil {
-			return []entities.URL{}, s.rollbackCreateURLMany(
+			return []entity.URL{}, s.rollbackCreateURLMany(
 				backup,
 				fmt.Errorf("failed to write data to file: %w", err),
 			)
 		}
 
 		s.mu.Unlock()
-		resp = append(resp, entities.URL{
+		resp = append(resp, entity.URL{
 			ID:          lastIDString,
 			ShortURL:    url.ShortURL,
 			OriginalURL: url.OriginalURL,
@@ -117,7 +117,7 @@ func (s *Storage) CreateURLs(
 	}
 
 	if err = s.writer.Flush(); err != nil {
-		return []entities.URL{}, s.rollbackCreateURLMany(
+		return []entity.URL{}, s.rollbackCreateURLMany(
 			backup,
 			fmt.Errorf(": %w", err),
 		)

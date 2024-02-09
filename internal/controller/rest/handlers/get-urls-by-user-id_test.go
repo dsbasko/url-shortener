@@ -13,7 +13,7 @@ import (
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/entities"
+	"github.com/dsbasko/yandex-go-shortener/internal/entity"
 	mockStorage "github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mocks"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
@@ -58,7 +58,7 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 			storeCfg: func() {
 				s.attr.urlsProvider.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
-					Return([]entities.URL{}, nil)
+					Return([]entity.URL{}, nil)
 			},
 			cookie:         s.attr.cookie,
 			wantStatusCode: http.StatusNoContent,
@@ -71,7 +71,7 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 			storeCfg: func() {
 				s.attr.urlsProvider.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
-					Return([]entities.URL{
+					Return([]entity.URL{
 						{
 							ID:          "42",
 							UserID:      "42",
@@ -83,7 +83,7 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 			cookie:         s.attr.cookie,
 			wantStatusCode: http.StatusOK,
 			wantBody: func() string {
-				respBytes, _ := json.Marshal([]entities.URL{
+				respBytes, _ := json.Marshal([]entity.URL{
 					{
 						ID:          "42",
 						UserID:      "42",
@@ -138,7 +138,7 @@ func BenchmarkHandler_GetURLsByUserID(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().GetURLsByUserID(gomock.Any(), gomock.Any()).Return([]entities.URL{
+		store.EXPECT().GetURLsByUserID(gomock.Any(), gomock.Any()).Return([]entity.URL{
 			{ID: "1", OriginalURL: "https://ya1.ru", ShortURL: "1"},
 			{ID: "2", OriginalURL: "https://ya2.ru", ShortURL: "2"},
 			{ID: "3", OriginalURL: "https://ya3.ru", ShortURL: "3"},

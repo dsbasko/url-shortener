@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
-func run() error {
+func RunRESTServer(buildVersion, buildDate, buildCommit string) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -25,7 +25,9 @@ func run() error {
 		return fmt.Errorf("failed to load the logger: %w", err)
 	}
 
-	printGreeting(log)
+	log.Infof("Build version: %s", buildVersion)
+	log.Infof("Build date: %s", buildDate)
+	log.Infof("Build commit: %s", buildCommit)
 
 	store, err := storage.New(ctx, log)
 	if err != nil {
