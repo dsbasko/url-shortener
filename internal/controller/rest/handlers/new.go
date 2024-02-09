@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
-	"github.com/dsbasko/yandex-go-shortener/internal/urls"
+	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 

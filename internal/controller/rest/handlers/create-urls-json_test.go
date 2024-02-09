@@ -12,10 +12,10 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
+	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/entities"
-	"github.com/dsbasko/yandex-go-shortener/internal/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/storage"
-	"github.com/dsbasko/yandex-go-shortener/internal/urls"
+	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage"
+	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
 	"github.com/dsbasko/yandex-go-shortener/pkg/api"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 	"github.com/dsbasko/yandex-go-shortener/pkg/test"

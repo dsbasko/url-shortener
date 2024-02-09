@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
-	"github.com/dsbasko/yandex-go-shortener/internal/storage"
-	"github.com/dsbasko/yandex-go-shortener/internal/storage/mock"
+	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage"
+	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mock"
+	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 

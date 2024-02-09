@@ -4,15 +4,15 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
-	"github.com/dsbasko/yandex-go-shortener/internal/rest/handlers"
-	"github.com/dsbasko/yandex-go-shortener/internal/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/urls"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
-
 	"github.com/go-chi/chi/v5"
 	mwChi "github.com/go-chi/chi/v5/middleware"
+
+	"github.com/dsbasko/yandex-go-shortener/internal/config"
+	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/handlers"
+	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
+	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
+	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
+	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
 // New creates a new http server.

@@ -8,10 +8,10 @@ import (
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/interfaces"
-	"github.com/dsbasko/yandex-go-shortener/internal/storage/file"
-	"github.com/dsbasko/yandex-go-shortener/internal/storage/memory"
-	"github.com/dsbasko/yandex-go-shortener/internal/storage/mock"
-	"github.com/dsbasko/yandex-go-shortener/internal/storage/psql"
+	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/file"
+	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/memory"
+	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mock"
+	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/psql"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 

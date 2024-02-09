@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
+	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
 )
 
 // GetURLsByUserID returns all urls by user id.

@@ -7,7 +7,7 @@ import (
 
 	mwChi "github.com/go-chi/chi/v5/middleware"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/jwt"
+	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
