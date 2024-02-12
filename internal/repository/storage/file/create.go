@@ -3,6 +3,7 @@ package file
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -80,7 +81,7 @@ func (s *Storage) CreateURLs(
 		if errFor == nil && foundURL.ShortURL != "" {
 			return []entity.URL{}, s.rollbackCreateURLMany(
 				backup,
-				fmt.Errorf("%s: %s", ErrURLFoundDuplicate, url.OriginalURL),
+				fmt.Errorf("%s: %s", errors.New("url already exists"), url.OriginalURL),
 			)
 		}
 

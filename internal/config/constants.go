@@ -2,13 +2,30 @@ package config
 
 // Def* constants are default values for config.
 const (
-	DefEnv              = "prod"
-	DefPort             = "8080"
-	DefServerAddress    = "localhost:" + DefPort
-	DefBaseURL          = "http://" + DefServerAddress + "/"
-	DefShortURLLen      = 4
-	DefRestReadTimeout  = 3000
+	// DefEnv is default environment.
+	DefEnv = "prod"
+
+	// DefPort is default http rest server port.
+	DefPort = "8080"
+
+	// DefServerAddress is default http rest server address.
+	DefServerAddress = "localhost:" + DefPort
+
+	// DefBaseURL is default base url address for short urls.
+	DefBaseURL = "http://" + DefServerAddress + "/"
+
+	// DefShortURLLen is default length of short url.
+	DefShortURLLen = 4
+
+	// DefRestReadTimeout is default http rest server read timeout.
+	DefRestReadTimeout = 3000
+
+	// DefRestWriteTimeout is default http rest server write timeout.
 	DefRestWriteTimeout = 3000
-	DefPsqlMaxConns     = 8
-	DefJWTSecret        = "allons-y"
+
+	// DefPsqlMaxConns is default max connections to postgresql.
+	DefPsqlMaxConns = 8
+
+	// DefJWTSecret is default secret for JWT auth.
+	DefJWTSecret = "allons-y"
 )

@@ -8,6 +8,8 @@ import (
 )
 
 // ParseServerAddress parses server address.
+//
+// If serverAddress does not contain "://", it will be prefixed with "https://".
 func ParseServerAddress(serverAddress string) (string, error) {
 	if !strings.Contains(serverAddress, "://") {
 		serverAddress = "https://" + serverAddress
@@ -22,6 +24,8 @@ func ParseServerAddress(serverAddress string) (string, error) {
 }
 
 // ParseBaseURL parses base url.
+//
+// If baseURL does not contain "://", it will be prefixed with "https://".
 func ParseBaseURL(baseURL string) (string, error) {
 	if baseURL[0] == ':' {
 		return "", errors.New("need host before the port")

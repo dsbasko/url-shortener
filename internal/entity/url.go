@@ -2,9 +2,18 @@ package entity
 
 // URL a url entity.
 type URL struct {
-	ID          string `json:"id,omitempty" db:"id"`
-	UserID      string `json:"user_id" db:"user_id"`
-	ShortURL    string `json:"short_url" db:"short_url"`
+	// ID is the unique identifier of the URL.
+	ID string `json:"id,omitempty" db:"id"`
+
+	// UserID is the unique identifier of the user.
+	UserID string `json:"user_id" db:"user_id"`
+
+	// ShortURL is the short version of the URL.
+	ShortURL string `json:"short_url" db:"short_url"`
+
+	// OriginalURL is the original URL.
 	OriginalURL string `json:"original_url" db:"original_url"`
-	DeletedFlag bool   `json:"is_deleted" db:"is_deleted"`
+
+	// DeletedFlag is the flag to indicate if the URL is deleted.
+	DeletedFlag bool `json:"is_deleted" db:"is_deleted"`
 }

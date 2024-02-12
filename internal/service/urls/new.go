@@ -1,6 +1,8 @@
 package urls
 
 import (
+	"context"
+
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
@@ -15,15 +17,26 @@ type URLs struct {
 	log         *logger.Logger
 	urlProvider URLProvider
 	urlMutator  URLMutator
+	deleteTask  chan map[string][]string // deleteTask map [userID][]shortURLs
 }
 
 // New creates new URLs service.
-func New(log *logger.Logger, urlProvider URLProvider, urlMutator URLMutator) URLs {
-	return URLs{
+func New(
+	ctx context.Context,
+	log *logger.Logger,
+	urlProvider URLProvider,
+	urlMutator URLMutator,
+) URLs {
+	service := URLs{
 		log:         log,
 		urlProvider: urlProvider,
 		urlMutator:  urlMutator,
+		deleteTask:  make(chan map[string][]string, 1),
 	}
+
+	go service.deleteWorker(ctx)
+
+	return service
 }
 
 // Generate mocks for tests.

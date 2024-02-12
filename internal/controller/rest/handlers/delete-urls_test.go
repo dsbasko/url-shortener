@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -75,8 +76,10 @@ func (s *SuiteHandlers) Test_DeleteURLs() {
 	}
 }
 
-func BenchmarkHandler_DeleteURLs(b *testing.B) {
+func Benchmark_Handler_DeleteURLs(b *testing.B) {
 	t := testing.T{}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	ctrl := gomock.NewController(&t)
 	defer ctrl.Finish()
 
@@ -84,7 +87,7 @@ func BenchmarkHandler_DeleteURLs(b *testing.B) {
 	assert.NoError(b, err)
 	log := logger.NewMock()
 	store := mockStorage.NewMockStorage(ctrl)
-	urlsService := urls.New(log, store, store)
+	urlsService := urls.New(ctx, log, store, store)
 	router := chi.NewRouter()
 	h := New(log, store, urlsService)
 	mw := middlewares.New(log)

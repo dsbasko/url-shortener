@@ -16,7 +16,7 @@ func GenerateToken() (string, error) {
 		UserID: uuid.New().String(),
 	})
 
-	tokenString, err := token.SignedString(config.GetJWTSecret())
+	tokenString, err := token.SignedString(config.JWTSecret())
 	if err != nil {
 		return "", fmt.Errorf("failed to sign JWT token: %w", err)
 	}

@@ -42,9 +42,9 @@ func Init() error {
 			JWTSecret:        DefJWTSecret,
 		}
 
-		errGofigure := gofigure.Gofigure(&cfg)
-		if errGofigure != nil {
-			err = fmt.Errorf("gofigure.Gofigure: %w", errGofigure)
+		err = gofigure.Gofigure(&cfg)
+		if err != nil {
+			err = fmt.Errorf("gofigure.Gofigure: %w", err)
 			return
 		}
 
@@ -66,52 +66,52 @@ func Init() error {
 	return err
 }
 
-// GetEnv returns run mode (dev|prod).
-func GetEnv() string {
+// Env returns run mode (dev|prod).
+func Env() string {
 	return cfg.Env
 }
 
-// GetServerAddress returns http rest server address.
-func GetServerAddress() string {
+// ServerAddress returns http rest server address.
+func ServerAddress() string {
 	return cfg.ServerAddress
 }
 
-// GetBaseURL returns base url address.
-func GetBaseURL() string {
+// BaseURL returns base url address.
+func BaseURL() string {
 	return cfg.BaseURL
 }
 
-// GetShortURLLen returns short url length.
-func GetShortURLLen() int {
+// ShortURLLen returns short url length.
+func ShortURLLen() int {
 	return cfg.ShortURLLen
 }
 
-// GetStoragePath returns full path of the json repositories file.
-func GetStoragePath() string {
+// StoragePath returns full path of the json repositories file.
+func StoragePath() string {
 	return cfg.StoragePath
 }
 
-// GetPsqlDSN returns string for connecting to database.
-func GetPsqlDSN() string {
+// PsqlDSN returns string for connecting to database.
+func PsqlDSN() string {
 	return cfg.PsqlDSN
 }
 
-// GetRestReadTimeout returns wait timeout for reading request on the http rest server.
-func GetRestReadTimeout() time.Duration {
+// RestReadTimeout returns wait timeout for reading request on the http rest server.
+func RestReadTimeout() time.Duration {
 	return time.Duration(cfg.RestReadTimeout) * time.Millisecond
 }
 
-// GetRestWriteTimeout returns wait timeout for writing response on the http rest server.
-func GetRestWriteTimeout() time.Duration {
+// RestWriteTimeout returns wait timeout for writing response on the http rest server.
+func RestWriteTimeout() time.Duration {
 	return time.Duration(cfg.RestWriteTimeout) * time.Millisecond
 }
 
-// GetPsqlMaxConns returns max connections to database.
-func GetPsqlMaxConns() int {
+// PsqlMaxConns returns max connections to database.
+func PsqlMaxConns() int {
 	return cfg.PsqlMaxConns
 }
 
-// GetJWTSecret returns jwt secret.
-func GetJWTSecret() []byte {
+// JWTSecret returns jwt secret.
+func JWTSecret() []byte {
 	return []byte(cfg.JWTSecret)
 }

@@ -36,14 +36,14 @@ func (u *URLs) GetURL(ctx context.Context, shortURL string) (entity.URL, error) 
 
 // GetURLsByUserID returns all URLs by user ID.
 func (u *URLs) GetURLsByUserID(ctx context.Context, userID string) ([]entity.URL, error) {
-	storeResp, err := u.urlProvider.GetURLsByUserID(ctx, userID)
+	urls, err := u.urlProvider.GetURLsByUserID(ctx, userID)
 	if err != nil {
 		return []entity.URL{}, fmt.Errorf("error getting url from storage: %w", err)
 	}
 
-	resp := make([]entity.URL, 0, len(storeResp))
-	for _, url := range storeResp {
-		url.ShortURL = fmt.Sprintf("%s%s", config.GetBaseURL(), url.ShortURL)
+	resp := make([]entity.URL, 0, len(urls))
+	for _, url := range urls {
+		url.ShortURL = fmt.Sprintf("%s%s", config.BaseURL(), url.ShortURL)
 		resp = append(resp, url)
 	}
 

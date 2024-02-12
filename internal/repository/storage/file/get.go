@@ -44,10 +44,6 @@ func (s *Storage) GetURLByOriginalURL(
 		}
 	}
 
-	if resp.ShortURL == "" {
-		return entity.URL{}, ErrURLNotFound
-	}
-
 	return resp, nil
 }
 
@@ -85,10 +81,6 @@ func (s *Storage) GetURLByShortURL(
 		}
 	}
 
-	if resp.ShortURL == "" {
-		return entity.URL{}, ErrURLNotFound
-	}
-
 	return resp, nil
 }
 
@@ -96,11 +88,12 @@ func (s *Storage) GetURLByShortURL(
 func (s *Storage) GetURLsByUserID(
 	ctx context.Context,
 	userID string,
-) (resp []entity.URL, err error) {
+) ([]entity.URL, error) {
+	resp := make([]entity.URL, 0)
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	_, err = s.file.Seek(0, 0)
+	_, err := s.file.Seek(0, 0)
 	if err != nil {
 		return []entity.URL{}, fmt.Errorf("failed to seek to the beginning of the file: %w", err)
 	}
@@ -127,10 +120,6 @@ func (s *Storage) GetURLsByUserID(
 		}
 
 		resp = append(resp, found)
-	}
-
-	if len(resp) == 0 {
-		return []entity.URL{}, ErrURLsNotFound
 	}
 
 	return resp, nil

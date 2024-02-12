@@ -11,7 +11,8 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
-func RunRESTServer(buildVersion, buildDate, buildCommit string) error {
+// RunREST runs the REST server
+func RunREST(buildVersion, buildDate, buildCommit string) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -20,7 +21,7 @@ func RunRESTServer(buildVersion, buildDate, buildCommit string) error {
 		return fmt.Errorf("the configuration could not be loaded: %w", err)
 	}
 
-	log, err := logger.New(config.GetEnv(), "url-shortener")
+	log, err := logger.New(config.Env(), "url-shortener")
 	if err != nil {
 		return fmt.Errorf("failed to load the logger: %w", err)
 	}
@@ -33,8 +34,13 @@ func RunRESTServer(buildVersion, buildDate, buildCommit string) error {
 	if err != nil {
 		return fmt.Errorf("storage could not be started: %w", err)
 	}
+	defer func() {
+		if err = store.Close(); err != nil {
+			log.Errorf("storage could not be closed: %v", err)
+		}
+	}()
 
-	urlService := urls.New(log, store, store)
+	urlService := urls.New(ctx, log, store, store)
 
 	if err = rest.New(ctx, log, store, urlService); err != nil {
 		return fmt.Errorf("http server stopped with an error: %w", err)

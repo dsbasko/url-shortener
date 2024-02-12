@@ -41,14 +41,14 @@ func (u *URLs) CreateURL(
 
 	dto.OriginalURL = originalURL
 	dto.UserID = userID
-	dto.ShortURL = RandomString(config.GetShortURLLen())
+	dto.ShortURL = RandomString(config.ShortURLLen())
 
 	resp, uniq, err := urlCreator.CreateURL(ctx, dto)
 	if err != nil {
 		return entity.URL{}, false, fmt.Errorf("failed to create a url in the storage: %w", err)
 	}
 
-	resp.ShortURL = fmt.Sprintf("%s%s", config.GetBaseURL(), resp.ShortURL)
+	resp.ShortURL = fmt.Sprintf("%s%s", config.BaseURL(), resp.ShortURL)
 	return resp, uniq, nil
 }
 
@@ -74,7 +74,7 @@ func (u *URLs) CreateURLs(
 			return []api.CreateURLsResponse{}, fmt.Errorf("failed to parse url: %w", ErrInvalidURL)
 		}
 
-		shortURL := RandomString(config.GetShortURLLen())
+		shortURL := RandomString(config.ShortURLLen())
 
 		urlEntities = append(urlEntities, entity.URL{
 			OriginalURL: url.OriginalURL,
@@ -84,7 +84,7 @@ func (u *URLs) CreateURLs(
 
 		response = append(response, api.CreateURLsResponse{
 			CorrelationID: url.CorrelationID,
-			ShortURL:      fmt.Sprintf("%s%s", config.GetBaseURL(), shortURL),
+			ShortURL:      fmt.Sprintf("%s%s", config.BaseURL(), shortURL),
 		})
 	}
 

@@ -26,11 +26,14 @@ type SuiteURLs struct {
 		errStore     error
 		errNotFound  error
 		ctxWithToken context.Context
+		deleteTasks  chan map[string][]string
 	}
 }
 
 func (s *SuiteURLs) SetupSuite() {
 	t := s.T()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -39,7 +42,7 @@ func (s *SuiteURLs) SetupSuite() {
 	s.attr.log = logger.NewMock()
 	s.attr.urlProvider = mockUrls.NewMockURLProvider(ctrl)
 	s.attr.urlMutator = mockUrls.NewMockURLMutator(ctrl)
-	s.attr.service = New(s.attr.log, s.attr.urlProvider, s.attr.urlMutator)
+	s.attr.service = New(ctx, s.attr.log, s.attr.urlProvider, s.attr.urlMutator)
 	s.attr.errStore = fmt.Errorf("storage error")
 	s.attr.errNotFound = fmt.Errorf("not found")
 
@@ -52,12 +55,14 @@ func (s *SuiteURLs) Test_New() {
 	t := s.T()
 
 	t.Run("Success", func(t *testing.T) {
+		mockService := URLs{
+			log:         s.attr.log,
+			urlProvider: s.attr.urlProvider,
+			urlMutator:  s.attr.urlMutator,
+		}
+
 		assert.NotNil(t, s.attr.service)
-		assert.Equal(
-			t,
-			URLs{log: s.attr.log, urlProvider: s.attr.urlProvider, urlMutator: s.attr.urlMutator},
-			s.attr.service,
-		)
+		assert.EqualExportedValues(t, mockService, s.attr.service)
 	})
 }
 

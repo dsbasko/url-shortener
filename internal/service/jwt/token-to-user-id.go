@@ -12,7 +12,7 @@ func TokenToUserID(tokenString string) string {
 	claims := &entity.JWTClaims{}
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
-		return config.GetJWTSecret(), nil
+		return config.JWTSecret(), nil
 	})
 	if err != nil || !token.Valid {
 		return ""

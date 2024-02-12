@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -87,7 +88,7 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 					{
 						ID:          "42",
 						UserID:      "42",
-						ShortURL:    fmt.Sprintf("%s42", config.GetBaseURL()),
+						ShortURL:    fmt.Sprintf("%s42", config.BaseURL()),
 						OriginalURL: "https://ya.ru",
 					},
 				})
@@ -113,8 +114,10 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 	}
 }
 
-func BenchmarkHandler_GetURLsByUserID(b *testing.B) {
+func Benchmark_Handler_GetURLsByUserID(b *testing.B) {
 	t := testing.T{}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	ctrl := gomock.NewController(&t)
 	defer ctrl.Finish()
 
@@ -122,7 +125,7 @@ func BenchmarkHandler_GetURLsByUserID(b *testing.B) {
 	assert.NoError(b, err)
 	log := logger.NewMock()
 	store := mockStorage.NewMockStorage(ctrl)
-	urlsService := urls.New(log, store, store)
+	urlsService := urls.New(ctx, log, store, store)
 	router := chi.NewRouter()
 	h := New(log, store, urlsService)
 	mw := middlewares.New(log)

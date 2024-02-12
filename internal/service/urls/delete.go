@@ -14,28 +14,47 @@ type URLDeleter interface {
 
 // DeleteURLs deletes urls from storage.
 func (u *URLs) DeleteURLs(userID string, shortURLs []string) error {
-	var urlDeleter URLDeleter = u.urlMutator
-
-	urlsToDelete := make([]entity.URL, 0, len(shortURLs))
-	for _, url := range shortURLs {
-		urlsToDelete = append(urlsToDelete, entity.URL{
-			ShortURL: url,
-			UserID:   userID,
-		})
+	u.deleteTask <- map[string][]string{
+		userID: shortURLs,
 	}
 
-	go func() {
-		if _, err := urlDeleter.DeleteURLs(context.Background(), urlsToDelete); err != nil {
-			u.log.Errorw(err.Error())
-			return
-		}
-
-		urls := make([]string, 0, len(urlsToDelete))
-		for _, url := range urlsToDelete {
-			urls = append(urls, url.ShortURL)
-		}
-		u.log.Infof("deleted urls: %v", urls)
-	}()
-
 	return nil
+}
+
+// deleteWorker is a worker for deleting urls.
+func (u *URLs) deleteWorker(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			u.log.Infof("delete worker stopped by context")
+			return
+		case task := <-u.deleteTask:
+			var urlDeleter URLDeleter = u.urlMutator
+
+			urlsToDelete := make([]entity.URL, 0, len(task))
+			for userID, shortURL := range task {
+				for _, url := range shortURL {
+					urlsToDelete = append(urlsToDelete, entity.URL{
+						ShortURL: url,
+						UserID:   userID,
+					})
+				}
+			}
+
+			deletedURLs, err := urlDeleter.DeleteURLs(context.Background(), urlsToDelete)
+			if err != nil {
+				u.log.Errorw(err.Error())
+				return
+			}
+
+			urls := make([]string, 0, len(deletedURLs))
+			for _, url := range deletedURLs {
+				urls = append(urls, url.ShortURL)
+			}
+
+			if len(urls) > 0 {
+				u.log.Debugf("deleted urls: %v", urls)
+			}
+		}
+	}
 }

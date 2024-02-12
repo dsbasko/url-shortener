@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -53,7 +54,7 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 			},
 			wantStatusCode: http.StatusCreated,
 			wantBody: func() string {
-				return fmt.Sprintf("%s42", config.GetBaseURL())
+				return fmt.Sprintf("%s42", config.BaseURL())
 			},
 		},
 		{
@@ -70,7 +71,7 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 			},
 			wantStatusCode: http.StatusConflict,
 			wantBody: func() string {
-				return fmt.Sprintf("%s42", config.GetBaseURL())
+				return fmt.Sprintf("%s42", config.BaseURL())
 			},
 		},
 	}
@@ -91,8 +92,10 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 	}
 }
 
-func BenchmarkHandler_CreateURLOnceTextPlain(b *testing.B) {
+func Benchmark_Handler_CreateURLTextPlain(b *testing.B) {
 	t := testing.T{}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	ctrl := gomock.NewController(&t)
 	defer ctrl.Finish()
 
@@ -100,37 +103,26 @@ func BenchmarkHandler_CreateURLOnceTextPlain(b *testing.B) {
 	assert.NoError(b, err)
 	log := logger.NewMock()
 	store := mockStorage.NewMockStorage(ctrl)
-	urlsService := urls.New(log, store, store)
+	urlsService := urls.New(ctx, log, store, store)
 	router := chi.NewRouter()
 	h := New(log, store, urlsService)
 	mw := middlewares.New(log)
-	router.
-		With(mw.JWT).
-		Post("/", h.CreateURLTextPlain)
+	router.With(mw.JWT).Post("/", h.CreateURLTextPlain)
 	ts := httptest.NewServer(router)
 	defer ts.Close()
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		if i%2 == 0 {
-			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entity.URL{
-				ID:          "42",
-				ShortURL:    "42",
-				OriginalURL: "https://ya.ru/",
-				UserID:      "42",
-			}, false, nil)
-		} else {
-			store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entity.URL{
-				ID:          "42",
-				ShortURL:    "42",
-				OriginalURL: "https://ya.ru/",
-				UserID:      "42",
-			}, true, nil)
-		}
+		store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entity.URL{
+			ID:          "42",
+			ShortURL:    "42",
+			OriginalURL: "https://ya.ru/",
+			UserID:      "42",
+		}, true, nil)
 		b.StartTimer()
 
-		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{
+		resp, _ := test.Request(&t, ts, &test.RequestArgs{
 			Method: "POST",
 			Path:   "/",
 			Body:   []byte("https://ya.ru/"),

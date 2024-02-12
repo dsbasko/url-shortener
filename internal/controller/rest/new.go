@@ -34,6 +34,7 @@ func New(
 	router.Mount("/debug", mwChi.Profiler())
 
 	h := handlers.New(log, pinger, urlService)
+	router.MethodNotAllowed(h.BadRequest)
 	router.Get("/ping", h.Ping)
 	router.Get("/{short_url}", h.Redirect)
 	router.Get("/api/user/urls", h.GetURLsByUserID)
@@ -50,22 +51,22 @@ func New(
 	}
 
 	server := http.Server{
-		Addr:         config.GetServerAddress(),
+		Addr:         config.ServerAddress(),
 		Handler:      router,
-		ReadTimeout:  config.GetRestReadTimeout(),
-		WriteTimeout: config.GetRestWriteTimeout(),
+		ReadTimeout:  config.RestReadTimeout(),
+		WriteTimeout: config.RestWriteTimeout(),
 	}
 
 	go func() {
 		<-ctx.Done()
-		log.Info("shutdown rest server")
+		log.Info("shutdown rest server by context")
 		server.SetKeepAlivesEnabled(false)
-		err := server.Shutdown(context.Background())
+		err := server.Shutdown(ctx)
 		if err != nil {
 			log.Errorf("a signal has been received to terminate the http server: %v", err)
 		}
 	}()
 
-	log.Infof("starting rest server at the address: %s", config.GetServerAddress())
+	log.Infof("starting rest server at the address: %s", config.ServerAddress())
 	return server.ListenAndServe()
 }

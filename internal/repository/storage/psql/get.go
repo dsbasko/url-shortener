@@ -2,6 +2,8 @@ package psql
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/entity"
@@ -37,6 +39,9 @@ func (s *Storage) GetURLByShortURL(
 	)
 
 	if err = row.StructScan(&resp); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return entity.URL{}, nil
+		}
 		return entity.URL{}, fmt.Errorf("failed to scan response: %w", err)
 	}
 
@@ -65,6 +70,9 @@ func (s *Storage) GetURLsByUserID(
 		var foundRow entity.URL
 
 		if err = rows.StructScan(&foundRow); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return []entity.URL{}, nil
+			}
 			return []entity.URL{}, fmt.Errorf("failed to scan response: %w", err)
 		}
 

@@ -119,7 +119,7 @@ func (s *SuiteURLs) Test_GetURLsByUserID() {
 				resp: []entity.URL{
 					{
 						ID:          "42",
-						ShortURL:    fmt.Sprintf("%s42", config.GetBaseURL()),
+						ShortURL:    fmt.Sprintf("%s42", config.BaseURL()),
 						OriginalURL: "https://ya.ru/",
 					},
 				},

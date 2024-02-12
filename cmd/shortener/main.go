@@ -14,7 +14,7 @@ var (
 )
 
 func main() {
-	if err := app.RunRESTServer(buildVersion, buildDate, buildCommit); err != nil {
+	if err := app.RunREST(buildVersion, buildDate, buildCommit); err != nil {
 		log.Panic(err.Error())
 	}
 }

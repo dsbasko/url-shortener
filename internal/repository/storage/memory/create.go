@@ -10,54 +10,50 @@ import (
 
 // CreateURL creates a new URL.
 func (s *Storage) CreateURL(
-	ctx context.Context,
+	_ context.Context,
 	dto entity.URL,
 ) (resp entity.URL, unique bool, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	if url, ok := s.store[dto.ShortURL]; ok {
-		select {
-		case <-ctx.Done():
-			return resp, false, ctx.Err()
-		default:
-		}
-
+	if url, ok := s.storeOriginal[dto.OriginalURL]; ok {
 		resp.OriginalURL = url.OriginalURL
-		resp.ShortURL = dto.ShortURL
+		resp.ShortURL = url.ShortURL
+
 		return resp, false, nil
 	}
 
-	s.store[dto.ShortURL] = dto
+	s.storeShort[dto.ShortURL] = dto
+	s.storeOriginal[dto.OriginalURL] = dto
 
 	return dto, true, nil
 }
 
 // CreateURLs creates URLs.
 func (s *Storage) CreateURLs(
-	ctx context.Context,
+	_ context.Context,
 	dto []entity.URL,
 ) (resp []entity.URL, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	storeCopy := make(map[string]entity.URL, len(s.store)+len(dto))
-	maps.Copy(storeCopy, s.store)
+	storeShortCopy := make(map[string]entity.URL, len(s.storeShort)+len(dto))
+	maps.Copy(storeShortCopy, s.storeShort)
+
+	storeOriginalCopy := make(map[string]entity.URL, len(s.storeOriginal)+len(dto))
+	maps.Copy(storeOriginalCopy, s.storeOriginal)
 
 	for _, url := range dto {
-		select {
-		case <-ctx.Done():
-			return resp, ctx.Err()
-		default:
-		}
-
-		if _, ok := storeCopy[url.ShortURL]; ok {
+		if _, ok := storeOriginalCopy[url.OriginalURL]; ok {
 			return []entity.URL{}, fmt.Errorf("url %s already exists", url.ShortURL)
 		}
 
-		storeCopy[url.ShortURL] = url
+		storeShortCopy[url.ShortURL] = url
+		storeOriginalCopy[url.OriginalURL] = url
 	}
 
-	s.store = storeCopy
+	s.storeShort = storeShortCopy
+	s.storeOriginal = storeOriginalCopy
+
 	return dto, nil
 }

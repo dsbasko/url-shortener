@@ -19,6 +19,12 @@ func (h *Handler) Redirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if urlResp.OriginalURL == "" {
+		log.Warnf("original url not found: %s", shortURL)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	if urlResp.DeletedFlag {
 		w.WriteHeader(http.StatusGone)
 		return

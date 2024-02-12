@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -66,7 +67,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 			wantStatusCode: http.StatusCreated,
 			wantBody: func() string {
 				resBytes, _ := json.Marshal(api.CreateURLResponse{
-					Result: fmt.Sprintf("%s42", config.GetBaseURL()),
+					Result: fmt.Sprintf("%s42", config.BaseURL()),
 				})
 				return fmt.Sprintf("%s\n", resBytes)
 			},
@@ -90,7 +91,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 			wantStatusCode: http.StatusConflict,
 			wantBody: func() string {
 				resBytes, _ := json.Marshal(api.CreateURLResponse{
-					Result: fmt.Sprintf("%s42", config.GetBaseURL()),
+					Result: fmt.Sprintf("%s42", config.BaseURL()),
 				})
 				return fmt.Sprintf("%s\n", resBytes)
 			},
@@ -115,8 +116,10 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 	}
 }
 
-func BenchmarkHandler_CreateURLJSON(b *testing.B) {
+func Benchmark_Handler_CreateURLJSON(b *testing.B) {
 	t := testing.T{}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	ctrl := gomock.NewController(&t)
 	defer ctrl.Finish()
 
@@ -124,7 +127,7 @@ func BenchmarkHandler_CreateURLJSON(b *testing.B) {
 	assert.NoError(b, err)
 	log := logger.NewMock()
 	store := mockStorage.NewMockStorage(ctrl)
-	urlsService := urls.New(log, store, store)
+	urlsService := urls.New(ctx, log, store, store)
 	router := chi.NewRouter()
 	h := New(log, store, urlsService)
 	mw := middlewares.New(log)

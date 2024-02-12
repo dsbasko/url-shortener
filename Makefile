@@ -51,17 +51,17 @@ build-staticlint:
 	@go build -o $(LOCAL_BIN_PATH)/staticlint ./cmd/staticlint/main.go
 
 test:
-	go test ./... --cover
+	@go test ./... --cover
 
 test-cover:
-	go test --coverprofile=coverage.out ./... > /dev/null; \
-    go tool cover -func=coverage.out | grep total | grep -oE '[0-9]+(\.[0-9]+)?%'
+	@go test --coverprofile=coverage.out ./... > /dev/null
+	@go tool cover -func=coverage.out | grep total | grep -oE '[0-9]+(\.[0-9]+)?%'
 
 test-bench:
-	go test ./internal/http-server/handler/... -bench=. -benchmem -memprofile=profiles/last.pprof
+	@go test ./internal/controller/rest/handlers -bench=. -benchmem -cpuprofile=profiles/cpu-last.pprof -memprofile=profiles/mem-last.pprof
 
 test-bench-show:
-	go tool pprof -http=":9090" handler.test profiles/last.pprof
+	@go tool pprof -http=":9090" handler.test profiles/cpu-last.pprof
 
 auto-tests:
 	@clear

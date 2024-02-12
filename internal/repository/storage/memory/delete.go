@@ -8,23 +8,23 @@ import (
 
 // DeleteURLs deletes URLs by user ID.
 func (s *Storage) DeleteURLs(
-	ctx context.Context,
+	_ context.Context,
 	dto []entity.URL,
 ) (resp []entity.URL, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	for _, url := range dto {
-		select {
-		case <-ctx.Done():
-			return []entity.URL{}, ctx.Err()
-		default:
+		if foundURL, ok := s.storeShort[url.ShortURL]; ok && foundURL.UserID == url.UserID {
+			url.OriginalURL = foundURL.OriginalURL
+			foundURL.DeletedFlag = true
+			s.storeShort[url.ShortURL] = foundURL
+			resp = append(resp, foundURL)
 		}
 
-		if foundURL, ok := s.store[url.ShortURL]; ok && foundURL.UserID == url.UserID {
+		if foundURL, ok := s.storeOriginal[url.OriginalURL]; ok && foundURL.UserID == url.UserID {
 			foundURL.DeletedFlag = true
-			s.store[url.ShortURL] = foundURL
-			resp = append(resp, foundURL)
+			s.storeOriginal[url.OriginalURL] = foundURL
 		}
 	}
 

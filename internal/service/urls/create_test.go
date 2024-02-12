@@ -81,7 +81,7 @@ func (s *SuiteURLs) Test_CreateURL() {
 			want: want{
 				resp: entity.URL{
 					ID:          "42",
-					ShortURL:    fmt.Sprintf("%s42", config.GetBaseURL()),
+					ShortURL:    fmt.Sprintf("%s42", config.BaseURL()),
 					OriginalURL: "https://ya.ru/",
 				},
 				uniq: true,
@@ -106,7 +106,7 @@ func (s *SuiteURLs) Test_CreateURL() {
 			want: want{
 				resp: entity.URL{
 					ID:          "42",
-					ShortURL:    fmt.Sprintf("%s42", config.GetBaseURL()),
+					ShortURL:    fmt.Sprintf("%s42", config.BaseURL()),
 					OriginalURL: "https://ya.ru/",
 				},
 				uniq: false,
@@ -245,7 +245,7 @@ func (s *SuiteURLs) Test_CreateURLs() {
 			assert.Equal(t, tt.want.err, errors.UnwrapAll(err))
 			assert.Equal(t, len(tt.want.resp), len(resp))
 			if len(resp) > 0 {
-				assert.True(t, strings.Contains(resp[0].ShortURL, config.GetBaseURL()))
+				assert.True(t, strings.Contains(resp[0].ShortURL, config.BaseURL()))
 				assert.Equal(t, tt.want.resp[0].CorrelationID, resp[0].CorrelationID)
 			}
 		})

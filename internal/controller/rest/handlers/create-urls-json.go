@@ -18,6 +18,7 @@ func (h *Handler) CreateURLsJSON(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
+		fmt.Printf("failed to decode json: %v", err)
 		log.Errorw(fmt.Errorf("failed to decode json: %w", err).Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -25,6 +26,7 @@ func (h *Handler) CreateURLsJSON(w http.ResponseWriter, r *http.Request) {
 
 	createdURLs, err := h.urls.CreateURLs(r.Context(), dto)
 	if err != nil {
+		fmt.Printf("ffailed to create link in urls: %v", err)
 		log.Errorw(fmt.Errorf("failed to create link in urls: %w", err).Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return

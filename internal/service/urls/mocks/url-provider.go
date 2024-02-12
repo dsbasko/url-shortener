@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	entities "github.com/dsbasko/yandex-go-shortener/internal/entity"
+	entity "github.com/dsbasko/yandex-go-shortener/internal/entity"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -41,10 +41,10 @@ func (m *MockURLProvider) EXPECT() *MockURLProviderMockRecorder {
 }
 
 // GetURLByOriginalURL mocks base method.
-func (m *MockURLProvider) GetURLByOriginalURL(arg0 context.Context, arg1 string) (entities.URL, error) {
+func (m *MockURLProvider) GetURLByOriginalURL(arg0 context.Context, arg1 string) (entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetURLByOriginalURL", arg0, arg1)
-	ret0, _ := ret[0].(entities.URL)
+	ret0, _ := ret[0].(entity.URL)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -56,10 +56,10 @@ func (mr *MockURLProviderMockRecorder) GetURLByOriginalURL(arg0, arg1 any) *gomo
 }
 
 // GetURLByShortURL mocks base method.
-func (m *MockURLProvider) GetURLByShortURL(arg0 context.Context, arg1 string) (entities.URL, error) {
+func (m *MockURLProvider) GetURLByShortURL(arg0 context.Context, arg1 string) (entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetURLByShortURL", arg0, arg1)
-	ret0, _ := ret[0].(entities.URL)
+	ret0, _ := ret[0].(entity.URL)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -71,10 +71,10 @@ func (mr *MockURLProviderMockRecorder) GetURLByShortURL(arg0, arg1 any) *gomock.
 }
 
 // GetURLsByUserID mocks base method.
-func (m *MockURLProvider) GetURLsByUserID(arg0 context.Context, arg1 string) ([]entities.URL, error) {
+func (m *MockURLProvider) GetURLsByUserID(arg0 context.Context, arg1 string) ([]entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetURLsByUserID", arg0, arg1)
-	ret0, _ := ret[0].([]entities.URL)
+	ret0, _ := ret[0].([]entity.URL)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

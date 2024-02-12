@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	entities "github.com/dsbasko/yandex-go-shortener/internal/entity"
+	entity "github.com/dsbasko/yandex-go-shortener/internal/entity"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -55,10 +55,10 @@ func (mr *MockStorageMockRecorder) Close() *gomock.Call {
 }
 
 // CreateURL mocks base method.
-func (m *MockStorage) CreateURL(arg0 context.Context, arg1 entities.URL) (entities.URL, bool, error) {
+func (m *MockStorage) CreateURL(arg0 context.Context, arg1 entity.URL) (entity.URL, bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateURL", arg0, arg1)
-	ret0, _ := ret[0].(entities.URL)
+	ret0, _ := ret[0].(entity.URL)
 	ret1, _ := ret[1].(bool)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
@@ -71,10 +71,10 @@ func (mr *MockStorageMockRecorder) CreateURL(arg0, arg1 any) *gomock.Call {
 }
 
 // CreateURLs mocks base method.
-func (m *MockStorage) CreateURLs(arg0 context.Context, arg1 []entities.URL) ([]entities.URL, error) {
+func (m *MockStorage) CreateURLs(arg0 context.Context, arg1 []entity.URL) ([]entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateURLs", arg0, arg1)
-	ret0, _ := ret[0].([]entities.URL)
+	ret0, _ := ret[0].([]entity.URL)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -86,10 +86,10 @@ func (mr *MockStorageMockRecorder) CreateURLs(arg0, arg1 any) *gomock.Call {
 }
 
 // DeleteURLs mocks base method.
-func (m *MockStorage) DeleteURLs(arg0 context.Context, arg1 []entities.URL) ([]entities.URL, error) {
+func (m *MockStorage) DeleteURLs(arg0 context.Context, arg1 []entity.URL) ([]entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteURLs", arg0, arg1)
-	ret0, _ := ret[0].([]entities.URL)
+	ret0, _ := ret[0].([]entity.URL)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -101,10 +101,10 @@ func (mr *MockStorageMockRecorder) DeleteURLs(arg0, arg1 any) *gomock.Call {
 }
 
 // GetURLByOriginalURL mocks base method.
-func (m *MockStorage) GetURLByOriginalURL(arg0 context.Context, arg1 string) (entities.URL, error) {
+func (m *MockStorage) GetURLByOriginalURL(arg0 context.Context, arg1 string) (entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetURLByOriginalURL", arg0, arg1)
-	ret0, _ := ret[0].(entities.URL)
+	ret0, _ := ret[0].(entity.URL)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -116,10 +116,10 @@ func (mr *MockStorageMockRecorder) GetURLByOriginalURL(arg0, arg1 any) *gomock.C
 }
 
 // GetURLByShortURL mocks base method.
-func (m *MockStorage) GetURLByShortURL(arg0 context.Context, arg1 string) (entities.URL, error) {
+func (m *MockStorage) GetURLByShortURL(arg0 context.Context, arg1 string) (entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetURLByShortURL", arg0, arg1)
-	ret0, _ := ret[0].(entities.URL)
+	ret0, _ := ret[0].(entity.URL)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -131,10 +131,10 @@ func (mr *MockStorageMockRecorder) GetURLByShortURL(arg0, arg1 any) *gomock.Call
 }
 
 // GetURLsByUserID mocks base method.
-func (m *MockStorage) GetURLsByUserID(arg0 context.Context, arg1 string) ([]entities.URL, error) {
+func (m *MockStorage) GetURLsByUserID(arg0 context.Context, arg1 string) ([]entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetURLsByUserID", arg0, arg1)
-	ret0, _ := ret[0].([]entities.URL)
+	ret0, _ := ret[0].([]entity.URL)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

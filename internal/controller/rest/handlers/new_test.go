@@ -41,6 +41,8 @@ type SuiteHandlers struct {
 
 func (s *SuiteHandlers) SetupSuite() {
 	t := s.T()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -50,7 +52,7 @@ func (s *SuiteHandlers) SetupSuite() {
 	s.attr.pinger = mockHandlers.NewMockPinger(ctrl)
 	s.attr.urlsProvider = mockURLs.NewMockURLProvider(ctrl)
 	s.attr.urlsMutator = mockURLs.NewMockURLMutator(ctrl)
-	s.attr.urls = urls.New(s.attr.log, s.attr.urlsProvider, s.attr.urlsMutator)
+	s.attr.urls = urls.New(ctx, s.attr.log, s.attr.urlsProvider, s.attr.urlsMutator)
 	router := chi.NewRouter()
 	s.attr.handler = New(s.attr.log, s.attr.pinger, s.attr.urls)
 	mw := middlewares.New(s.attr.log)
@@ -59,13 +61,14 @@ func (s *SuiteHandlers) SetupSuite() {
 	s.attr.cookie = &http.Cookie{Name: jwt.CookieKey, Value: token}
 
 	// Роуты
+	router.MethodNotAllowed(s.attr.handler.BadRequest)
 	router.Get("/ping", s.attr.handler.Ping)
+	router.Get("/{short_url}", s.attr.handler.Redirect)
 	router.With(mw.JWT).Post("/api/shorten", s.attr.handler.CreateURLJSON)
 	router.With(mw.JWT).Post("/", s.attr.handler.CreateURLTextPlain)
 	router.With(mw.JWT).Post("/api/shorten/batch", s.attr.handler.CreateURLsJSON)
-	router.With(mw.JWT).Delete("/api/user/urls", s.attr.handler.DeleteURLs)
 	router.With(mw.JWT).Get("/api/user/urls", s.attr.handler.GetURLsByUserID)
-	router.Get("/{short_url}", s.attr.handler.Redirect)
+	router.With(mw.JWT).Delete("/api/user/urls", s.attr.handler.DeleteURLs)
 
 	s.attr.ts = httptest.NewServer(router)
 	s.attr.errService = errors.New("service error")

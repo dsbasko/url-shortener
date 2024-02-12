@@ -21,7 +21,7 @@ type Storage struct {
 
 // New creates a new instance of the file storage.
 func New(_ context.Context, log *logger.Logger) (*Storage, error) {
-	file, err := os.OpenFile(config.GetStoragePath(), os.O_RDWR|os.O_CREATE|os.O_APPEND|os.O_SYNC, 0666) //nolint:gomnd
+	file, err := os.OpenFile(config.StoragePath(), os.O_RDWR|os.O_CREATE|os.O_APPEND|os.O_SYNC, 0666) //nolint:gomnd
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
 	}

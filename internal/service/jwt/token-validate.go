@@ -9,7 +9,7 @@ import (
 // TokenValidate validates jwt token.
 func TokenValidate(tokenString string) bool {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
-		return config.GetJWTSecret(), nil
+		return config.JWTSecret(), nil
 	})
 
 	if err != nil || token == nil {
