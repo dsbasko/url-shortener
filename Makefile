@@ -22,6 +22,7 @@ start-dev-psql:
 start-prod:
 	clear; \
 	ENV="prod" \
+	ENABLE_HTTPS="true" \
 	SERVER_ADDRESS="localhost:3000" \
 	go run ./cmd/shortener
 
@@ -69,6 +70,9 @@ auto-tests:
 	@$(ROOT_PATH)/bin/shortenertest -test.v -test.run=$(TEST_RUN_ITERATION) "$(AUTO_TEST_CONFIG)"
 	@printf "\n%.0s" $(seq 1 5)
 	@go vet -vettool $(ROOT_PATH)/bin/statictest ./...
+
+gen-cert:
+	@go run ./cmd/cert-gen
 
 # -------
 # Configs

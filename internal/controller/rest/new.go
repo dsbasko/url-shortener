@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"net/http"
+	"path"
 
 	"github.com/go-chi/chi/v5"
 	mwChi "github.com/go-chi/chi/v5/middleware"
@@ -53,8 +54,8 @@ func New(
 	server := http.Server{
 		Addr:         config.ServerAddress(),
 		Handler:      router,
-		ReadTimeout:  config.RestReadTimeout(),
-		WriteTimeout: config.RestWriteTimeout(),
+		ReadTimeout:  config.RESTReadTimeout(),
+		WriteTimeout: config.RESTWriteTimeout(),
 	}
 
 	go func() {
@@ -67,6 +68,11 @@ func New(
 		}
 	}()
 
-	log.Infof("starting rest server at the address: %s", config.ServerAddress())
+	if config.RESTEnableHTTPS() {
+		log.Infof("starting rest server at the address: https://%s", config.ServerAddress())
+		return server.ListenAndServeTLS(path.Join("cert", "cert.pem"), path.Join("cert", "key.pem"))
+	}
+
+	log.Infof("starting rest server at the address: http://%s", config.ServerAddress())
 	return server.ListenAndServe()
 }

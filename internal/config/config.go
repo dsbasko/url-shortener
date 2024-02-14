@@ -15,8 +15,9 @@ type config struct {
 	BaseURL          string      `env:"BASE_URL" flag:"b" flagDesc:"base url address"`                                                                     //nolint:lll
 	ShortURLLen      int         `env:"SHORT_URL_LEN" flag:"short-url-len" flagDesc:"short url length"`                                                    //nolint:lll
 	StoragePath      string      `env:"FILE_STORAGE_PATH" flag:"f" flagDesc:"full path of the json repositories file"`                                     //nolint:lll
-	RestReadTimeout  int         `env:"REST_READ_TIMEOUT" flag:"rest-read-timeout" flagDesc:"wait timeout for reading request on the http rest server"`    //nolint:lll
-	RestWriteTimeout int         `env:"REST_WRITE_TIMEOUT" flag:"rest-write-timeout" flagDesc:"wait timeout for writing response on the http rest server"` //nolint:lll
+	RESTReadTimeout  int         `env:"REST_READ_TIMEOUT" flag:"rest-read-timeout" flagDesc:"wait timeout for reading request on the http rest server"`    //nolint:lll
+	RESTWriteTimeout int         `env:"REST_WRITE_TIMEOUT" flag:"rest-write-timeout" flagDesc:"wait timeout for writing response on the http rest server"` //nolint:lll
+	RESTEnableHTTPS  bool        `env:"ENABLE_HTTPS" flag:"s" flagDesc:"enable https for rest server"`                                                     //nolint:lll
 	PsqlDSN          string      `env:"DATABASE_DSN" flag:"d" flagDesc:"string for connecting to database"`                                                //nolint:lll
 	PsqlMaxConns     int         `env:"PSQL_MAX_CONNS" flag:"psql-max-conns" flagDesc:"max connections to database"`                                       //nolint:lll
 	JWTSecret        string      `env:"JWT_SECRET" flag:"jwt" flagDesc:"jwt secret"`
@@ -36,8 +37,8 @@ func Init() error {
 			ServerAddress:    DefServerAddress,
 			BaseURL:          DefBaseURL,
 			ShortURLLen:      DefShortURLLen,
-			RestReadTimeout:  DefRestReadTimeout,
-			RestWriteTimeout: DefRestWriteTimeout,
+			RESTReadTimeout:  DefRESTReadTimeout,
+			RESTWriteTimeout: DefRESTWriteTimeout,
 			PsqlMaxConns:     DefPsqlMaxConns,
 			JWTSecret:        DefJWTSecret,
 		}
@@ -96,14 +97,19 @@ func PsqlDSN() string {
 	return cfg.PsqlDSN
 }
 
-// RestReadTimeout returns wait timeout for reading request on the http rest server.
-func RestReadTimeout() time.Duration {
-	return time.Duration(cfg.RestReadTimeout) * time.Millisecond
+// RESTReadTimeout returns wait timeout for reading request on the http rest server.
+func RESTReadTimeout() time.Duration {
+	return time.Duration(cfg.RESTReadTimeout) * time.Millisecond
 }
 
-// RestWriteTimeout returns wait timeout for writing response on the http rest server.
-func RestWriteTimeout() time.Duration {
-	return time.Duration(cfg.RestWriteTimeout) * time.Millisecond
+// RESTWriteTimeout returns wait timeout for writing response on the http rest server.
+func RESTWriteTimeout() time.Duration {
+	return time.Duration(cfg.RESTWriteTimeout) * time.Millisecond
+}
+
+// RESTEnableHTTPS returns true if https is enabled for rest server.
+func RESTEnableHTTPS() bool {
+	return cfg.RESTEnableHTTPS
 }
 
 // PsqlMaxConns returns max connections to database.

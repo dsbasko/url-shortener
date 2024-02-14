@@ -16,6 +16,9 @@ make install-deps
 # запуск PostgreSQL docker контейнера
 make start-psql
 
+# генерация сертификатов
+make gen-cert
+
 # запуск сервиса
 make start-prod
 ```
@@ -54,7 +57,9 @@ make start-dev-mem
 ```
 
 ##### Переменные окружения и фраги необходимые для запуска через `go run`
-Помимо инструкций, запуск сервера через `go run cmd/shortener` можно сконфигурировать с помощью переменных окружения или флагов.
+
+Помимо инструкций, запуск сервера через `go run cmd/shortener` можно сконфигурировать с помощью переменных окружения или
+флагов.
 
 | Описание                             | Переменная окружения | Флаг                   |
 |--------------------------------------|----------------------|------------------------|
@@ -65,11 +70,13 @@ make start-dev-mem
 | Путь к файлу для файлового хранилища | `FILE_STORAGE_PATH`  | `--f`                  |
 | Таймаут для чтения в миллисекундах   | `REST_READ_TIMEOUT`  | `--rest-read-timeout`  |
 | Таймаут для записи в миллисекундах   | `REST_WRITE_TIMEOUT` | `--rest-write-timeout` |
+| Включение режима SSL/TLS             | `ENABLE_HTTPS`       | `--s`                  |
 | Строка подключения к PostgreSQL      | `DATABASE_DSN`       | `--d`                  |
 | Максимальное количество пулов        | `PSQL_MAX_CONNS`     | `--psql-max-conns`     |
 | Секрет для генерации JWT токена      | `JWT_SECRET`         | `--jwt`                |
 
 Если будут указаны все флаги, то выбор хранилища будет осуществлен в следующем порядке:
+
 1. PostgreSQL
 2. File
 3. In-memory
@@ -79,6 +86,7 @@ make start-dev-mem
 ## Архитектура
 
 Приложение разбито по слоям, где каждый слой отвечает за свою область ответственности.
+
 - `entity` слой отвечающий за описание сущностей.
 - `app` слой отвечающий за инициализацию зависимостей и запуск сервера.
 - `controller` слой отвечающий за обработку входящих запросов.
@@ -89,16 +97,16 @@ make start-dev-mem
 flowchart TB
     entity{{Entity}}
     app(((App)))
-    
-    subgraph codeBase[ ]
-        controller([Controller])
-        service([Service])
-        repository([Repository])
-    end
-    
-    app --> codeBase
-    codeBase --> entity
-    controller --> service --> repository
+
+subgraph codeBase[]
+controller([Controller])
+service([Service])
+repository([Repository])
+end
+
+app --> codeBase
+codeBase --> entity
+controller --> service --> repository
 ```
 
 <br>

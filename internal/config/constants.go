@@ -17,11 +17,11 @@ const (
 	// DefShortURLLen is default length of short url.
 	DefShortURLLen = 4
 
-	// DefRestReadTimeout is default http rest server read timeout.
-	DefRestReadTimeout = 3000
+	// DefRESTReadTimeout is default http rest server read timeout.
+	DefRESTReadTimeout = 3000
 
-	// DefRestWriteTimeout is default http rest server write timeout.
-	DefRestWriteTimeout = 3000
+	// DefRESTWriteTimeout is default http rest server write timeout.
+	DefRESTWriteTimeout = 3000
 
 	// DefPsqlMaxConns is default max connections to postgresql.
 	DefPsqlMaxConns = 8
