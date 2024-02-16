@@ -3,6 +3,7 @@ package urls
 import (
 	"context"
 
+	"github.com/dsbasko/yandex-go-shortener/pkg/graceful"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
@@ -34,6 +35,7 @@ func New(
 		deleteTask:  make(chan map[string][]string, 1),
 	}
 
+	graceful.Add()
 	go service.deleteWorker(ctx)
 
 	return service

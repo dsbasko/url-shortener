@@ -6,14 +6,15 @@ import (
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest"
-	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage"
+	storages "github.com/dsbasko/yandex-go-shortener/internal/repository/storage"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
+	"github.com/dsbasko/yandex-go-shortener/pkg/graceful"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
 // RunREST runs the REST server
 func RunREST(buildVersion, buildDate, buildCommit string) error {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := graceful.Context(context.Background(), graceful.DefaultSignals...)
 	defer cancel()
 
 	err := config.Init()
@@ -30,21 +31,21 @@ func RunREST(buildVersion, buildDate, buildCommit string) error {
 	log.Infof("Build date: %s", buildDate)
 	log.Infof("Build commit: %s", buildCommit)
 
-	store, err := storage.New(ctx, log)
+	storage, err := storages.New(ctx, log)
 	if err != nil {
 		return fmt.Errorf("storage could not be started: %w", err)
 	}
 	defer func() {
-		if err = store.Close(); err != nil {
+		if err = storage.Close(); err != nil {
 			log.Errorf("storage could not be closed: %v", err)
 		}
 	}()
 
-	urlService := urls.New(ctx, log, store, store)
+	urlService := urls.New(ctx, log, storage, storage)
+	rest.New(ctx, log, storage, urlService)
 
-	if err = rest.New(ctx, log, store, urlService); err != nil {
-		return fmt.Errorf("http server stopped with an error: %w", err)
-	}
+	graceful.Wait()
+	log.Infof("app has been stopped gracefully [%v]", graceful.Count())
 
 	return nil
 }

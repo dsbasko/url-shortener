@@ -41,8 +41,7 @@ type SuiteHandlers struct {
 
 func (s *SuiteHandlers) SetupSuite() {
 	t := s.T()
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

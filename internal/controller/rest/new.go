@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"path"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/handlers"
 	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
 	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
+	"github.com/dsbasko/yandex-go-shortener/pkg/graceful"
 	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
 )
 
@@ -21,7 +23,7 @@ func New(
 	log *logger.Logger,
 	pinger handlers.Pinger,
 	urlService urls.URLs,
-) error {
+) {
 	router := chi.NewRouter()
 
 	mw := middlewares.New(log)
@@ -58,21 +60,44 @@ func New(
 		WriteTimeout: config.RESTWriteTimeout(),
 	}
 
-	go func() {
-		<-ctx.Done()
-		log.Info("shutdown rest server by context")
-		server.SetKeepAlivesEnabled(false)
-		err := server.Shutdown(ctx)
-		if err != nil {
-			log.Errorf("a signal has been received to terminate the http server: %v", err)
-		}
-	}()
+	// Run the server in a goroutine so that it doesn't block.
+	// The server will be gracefully shutdown by the signal.
+	graceful.Add()
+	go runServer(log, &server)
+
+	graceful.Add()
+	go gracefulShutdown(ctx, log, &server)
+}
+
+// runServer runs the http server.
+func runServer(log *logger.Logger, server *http.Server) {
+	defer graceful.Done()
 
 	if config.RESTEnableHTTPS() {
 		log.Infof("starting rest server at the address: https://%s", config.ServerAddress())
-		return server.ListenAndServeTLS(path.Join("cert", "cert.pem"), path.Join("cert", "key.pem"))
+		err := server.ListenAndServeTLS(path.Join("cert", "cert.pem"), path.Join("cert", "key.pem"))
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Errorf("failed to start the rest server: %v", err)
+		}
+		return
 	}
 
 	log.Infof("starting rest server at the address: http://%s", config.ServerAddress())
-	return server.ListenAndServe()
+	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		log.Errorf("failed to start the rest server: %v", err)
+	}
+}
+
+// gracefulShutdown gracefully shutdowns the http server.
+func gracefulShutdown(ctx context.Context, log *logger.Logger, server *http.Server) {
+	defer graceful.Done()
+
+	<-ctx.Done()
+
+	server.SetKeepAlivesEnabled(false)
+	log.Infof("shutdown rest server by signal")
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Errorf("a signal has been received to terminate the http server: %v", err)
+	}
 }
