@@ -58,6 +58,13 @@ func Init() error {
 	return err
 }
 
+// MustInit singleton config initialization with panic.
+func MustInit() {
+	if err = Init(); err != nil {
+		panic(fmt.Errorf("the configuration could not be loaded: %w", err))
+	}
+}
+
 // Env returns run mode (dev|prod).
 func Env() string {
 	return cfg.Env

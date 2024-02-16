@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/dsbasko/yandex-go-shortener/internal/config"
 	"github.com/dsbasko/yandex-go-shortener/internal/entity"
@@ -49,6 +50,16 @@ func New(ctx context.Context, log *logger.Logger) (Storage, error) {
 	}
 
 	return memory.New(ctx, log)
+}
+
+// MustNew creates a new instance of the storage.
+func MustNew(ctx context.Context, log *logger.Logger) Storage {
+	storage, err := New(ctx, log)
+	if err != nil {
+		panic(fmt.Errorf("storage could not be started: %w", err))
+	}
+
+	return storage
 }
 
 // Generate mocks for tests.
