@@ -27,14 +27,14 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 
 	tests := []struct {
 		name           string
-		storeCfg       func()
+		storageCfg     func()
 		cookie         *http.Cookie
 		wantStatusCode int
 		wantBody       func() string
 	}{
 		{
 			name:           "Unauthorized",
-			storeCfg:       func() {},
+			storageCfg:     func() {},
 			cookie:         nil,
 			wantStatusCode: http.StatusUnauthorized,
 			wantBody: func() string {
@@ -43,7 +43,7 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 		},
 		{
 			name: "Service Error",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsProvider.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
 					Return(nil, s.attr.errService)
@@ -56,7 +56,7 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 		},
 		{
 			name: "Not Found",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsProvider.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
 					Return([]entity.URL{}, nil)
@@ -69,7 +69,7 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 		},
 		{
 			name: "Success",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsProvider.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
 					Return([]entity.URL{
@@ -99,7 +99,7 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.storeCfg()
+			tt.storageCfg()
 			resp, body := test.Request(t, s.attr.ts, &test.RequestArgs{
 				Method: "GET",
 				Path:   "/api/user/urls",
@@ -124,10 +124,10 @@ func Benchmark_Handler_GetURLsByUserID(b *testing.B) {
 	err := config.Init()
 	assert.NoError(b, err)
 	log := logger.NewMock()
-	store := mockStorage.NewMockStorage(ctrl)
-	urlsService := urls.New(ctx, log, store, store)
+	storage := mockStorage.NewMockStorage(ctrl)
+	urlsService := urls.New(ctx, log, storage, storage)
 	router := chi.NewRouter()
-	h := New(log, store, urlsService)
+	h := New(log, storage, urlsService)
 	mw := middlewares.New(log)
 	router.
 		With(mw.JWT).
@@ -141,7 +141,7 @@ func Benchmark_Handler_GetURLsByUserID(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().GetURLsByUserID(gomock.Any(), gomock.Any()).Return([]entity.URL{
+		storage.EXPECT().GetURLsByUserID(gomock.Any(), gomock.Any()).Return([]entity.URL{
 			{ID: "1", OriginalURL: "https://ya1.ru", ShortURL: "1"},
 			{ID: "2", OriginalURL: "https://ya2.ru", ShortURL: "2"},
 			{ID: "3", OriginalURL: "https://ya3.ru", ShortURL: "3"},

@@ -30,10 +30,10 @@ func (s *SuiteURLs) Test_CreateURL() {
 	}
 
 	tests := []struct {
-		name     string
-		args     args
-		storeCfg func()
-		want     want
+		name       string
+		args       args
+		storageCfg func()
+		want       want
 	}{
 		{
 			name: "Invalid URL",
@@ -41,7 +41,7 @@ func (s *SuiteURLs) Test_CreateURL() {
 				ctx:         context.Background(),
 				originalURL: "invalid-url",
 			},
-			storeCfg: func() {},
+			storageCfg: func() {},
 			want: want{
 				resp: entity.URL{},
 				err:  ErrInvalidURL,
@@ -53,7 +53,7 @@ func (s *SuiteURLs) Test_CreateURL() {
 				ctx:         s.attr.ctxWithToken,
 				originalURL: "https://ya.ru/",
 			},
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{}, false, s.attr.errStore)
@@ -69,7 +69,7 @@ func (s *SuiteURLs) Test_CreateURL() {
 				ctx:         s.attr.ctxWithToken,
 				originalURL: "https://ya.ru/",
 			},
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{
@@ -94,7 +94,7 @@ func (s *SuiteURLs) Test_CreateURL() {
 				ctx:         s.attr.ctxWithToken,
 				originalURL: "https://ya.ru/",
 			},
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{
@@ -119,7 +119,7 @@ func (s *SuiteURLs) Test_CreateURL() {
 				ctx:         context.Background(),
 				originalURL: "https://ya.ru/",
 			},
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{}, false, s.attr.errStore)
@@ -132,7 +132,7 @@ func (s *SuiteURLs) Test_CreateURL() {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.storeCfg()
+			tt.storageCfg()
 			resp, uniq, err := s.attr.service.CreateURL(tt.args.ctx, tt.args.originalURL)
 
 			assert.Equal(t, tt.want.resp, resp)
@@ -156,10 +156,10 @@ func (s *SuiteURLs) Test_CreateURLs() {
 	}
 
 	tests := []struct {
-		name     string
-		args     args
-		storeCfg func()
-		want     want
+		name       string
+		args       args
+		storageCfg func()
+		want       want
 	}{
 		{
 			name: "Empty Token",
@@ -169,7 +169,7 @@ func (s *SuiteURLs) Test_CreateURLs() {
 					{OriginalURL: "invalid-url", CorrelationID: "1"},
 				},
 			},
-			storeCfg: func() {},
+			storageCfg: func() {},
 			want: want{
 				resp: []api.CreateURLsResponse{},
 				err:  jwt.ErrNotFoundFromContext,
@@ -183,7 +183,7 @@ func (s *SuiteURLs) Test_CreateURLs() {
 					{OriginalURL: "invalid-url", CorrelationID: "1"},
 				},
 			},
-			storeCfg: func() {},
+			storageCfg: func() {},
 			want: want{
 				resp: []api.CreateURLsResponse{},
 				err:  ErrInvalidURL,
@@ -197,7 +197,7 @@ func (s *SuiteURLs) Test_CreateURLs() {
 					{OriginalURL: "https://ya.ru/", CorrelationID: "1"},
 				},
 			},
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
 					Return(nil, s.attr.errStore)
@@ -215,7 +215,7 @@ func (s *SuiteURLs) Test_CreateURLs() {
 					{OriginalURL: "https://ya.ru/", CorrelationID: "1"},
 				},
 			},
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
 					Return([]entity.URL{
@@ -239,7 +239,7 @@ func (s *SuiteURLs) Test_CreateURLs() {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.storeCfg()
+			tt.storageCfg()
 			resp, err := s.attr.service.CreateURLs(tt.args.ctx, tt.args.dto)
 
 			assert.Equal(t, tt.want.err, errors.UnwrapAll(err))

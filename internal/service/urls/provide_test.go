@@ -22,15 +22,15 @@ func (s *SuiteURLs) Test_GetURL() {
 	}
 
 	tests := []struct {
-		name     string
-		shortURL string
-		storeCfg func()
-		want     want
+		name       string
+		shortURL   string
+		storageCfg func()
+		want       want
 	}{
 		{
 			name:     "Not Found",
 			shortURL: "42",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlProvider.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{}, s.attr.errNotFound)
@@ -43,7 +43,7 @@ func (s *SuiteURLs) Test_GetURL() {
 		{
 			name:     "Found",
 			shortURL: "42",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlProvider.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{
@@ -65,7 +65,7 @@ func (s *SuiteURLs) Test_GetURL() {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.storeCfg()
+			tt.storageCfg()
 			resp, err := s.attr.service.GetURL(context.Background(), tt.shortURL)
 
 			assert.Equal(t, tt.want.resp, resp)
@@ -83,15 +83,15 @@ func (s *SuiteURLs) Test_GetURLsByUserID() {
 	}
 
 	tests := []struct {
-		name     string
-		userID   string
-		storeCfg func()
-		want     want
+		name       string
+		userID     string
+		storageCfg func()
+		want       want
 	}{
 		{
 			name:   "Not Found",
 			userID: "42",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlProvider.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
 					Return([]entity.URL{}, s.attr.errNotFound)
@@ -104,7 +104,7 @@ func (s *SuiteURLs) Test_GetURLsByUserID() {
 		{
 			name:   "Found",
 			userID: "42",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlProvider.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
 					Return([]entity.URL{
@@ -130,7 +130,7 @@ func (s *SuiteURLs) Test_GetURLsByUserID() {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.storeCfg()
+			tt.storageCfg()
 			resp, err := s.attr.service.GetURLsByUserID(context.Background(), tt.userID)
 
 			assert.Equal(t, tt.want.resp, resp)

@@ -14,7 +14,7 @@ func (s *Storage) GetURLByOriginalURL(
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	if url, ok := s.storeOriginal[originalURL]; ok {
+	if url, ok := s.storageOriginal[originalURL]; ok {
 		return url, nil
 	}
 	return entity.URL{}, nil
@@ -28,7 +28,7 @@ func (s *Storage) GetURLByShortURL(
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	if url, ok := s.storeShort[shortURL]; ok {
+	if url, ok := s.storageShort[shortURL]; ok {
 		return url, nil
 	}
 
@@ -43,7 +43,7 @@ func (s *Storage) GetURLsByUserID(
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	for _, url := range s.storeShort {
+	for _, url := range s.storageShort {
 		if url.UserID == userID {
 			resp = append(resp, url)
 		}

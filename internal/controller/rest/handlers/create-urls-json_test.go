@@ -30,7 +30,7 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 		name           string
 		contentType    string
 		body           func() []byte
-		storeCfg       func()
+		storageCfg     func()
 		wantStatusCode int
 		wantBody       []api.CreateURLsResponse
 	}{
@@ -46,7 +46,7 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 				return dtoBytes
 			},
 			contentType: "application/json",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
 					Return(nil, s.attr.errService)
@@ -66,7 +66,7 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 				return dtoBytes
 			},
 			contentType: "application/json",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
 					Return([]entity.URL{}, nil)
@@ -95,7 +95,7 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 				return dtoBytes
 			},
 			contentType: "application/json",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
 					Return([]entity.URL{}, nil)
@@ -116,7 +116,7 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.storeCfg()
+			tt.storageCfg()
 			resp, body := test.Request(t, s.attr.ts, &test.RequestArgs{
 				Method:      "POST",
 				Path:        "/api/shorten/batch",
@@ -149,10 +149,10 @@ func Benchmark_Handler_CreateURLsJSON(b *testing.B) {
 	err := config.Init()
 	assert.NoError(b, err)
 	log := logger.NewMock()
-	store := mockStorage.NewMockStorage(ctrl)
-	urlsService := urls.New(ctx, log, store, store)
+	storage := mockStorage.NewMockStorage(ctrl)
+	urlsService := urls.New(ctx, log, storage, storage)
 	router := chi.NewRouter()
-	h := New(log, store, urlsService)
+	h := New(log, storage, urlsService)
 	mw := middlewares.New(log)
 	router.With(mw.JWT).Post("/api/shorten/batch", h.CreateURLsJSON)
 	ts := httptest.NewServer(router)
@@ -165,7 +165,7 @@ func Benchmark_Handler_CreateURLsJSON(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().CreateURLs(gomock.Any(), gomock.Any()).Return([]entity.URL{}, nil)
+		storage.EXPECT().CreateURLs(gomock.Any(), gomock.Any()).Return([]entity.URL{}, nil)
 		body := func() []byte {
 			dto := []api.CreateURLsRequest{
 				{CorrelationID: "1", OriginalURL: "http://ya1.ru/"},

@@ -26,12 +26,12 @@ func (u *URLs) GetURL(ctx context.Context, shortURL string) (entity.URL, error) 
 		return entity.URL{}, ErrInvalidURL
 	}
 
-	storeResp, err := u.urlProvider.GetURLByShortURL(ctx, shortURL)
+	storageResp, err := u.urlProvider.GetURLByShortURL(ctx, shortURL)
 	if err != nil {
 		return entity.URL{}, fmt.Errorf("error getting url from storage: %w", err)
 	}
 
-	return storeResp, nil
+	return storageResp, nil
 }
 
 // GetURLsByUserID returns all URLs by user ID.

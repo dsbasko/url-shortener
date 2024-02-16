@@ -26,13 +26,13 @@ func (s *SuiteHandlers) Test_Redirect() {
 	tests := []struct {
 		name           string
 		shortURL       string
-		storeCfg       func()
+		storageCfg     func()
 		wantStatusCode int
 	}{
 		{
 			name:     "Not Found",
 			shortURL: "42",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsProvider.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{}, errors.New("not found"))
@@ -42,7 +42,7 @@ func (s *SuiteHandlers) Test_Redirect() {
 		{
 			name:     "Found",
 			shortURL: "42",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsProvider.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{
@@ -57,7 +57,7 @@ func (s *SuiteHandlers) Test_Redirect() {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.storeCfg()
+			tt.storageCfg()
 			resp, _ := test.Request(t, s.attr.ts, &test.RequestArgs{
 				Method: "GET",
 				Path:   fmt.Sprintf("/%s", tt.shortURL),
@@ -80,17 +80,17 @@ func Benchmark_Handler_Redirect(b *testing.B) {
 	err := config.Init()
 	assert.NoError(b, err)
 	log := logger.NewMock()
-	store := mockStorage.NewMockStorage(ctrl)
-	urlsService := urls.New(ctx, log, store, store)
+	storage := mockStorage.NewMockStorage(ctrl)
+	urlsService := urls.New(ctx, log, storage, storage)
 	router := chi.NewRouter()
-	h := New(log, store, urlsService)
+	h := New(log, storage, urlsService)
 	router.Get("/{short_url}", h.Redirect)
 	ts := httptest.NewServer(router)
 	defer ts.Close()
 
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().GetURLByShortURL(gomock.Any(), gomock.Any()).Return(entity.URL{
+		storage.EXPECT().GetURLByShortURL(gomock.Any(), gomock.Any()).Return(entity.URL{
 			ID:          "42",
 			ShortURL:    "42",
 			OriginalURL: "https://ya.ru/",

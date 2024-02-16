@@ -16,15 +16,15 @@ func (s *Storage) CreateURL(
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	if url, ok := s.storeOriginal[dto.OriginalURL]; ok {
+	if url, ok := s.storageOriginal[dto.OriginalURL]; ok {
 		resp.OriginalURL = url.OriginalURL
 		resp.ShortURL = url.ShortURL
 
 		return resp, false, nil
 	}
 
-	s.storeShort[dto.ShortURL] = dto
-	s.storeOriginal[dto.OriginalURL] = dto
+	s.storageShort[dto.ShortURL] = dto
+	s.storageOriginal[dto.OriginalURL] = dto
 
 	return dto, true, nil
 }
@@ -37,23 +37,23 @@ func (s *Storage) CreateURLs(
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	storeShortCopy := make(map[string]entity.URL, len(s.storeShort)+len(dto))
-	maps.Copy(storeShortCopy, s.storeShort)
+	storageShortCopy := make(map[string]entity.URL, len(s.storageShort)+len(dto))
+	maps.Copy(storageShortCopy, s.storageShort)
 
-	storeOriginalCopy := make(map[string]entity.URL, len(s.storeOriginal)+len(dto))
-	maps.Copy(storeOriginalCopy, s.storeOriginal)
+	storageOriginalCopy := make(map[string]entity.URL, len(s.storageOriginal)+len(dto))
+	maps.Copy(storageOriginalCopy, s.storageOriginal)
 
 	for _, url := range dto {
-		if _, ok := storeOriginalCopy[url.OriginalURL]; ok {
+		if _, ok := storageOriginalCopy[url.OriginalURL]; ok {
 			return []entity.URL{}, fmt.Errorf("url %s already exists", url.ShortURL)
 		}
 
-		storeShortCopy[url.ShortURL] = url
-		storeOriginalCopy[url.OriginalURL] = url
+		storageShortCopy[url.ShortURL] = url
+		storageOriginalCopy[url.OriginalURL] = url
 	}
 
-	s.storeShort = storeShortCopy
-	s.storeOriginal = storeOriginalCopy
+	s.storageShort = storageShortCopy
+	s.storageOriginal = storageOriginalCopy
 
 	return dto, nil
 }

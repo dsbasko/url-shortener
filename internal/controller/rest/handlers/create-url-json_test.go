@@ -29,7 +29,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 		name           string
 		contentType    string
 		body           func() []byte
-		storeCfg       func()
+		storageCfg     func()
 		wantStatusCode int
 		wantBody       func() string
 	}{
@@ -40,7 +40,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 				return dtoBytes
 			},
 			contentType: "application/json",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{}, false, s.attr.errService)
@@ -55,7 +55,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 				return dtoBytes
 			},
 			contentType: "application/json",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{
@@ -79,7 +79,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 				return dtoBytes
 			},
 			contentType: "application/json",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{
@@ -100,7 +100,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.storeCfg()
+			tt.storageCfg()
 			resp, body := test.Request(t, s.attr.ts, &test.RequestArgs{
 				Method:      "POST",
 				Path:        "/api/shorten",
@@ -126,10 +126,10 @@ func Benchmark_Handler_CreateURLJSON(b *testing.B) {
 	err := config.Init()
 	assert.NoError(b, err)
 	log := logger.NewMock()
-	store := mockStorage.NewMockStorage(ctrl)
-	urlsService := urls.New(ctx, log, store, store)
+	storage := mockStorage.NewMockStorage(ctrl)
+	urlsService := urls.New(ctx, log, storage, storage)
 	router := chi.NewRouter()
-	h := New(log, store, urlsService)
+	h := New(log, storage, urlsService)
 	mw := middlewares.New(log)
 	router.
 		With(mw.JWT).
@@ -140,7 +140,7 @@ func Benchmark_Handler_CreateURLJSON(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entity.URL{
+		storage.EXPECT().CreateURL(gomock.Any(), gomock.Any()).Return(entity.URL{
 			ID:          "42",
 			ShortURL:    "42",
 			OriginalURL: "https://ya.ru/",

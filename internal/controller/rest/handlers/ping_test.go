@@ -16,13 +16,13 @@ func (s *SuiteHandlers) Test_Ping() {
 
 	tests := []struct {
 		name           string
-		storeCfg       func()
+		storageCfg     func()
 		wantStatusCode int
 		wantBody       func() string
 	}{
 		{
 			name: "Error",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.pinger.EXPECT().Ping(gomock.Any()).Return(errors.New(""))
 			},
 			wantStatusCode: http.StatusBadRequest,
@@ -30,7 +30,7 @@ func (s *SuiteHandlers) Test_Ping() {
 		},
 		{
 			name: "Success",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.pinger.EXPECT().Ping(gomock.Any()).Return(nil)
 			},
 			wantStatusCode: http.StatusOK,
@@ -39,7 +39,7 @@ func (s *SuiteHandlers) Test_Ping() {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.storeCfg()
+			tt.storageCfg()
 			resp, body := test.Request(t, s.attr.ts, &test.RequestArgs{
 				Method: "GET",
 				Path:   "/ping",

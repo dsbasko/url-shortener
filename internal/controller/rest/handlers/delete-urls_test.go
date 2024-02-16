@@ -27,14 +27,14 @@ func (s *SuiteHandlers) Test_DeleteURLs() {
 		name           string
 		contentType    string
 		body           []byte
-		storeCfg       func()
+		storageCfg     func()
 		cookie         *http.Cookie
 		wantStatusCode int
 	}{
 		{
 			name:           "Unauthorized",
 			body:           []byte(""),
-			storeCfg:       func() {},
+			storageCfg:     func() {},
 			cookie:         nil,
 			wantStatusCode: http.StatusUnauthorized,
 		},
@@ -42,7 +42,7 @@ func (s *SuiteHandlers) Test_DeleteURLs() {
 			name:           "JSON Marshal Error",
 			contentType:    "application/json",
 			body:           []byte("42[],,"),
-			storeCfg:       func() {},
+			storageCfg:     func() {},
 			cookie:         s.attr.cookie,
 			wantStatusCode: http.StatusBadRequest,
 		},
@@ -50,7 +50,7 @@ func (s *SuiteHandlers) Test_DeleteURLs() {
 			name:        "Success",
 			body:        []byte(`["42"]`),
 			contentType: "application/json",
-			storeCfg: func() {
+			storageCfg: func() {
 				s.attr.urlsMutator.EXPECT().DeleteURLs(gomock.Any(), gomock.Any()).Return(nil, nil)
 			},
 			cookie:         s.attr.cookie,
@@ -60,7 +60,7 @@ func (s *SuiteHandlers) Test_DeleteURLs() {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.storeCfg()
+			tt.storageCfg()
 			resp, _ := test.Request(t, s.attr.ts, &test.RequestArgs{
 				Method:      "DELETE",
 				Path:        "/api/user/urls",
@@ -86,10 +86,10 @@ func Benchmark_Handler_DeleteURLs(b *testing.B) {
 	err := config.Init()
 	assert.NoError(b, err)
 	log := logger.NewMock()
-	store := mockStorage.NewMockStorage(ctrl)
-	urlsService := urls.New(ctx, log, store, store)
+	storage := mockStorage.NewMockStorage(ctrl)
+	urlsService := urls.New(ctx, log, storage, storage)
 	router := chi.NewRouter()
-	h := New(log, store, urlsService)
+	h := New(log, storage, urlsService)
 	mw := middlewares.New(log)
 	router.
 		With(mw.JWT).
@@ -104,7 +104,7 @@ func Benchmark_Handler_DeleteURLs(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		store.EXPECT().DeleteURLs(gomock.Any(), gomock.Any()).Return([]entity.URL{
+		storage.EXPECT().DeleteURLs(gomock.Any(), gomock.Any()).Return([]entity.URL{
 			{ID: "42", OriginalURL: "https://ya42.ru", ShortURL: "42"},
 			{ID: "43", OriginalURL: "https://ya43.ru", ShortURL: "43"},
 			{ID: "44", OriginalURL: "https://ya44.ru", ShortURL: "44"},

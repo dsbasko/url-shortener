@@ -15,16 +15,16 @@ func (s *Storage) DeleteURLs(
 	defer s.mu.Unlock()
 
 	for _, url := range dto {
-		if foundURL, ok := s.storeShort[url.ShortURL]; ok && foundURL.UserID == url.UserID {
+		if foundURL, ok := s.storageShort[url.ShortURL]; ok && foundURL.UserID == url.UserID {
 			url.OriginalURL = foundURL.OriginalURL
 			foundURL.DeletedFlag = true
-			s.storeShort[url.ShortURL] = foundURL
+			s.storageShort[url.ShortURL] = foundURL
 			resp = append(resp, foundURL)
 		}
 
-		if foundURL, ok := s.storeOriginal[url.OriginalURL]; ok && foundURL.UserID == url.UserID {
+		if foundURL, ok := s.storageOriginal[url.OriginalURL]; ok && foundURL.UserID == url.UserID {
 			foundURL.DeletedFlag = true
-			s.storeOriginal[url.OriginalURL] = foundURL
+			s.storageOriginal[url.OriginalURL] = foundURL
 		}
 	}
 
