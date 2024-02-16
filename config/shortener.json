@@ -1,0 +1,13 @@
+{
+  "env": "prod",
+  "server_address": "localhost:8080",
+  "base_url": "localhost:8080",
+  "short_url_len": 5,
+  "file_storage_path": "",
+  "rest_read_timeout": 3000,
+  "rest_write_timeout": 3000,
+  "enable_https": true,
+  "database_dsn": "",
+  "database_max_connections": 8,
+  "jwt_secret": "42"
+}

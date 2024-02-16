@@ -19,12 +19,12 @@ type Storage struct {
 
 // New creates a new instance of the postgresql storage.
 func New(ctx context.Context, log *logger.Logger) (*Storage, error) {
-	conn, err := sqlx.ConnectContext(ctx, "pgx", config.PsqlDSN())
+	conn, err := sqlx.ConnectContext(ctx, "pgx", config.DatabaseDSN())
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to the database: %w", err)
 	}
 
-	conn.SetMaxOpenConns(config.PsqlMaxConns())
+	conn.SetMaxOpenConns(config.DatabaseMaxConnects())
 
 	if err = createTable(ctx, conn); err != nil {
 		return nil, fmt.Errorf("failed to create table: %w", err)

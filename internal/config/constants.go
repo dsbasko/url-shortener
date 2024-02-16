@@ -23,8 +23,8 @@ const (
 	// DefRESTWriteTimeout is default http rest server write timeout.
 	DefRESTWriteTimeout = 3000
 
-	// DefPsqlMaxConns is default max connections to postgresql.
-	DefPsqlMaxConns = 8
+	// DefDatabaseMaxConns is default max connections to postgresql.
+	DefDatabaseMaxConns = 8
 
 	// DefJWTSecret is default secret for JWT auth.
 	DefJWTSecret = "allons-y"

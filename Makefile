@@ -4,17 +4,20 @@
 start-dev-mem:
 	clear; \
 	ENV="dev" \
+	CONFIG="config/shortener.json" \
 	go run ./cmd/shortener
 
 start-dev-file:
 	clear; \
 	ENV="dev" \
+	CONFIG="config/shortener.json" \
 	FILE_STORAGE_PATH="/tmp/short-url-db.json" \
 	go run ./cmd/shortener
 
 start-dev-psql:
 	clear; \
 	ENV="dev" \
+	CONFIG="config/shortener.json" \
 	REST_WRITE_TIMEOUT="100000" \
 	DATABASE_DSN="postgres://$(PSQL_USER):$(PSQL_PASS)@localhost:$(PSQL_PORT)/$(PSQL_DB)?sslmode=disable" \
 	go run ./cmd/shortener
@@ -22,6 +25,7 @@ start-dev-psql:
 start-prod:
 	clear; \
 	ENV="prod" \
+	CONFIG="config/shortener.json" \
 	ENABLE_HTTPS="true" \
 	SERVER_ADDRESS="localhost:3000" \
 	go run ./cmd/shortener

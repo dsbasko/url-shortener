@@ -40,7 +40,7 @@ type Storage interface {
 
 // New creates a new instance of the storage.
 func New(ctx context.Context, log *logger.Logger) (Storage, error) {
-	if len(config.PsqlDSN()) > 0 {
+	if len(config.DatabaseDSN()) > 0 {
 		return psql.New(ctx, log)
 	}
 
