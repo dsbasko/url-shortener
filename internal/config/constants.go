@@ -5,14 +5,11 @@ const (
 	// DefEnv is default environment.
 	DefEnv = "prod"
 
-	// DefPort is default http rest server port.
-	DefPort = "8080"
-
 	// DefServerAddress is default http rest server address.
-	DefServerAddress = "localhost:" + DefPort
+	DefServerAddress = "localhost:8080"
 
 	// DefBaseURL is default base url address for short urls.
-	DefBaseURL = "http://" + DefServerAddress + "/"
+	DefBaseURL = DefServerAddress
 
 	// DefShortURLLen is default length of short url.
 	DefShortURLLen = 4

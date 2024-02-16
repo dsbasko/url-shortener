@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -43,7 +44,7 @@ func Init() error {
 			JWTSecret:           DefJWTSecret,
 		}
 
-		// Использую собственную библиотеку для чтения конфигурации
+		// Use my own library to read the configuration
 		// github.com/dsbasko/go-cfg
 		cfgPath := CfgPath()
 		if cfgPath != "" {
@@ -77,9 +78,18 @@ func ServerAddress() string {
 
 // BaseURL returns base url address.
 func BaseURL() string {
+	if strings.HasPrefix(cfg.BaseURL, "http") {
+		if strings.HasSuffix(cfg.BaseURL, "/") {
+			return cfg.BaseURL
+		}
+
+		return cfg.BaseURL + "/"
+	}
+
 	if cfg.RESTEnableHTTPS {
 		return fmt.Sprintf("https://%s/", cfg.BaseURL)
 	}
+
 	return fmt.Sprintf("http://%s/", cfg.BaseURL)
 }
 
