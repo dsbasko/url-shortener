@@ -61,3 +61,13 @@ func New(env, serviceName string) (*Logger, error) {
 
 	return logger, nil
 }
+
+// MustNew creates a new logger and panics if an error occurs.
+func MustNew(env, serviceName string) *Logger {
+	logger, err := New(env, serviceName)
+	if err != nil {
+		panic(fmt.Errorf("failed to load the logger: %w", err))
+	}
+
+	return logger
+}

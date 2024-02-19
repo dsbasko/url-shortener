@@ -2,7 +2,6 @@ package linter
 
 import (
 	"go/ast"
-	"strings"
 
 	"golang.org/x/tools/go/analysis"
 )
@@ -18,12 +17,7 @@ func runNoExitInMain(pass *analysis.Pass) (any, error) {
 	for _, file := range pass.Files {
 		for _, decl := range file.Decls {
 			fd, okFD := decl.(*ast.FuncDecl)
-			if !okFD || fd.Name.Name != "main" {
-				continue
-			}
-
-			filePath := pass.Fset.Position(file.Package).Filename
-			if strings.Contains(filePath, "go-build") {
+			if !okFD || fd.Name.Name != "main" || ast.IsGenerated(file) {
 				continue
 			}
 
