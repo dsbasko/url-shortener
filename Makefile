@@ -50,6 +50,7 @@ install-deps:
 	@GOBIN=$(LOCAL_BIN_PATH) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
 	@GOBIN=$(LOCAL_BIN_PATH) go install go.uber.org/mock/mockgen@latest
 	@GOBIN=$(LOCAL_BIN_PATH)  go install golang.org/x/perf/cmd/benchstat@latest
+	@GOBIN=$(LOCAL_BIN_PATH) go install github.com/nikolaydubina/go-cover-treemap@latest
 	@go mod tidy
 
 build-staticlint:
@@ -61,6 +62,12 @@ test:
 test-cover:
 	@go test --coverprofile=coverage.out ./... > /dev/null
 	@go tool cover -func=coverage.out | grep total | grep -oE '[0-9]+(\.[0-9]+)?%'
+
+test-cover-show:
+	@clear;
+	@go test --coverprofile=coverage.out ./... > /dev/null;
+	@$(LOCAL_BIN_PATH)/go-cover-treemap -coverprofile coverage.out > coverage.svg
+	@xdg-open ./coverage.svg
 
 test-bench:
 	@go test ./internal/controller/rest/handlers -bench=. -benchmem -cpuprofile=profiles/cpu-last.pprof -memprofile=profiles/mem-last.pprof
