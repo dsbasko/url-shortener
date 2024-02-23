@@ -99,7 +99,7 @@ flowchart TB
     entity{{Entity}}
     app(((App)))
 
-subgraph codeBase[]
+subgraph codeBase[ ]
 controller([Controller])
 service([Service])
 repository([Repository])

@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/dsbasko/yandex-go-shortener/pkg/test"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func (s *SuiteHandlers) Test_BadRequest() {

@@ -1,6 +1,6 @@
 module github.com/dsbasko/yandex-go-shortener
 
-go 1.21
+go 1.22
 
 require (
 	github.com/dsbasko/go-cfg v1.0.1
