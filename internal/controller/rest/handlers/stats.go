@@ -16,7 +16,7 @@ func (h *Handler) Stats(w http.ResponseWriter, r *http.Request) {
 	isTrustedSubnet, err := config.IsTrustedSubnet(r.RemoteAddr)
 	if err != nil {
 		log.Errorf("failed to check trusted subnet: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 

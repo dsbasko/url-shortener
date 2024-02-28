@@ -167,6 +167,13 @@ func IsTrustedSubnet(ipAndPort string) (bool, error) {
 	return ipNet.Contains(net.ParseIP(ip)), nil
 }
 
+// SetTrustedSubnet sets the trusted subnet for the configuration.
+//
+// ⚠️ This function is used for mocking purposes!
+func SetTrustedSubnet(trustedSubnet string) {
+	cfg.TrustedSubnet = trustedSubnet
+}
+
 // IsEnablePPROF returns true if pprof is enabled for rest server.
 func IsEnablePPROF() bool {
 	return cfg.IsEnablePPROF

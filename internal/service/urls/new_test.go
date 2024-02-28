@@ -24,7 +24,7 @@ type SuiteURLs struct {
 		urlMutator   *mockUrls.MockMutator
 		urlAnalyzer  *mockUrls.MockAnalyzer
 		service      URLs
-		errStore     error
+		errStorage   error
 		errNotFound  error
 		ctxWithToken context.Context
 		deleteTasks  chan map[string][]string
@@ -45,7 +45,7 @@ func (s *SuiteURLs) SetupSuite() {
 	s.attr.urlMutator = mockUrls.NewMockMutator(ctrl)
 	s.attr.urlAnalyzer = mockUrls.NewMockAnalyzer(ctrl)
 	s.attr.service = New(ctx, s.attr.log, s.attr.urlProvider, s.attr.urlMutator, s.attr.urlAnalyzer)
-	s.attr.errStore = fmt.Errorf("storage error")
+	s.attr.errStorage = fmt.Errorf("storage error")
 	s.attr.errNotFound = fmt.Errorf("not found")
 
 	token, err := jwt.GenerateToken()

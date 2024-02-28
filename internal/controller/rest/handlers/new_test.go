@@ -70,6 +70,7 @@ func (s *SuiteHandlers) SetupSuite() {
 	router.With(mw.JWT).Post("/api/shorten/batch", s.attr.handler.CreateURLsJSON)
 	router.With(mw.JWT).Get("/api/user/urls", s.attr.handler.GetURLsByUserID)
 	router.With(mw.JWT).Delete("/api/user/urls", s.attr.handler.DeleteURLs)
+	router.With(mw.JWT).Get("/api/internal/stats", s.attr.handler.Stats)
 
 	s.attr.ts = httptest.NewServer(router)
 	s.attr.errService = errors.New("service error")
