@@ -9,13 +9,7 @@ import (
 
 // Stats returns the stats of the URL.
 func (s *Storage) Stats(ctx context.Context) (entity.URLStats, error) {
-	query := `
-		SELECT
-			COUNT(*) AS users,
-			(SELECT COUNT(DISTINCT user_id) FROM urls) as users
-		FROM urls`
-
-	row := s.conn.QueryRowContext(ctx, query)
+	row := s.conn.QueryRowContext(ctx, `SELECT COUNT(*) AS users, COUNT(DISTINCT user_id) FROM urls`)
 
 	var resp entity.URLStats
 	if err := row.Scan(&resp.URLs, &resp.Users); err != nil {
