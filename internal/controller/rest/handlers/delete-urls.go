@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5/middleware"
@@ -25,14 +24,14 @@ func (h *Handler) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 	var deleteURLs []string
 	err = json.NewDecoder(r.Body).Decode(&deleteURLs)
 	if err != nil {
-		log.Errorw(fmt.Errorf("failed to unmarshal request body: %w", err).Error())
+		log.Errorf("failed to unmarshal request body: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	err = h.urls.DeleteURLs(userID, deleteURLs)
 	if err != nil {
-		log.Errorw(fmt.Errorf("failed to delete urls: %w", err).Error())
+		log.Errorf("failed to delete urls: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

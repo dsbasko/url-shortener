@@ -29,12 +29,15 @@ func New(
 	mw := middlewares.New(log)
 	router.Use(mwChi.RequestID)
 	router.Use(mwChi.Recoverer)
+	router.Use(mwChi.RealIP)
 	router.Use(mw.CompressDecoding)
 	router.Use(mw.Logger)
 	router.Use(mw.JWT)
 	router.Use(mw.CompressEncoding)
 
-	router.Mount("/debug", mwChi.Profiler())
+	if config.IsEnablePPROF() {
+		router.Mount("/debug", mwChi.Profiler())
+	}
 
 	h := handlers.New(log, pinger, urlService)
 	router.MethodNotAllowed(h.BadRequest)
@@ -45,6 +48,7 @@ func New(
 	router.Post("/api/shorten", h.CreateURLJSON)
 	router.Post("/api/shorten/batch", h.CreateURLsJSON)
 	router.Delete("/api/user/urls", h.DeleteURLs)
+	router.Get("/api/internal/stats", h.Stats)
 
 	routes := router.Routes()
 	for _, route := range routes {
@@ -73,7 +77,7 @@ func New(
 func runServer(log *logger.Logger, server *http.Server) {
 	defer graceful.Done()
 
-	if config.RESTEnableHTTPS() {
+	if config.IsRESTEnableHTTPS() {
 		log.Infof("starting rest server at the address: https://%s", config.ServerAddress())
 		err := server.ListenAndServeTLS(path.Join("cert", "cert.pem"), path.Join("cert", "key.pem"))
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {

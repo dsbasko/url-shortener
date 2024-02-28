@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5/middleware"
@@ -18,14 +17,14 @@ func (h *Handler) CreateURLJSON(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
-		log.Errorw(fmt.Errorf("failed to decode json: %w", err).Error())
+		log.Errorf("failed to decode json: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	createdURL, unique, err := h.urls.CreateURL(r.Context(), dto.URL)
 	if err != nil {
-		log.Errorw(fmt.Errorf("failed to create link in urls: %w", err).Error())
+		log.Errorf("failed to create link in urls: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -42,7 +41,7 @@ func (h *Handler) CreateURLJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = json.NewEncoder(w).Encode(response); err != nil {
-		log.Errorw(fmt.Errorf("failed to return response body: %w", err).Error())
+		log.Errorf("failed to return response body: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

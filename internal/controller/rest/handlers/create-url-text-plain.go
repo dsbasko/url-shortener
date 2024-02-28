@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 
@@ -14,14 +13,14 @@ func (h *Handler) CreateURLTextPlain(w http.ResponseWriter, r *http.Request) {
 
 	originalURL, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Errorw(fmt.Errorf("failed to read request body: %w", err).Error())
+		log.Errorf("failed to read request body: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	createdURL, unique, err := h.urls.CreateURL(r.Context(), string(originalURL))
 	if err != nil {
-		log.Errorw(fmt.Errorf("failed to create link in urls: %w", err).Error())
+		log.Errorf("failed to create link in urls: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -34,7 +33,7 @@ func (h *Handler) CreateURLTextPlain(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, err = w.Write([]byte(createdURL.ShortURL)); err != nil {
-		log.Errorw(fmt.Errorf("failed to return response body: %w", err).Error())
+		log.Errorf("failed to return response body: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

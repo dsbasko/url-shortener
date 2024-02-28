@@ -28,8 +28,9 @@ type SuiteHandlers struct {
 		log          *logger.Logger
 		pinger       *mockHandlers.MockPinger
 		urls         urls.URLs
-		urlsProvider *mockURLs.MockURLProvider
-		urlsMutator  *mockURLs.MockURLMutator
+		urlsProvider *mockURLs.MockProvider
+		urlsMutator  *mockURLs.MockMutator
+		urlsAnalyzer *mockURLs.MockAnalyzer
 		handler      Handler
 		errService   error
 		errNotFound  error
@@ -49,9 +50,10 @@ func (s *SuiteHandlers) SetupSuite() {
 	assert.NoError(t, err)
 	s.attr.log = logger.NewMock()
 	s.attr.pinger = mockHandlers.NewMockPinger(ctrl)
-	s.attr.urlsProvider = mockURLs.NewMockURLProvider(ctrl)
-	s.attr.urlsMutator = mockURLs.NewMockURLMutator(ctrl)
-	s.attr.urls = urls.New(ctx, s.attr.log, s.attr.urlsProvider, s.attr.urlsMutator)
+	s.attr.urlsProvider = mockURLs.NewMockProvider(ctrl)
+	s.attr.urlsMutator = mockURLs.NewMockMutator(ctrl)
+	s.attr.urlsAnalyzer = mockURLs.NewMockAnalyzer(ctrl)
+	s.attr.urls = urls.New(ctx, s.attr.log, s.attr.urlsProvider, s.attr.urlsMutator, s.attr.urlsAnalyzer)
 	router := chi.NewRouter()
 	s.attr.handler = New(s.attr.log, s.attr.pinger, s.attr.urls)
 	mw := middlewares.New(s.attr.log)

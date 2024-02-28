@@ -17,3 +17,12 @@ type URL struct {
 	// DeletedFlag is the flag to indicate if the URL is deleted.
 	DeletedFlag bool `json:"is_deleted" db:"is_deleted"`
 }
+
+// URLStats represents the stats of the URL.
+type URLStats struct {
+	// URLs is the number of unique URLs.
+	URLs string `json:"urls"`
+
+	// Users is the number of unique users.
+	Users string `json:"users"`
+}

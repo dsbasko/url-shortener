@@ -125,7 +125,7 @@ func Benchmark_Handler_GetURLsByUserID(b *testing.B) {
 	assert.NoError(b, err)
 	log := logger.NewMock()
 	storage := mockStorage.NewMockStorage(ctrl)
-	urlsService := urls.New(ctx, log, storage, storage)
+	urlsService := urls.New(ctx, log, storage, storage, storage)
 	router := chi.NewRouter()
 	h := New(log, storage, urlsService)
 	mw := middlewares.New(log)

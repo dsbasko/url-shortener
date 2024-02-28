@@ -7,8 +7,8 @@ import (
 	"github.com/dsbasko/yandex-go-shortener/pkg/graceful"
 )
 
-// URLDeleter is an interface for deleting URLs.
-type URLDeleter interface {
+// Deleter is an interface for deleting URLs.
+type Deleter interface {
 	// DeleteURLs deletes URLs.
 	DeleteURLs(ctx context.Context, dto []entity.URL) (resp []entity.URL, err error)
 }
@@ -46,7 +46,7 @@ func (u *URLs) deleteWorker(ctx context.Context) {
 
 // doDelete deletes urls from storage.
 func (u *URLs) doDelete(task map[string][]string) {
-	var urlDeleter URLDeleter = u.urlMutator
+	var urlDeleter Deleter = u.urlMutator
 
 	urlsToDelete := make([]entity.URL, 0, len(task))
 	for userID, shortURL := range task {
@@ -60,7 +60,7 @@ func (u *URLs) doDelete(task map[string][]string) {
 
 	deletedURLs, err := urlDeleter.DeleteURLs(context.Background(), urlsToDelete)
 	if err != nil {
-		u.log.Errorw(err.Error())
+		u.log.Error(err)
 		return
 	}
 

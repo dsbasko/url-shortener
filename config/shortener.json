@@ -9,5 +9,7 @@
   "enable_https": true,
   "database_dsn": "",
   "database_max_connections": 8,
-  "jwt_secret": "42"
+  "jwt_secret": "42",
+  "trusted_subnet": "127.0.0.1/24",
+  "pprof_enabled": false
 }

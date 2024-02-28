@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5/middleware"
@@ -37,7 +36,7 @@ func (h *Handler) GetURLsByUserID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(w).Encode(urlsResp); err != nil {
-		log.Errorw(fmt.Errorf("failed to return response body: %w", err).Error())
+		log.Errorf("failed to return response body: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

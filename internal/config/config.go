@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net"
 	"strings"
 	"sync"
 	"time"
@@ -18,10 +19,12 @@ type config struct {
 	StoragePath         string `env:"FILE_STORAGE_PATH" s-flag:"f" flag:"file-storage-path" json:"file_storage_path" description:"full path of the json repositories file"`           //nolint:lll
 	RESTReadTimeout     int    `env:"REST_READ_TIMEOUT" flag:"rest-read-timeout" json:"rest_read_timeout" description:"wait timeout for reading request on the http rest server"`     //nolint:lll
 	RESTWriteTimeout    int    `env:"REST_WRITE_TIMEOUT" flag:"rest-write-timeout" json:"rest_write_timeout" description:"wait timeout for writing response on the http rest server"` //nolint:lll
-	RESTEnableHTTPS     bool   `env:"ENABLE_HTTPS" s-flag:"s" flag:"enable-https" json:"enable_https" description:"enable https for rest server"`                                     //nolint:lll
+	IsRESTEnableHTTPS   bool   `env:"ENABLE_HTTPS" s-flag:"s" flag:"enable-https" json:"enable_https" description:"enable https for rest server"`                                     //nolint:lll
 	DatabaseDSN         string `env:"DATABASE_DSN" s-flag:"d" flag:"database-dsn" json:"database_dsn" description:"string for connecting to database"`                                //nolint:lll
 	DatabaseMaxConnects int    `env:"DATABASE_MAX_CONNECTIONS" json:"database_max_connections" flag:"database-max-connections" description:"max connections to database"`             //nolint:lll
 	JWTSecret           string `env:"JWT_SECRET" flag:"jwt-secret" json:"jwt_secret" description:"jwt secret"`                                                                        //nolint:lll
+	TrustedSubnet       string `env:"TRUSTED_SUBNET" s-flag:"t" flag:"trusted-subnet" json:"trusted_subnet" description:"jwt secret"`                                                 //nolint:lll
+	IsEnablePPROF       bool   `env:"PPROF_ENABLED" flag:"pprof-enabled" json:"pprof_enabled" description:"enable pprof for rest server"`                                             //nolint:lll
 }
 
 var (
@@ -42,6 +45,7 @@ func Init() error {
 			RESTWriteTimeout:    DefRESTWriteTimeout,
 			DatabaseMaxConnects: DefDatabaseMaxConns,
 			JWTSecret:           DefJWTSecret,
+			TrustedSubnet:       DefTrustedSubnet,
 		}
 
 		// Use my own library to read the configuration
@@ -93,7 +97,7 @@ func BaseURL() string {
 		return cfg.BaseURL + "/"
 	}
 
-	if cfg.RESTEnableHTTPS {
+	if cfg.IsRESTEnableHTTPS {
 		return fmt.Sprintf("https://%s/", cfg.BaseURL)
 	}
 
@@ -130,12 +134,40 @@ func RESTWriteTimeout() time.Duration {
 	return time.Duration(cfg.RESTWriteTimeout) * time.Millisecond
 }
 
-// RESTEnableHTTPS returns true if https is enabled for rest server.
-func RESTEnableHTTPS() bool {
-	return cfg.RESTEnableHTTPS
+// IsRESTEnableHTTPS returns true if https is enabled for rest server.
+func IsRESTEnableHTTPS() bool {
+	return cfg.IsRESTEnableHTTPS
 }
 
 // JWTSecret returns jwt secret.
 func JWTSecret() []byte {
 	return []byte(cfg.JWTSecret)
+}
+
+// IsTrustedSubnet checks if the given IP address belongs to a trusted subnet.
+// It takes an IP address and port in the format "ip:port" and returns a boolean
+// indicating whether the IP address is within the trusted subnet or not. If an
+// error occurs during the process, it returns an error.
+func IsTrustedSubnet(ipAndPort string) (bool, error) {
+	ip, _, err := net.SplitHostPort(ipAndPort)
+	if err != nil {
+		return false, fmt.Errorf("failed to split host and port: %w", err)
+	}
+
+	trustedSubnet := cfg.TrustedSubnet
+	if !strings.Contains(trustedSubnet, "/") {
+		trustedSubnet = fmt.Sprintf("%s/32", trustedSubnet)
+	}
+
+	_, ipNet, err := net.ParseCIDR(trustedSubnet)
+	if err != nil {
+		return false, fmt.Errorf("failed to parse trusted subnet: %w", err)
+	}
+
+	return ipNet.Contains(net.ParseIP(ip)), nil
+}
+
+// IsEnablePPROF returns true if pprof is enabled for rest server.
+func IsEnablePPROF() bool {
+	return cfg.IsEnablePPROF
 }

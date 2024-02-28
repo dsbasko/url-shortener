@@ -37,15 +37,18 @@ type Storage interface {
 
 	// DeleteURLs deletes URLs.
 	DeleteURLs(ctx context.Context, dto []entity.URL) (resp []entity.URL, err error)
+
+	// Stats returns the stats of the URL.
+	Stats(ctx context.Context) (resp entity.URLStats, err error)
 }
 
 // New creates a new instance of the storage.
 func New(ctx context.Context, log *logger.Logger) (Storage, error) {
-	if len(config.DatabaseDSN()) > 0 {
+	if config.DatabaseDSN() != "" {
 		return psql.New(ctx, log)
 	}
 
-	if len(config.StoragePath()) > 0 {
+	if config.StoragePath() != "" {
 		return file.New(ctx, log)
 	}
 

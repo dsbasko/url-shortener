@@ -29,10 +29,8 @@ func (s *Storage) GetURLByOriginalURL(
 			return entity.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
 		}
 
-		select {
-		case <-ctx.Done():
+		if ctx.Err() != nil {
 			return entity.URL{}, ctx.Err()
-		default:
 		}
 
 		if !strings.Contains(scanner.Text(), `"original_url":"`+originalURL+`"`) {
@@ -66,10 +64,8 @@ func (s *Storage) GetURLByShortURL(
 			return entity.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
 		}
 
-		select {
-		case <-ctx.Done():
+		if ctx.Err() != nil {
 			return entity.URL{}, ctx.Err()
-		default:
 		}
 
 		if !strings.Contains(scanner.Text(), `"short_url":"`+shortURL+`"`) {
@@ -104,10 +100,8 @@ func (s *Storage) GetURLsByUserID(
 			return []entity.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
 		}
 
-		select {
-		case <-ctx.Done():
+		if ctx.Err() != nil {
 			return []entity.URL{}, ctx.Err()
-		default:
 		}
 
 		if !strings.Contains(scanner.Text(), `"user_id":"`+userID+`"`) {

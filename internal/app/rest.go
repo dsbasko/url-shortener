@@ -30,7 +30,7 @@ func RunREST(buildVersion, buildDate, buildCommit string) error {
 		}
 	}()
 
-	urlService := urls.New(ctx, log, storage, storage)
+	urlService := urls.New(ctx, log, storage, storage, storage)
 	rest.New(ctx, log, storage, urlService)
 
 	graceful.Wait()

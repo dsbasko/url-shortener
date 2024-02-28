@@ -25,4 +25,7 @@ const (
 
 	// DefJWTSecret is default secret for JWT auth.
 	DefJWTSecret = "allons-y"
+
+	// DefTrustedSubnet is default trusted subnet for stats endpoint.
+	DefTrustedSubnet = "0.0.0.0/32"
 )

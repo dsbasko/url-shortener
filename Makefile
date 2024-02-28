@@ -63,11 +63,16 @@ test-cover:
 	@go test --coverprofile=coverage.out ./... > /dev/null
 	@go tool cover -func=coverage.out | grep total | grep -oE '[0-9]+(\.[0-9]+)?%'
 
-test-cover-show:
+test-cover-svg:
 	@clear;
 	@go test --coverprofile=coverage.out ./... > /dev/null;
 	@$(LOCAL_BIN_PATH)/go-cover-treemap -coverprofile coverage.out > coverage.svg
 	@xdg-open ./coverage.svg
+
+test-cover-html:
+	@clear;
+	@go test --coverprofile=coverage.out ./... > /dev/null;
+	@go tool cover -html="coverage.out"
 
 test-bench:
 	@go test ./internal/controller/rest/handlers -bench=. -benchmem -cpuprofile=profiles/cpu-last.pprof -memprofile=profiles/mem-last.pprof
