@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/config"
 )
 
 // Stats returns the stats of the URL.

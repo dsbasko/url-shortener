@@ -31,4 +31,4 @@ func (h *Handler) Ping(w http.ResponseWriter, r *http.Request) {
 }
 
 // Generate mocks for tests.
-//go:generate ../../../../bin/mockgen -destination=./mocks/pinger.go -package=mock_handlers github.com/dsbasko/yandex-go-shortener/internal/controller/rest/handlers Pinger
+//go:generate ../../../../bin/mockgen -destination=./mocks/pinger.go -package=mock_handlers github.com/dsbasko/url-shortener/internal/controller/rest/handlers Pinger

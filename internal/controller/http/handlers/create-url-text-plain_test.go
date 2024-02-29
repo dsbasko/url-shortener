@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -12,22 +11,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
-	mockStorage "github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mocks"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
-	"github.com/dsbasko/yandex-go-shortener/pkg/api"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
-	"github.com/dsbasko/yandex-go-shortener/pkg/test"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/controller/http/middlewares"
+	"github.com/dsbasko/url-shortener/internal/entity"
+	mockStorage "github.com/dsbasko/url-shortener/internal/repository/storage/mocks"
+	"github.com/dsbasko/url-shortener/internal/service/urls"
+	"github.com/dsbasko/url-shortener/pkg/logger"
+	"github.com/dsbasko/url-shortener/pkg/test"
 )
 
-func (s *SuiteHandlers) Test_CreateURL_JSON() {
+func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 	t := s.T()
-
 	tests := []struct {
 		name           string
-		contentType    string
 		body           func() []byte
 		storageCfg     func()
 		wantStatusCode int
@@ -35,11 +31,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 	}{
 		{
 			name: "Service Error",
-			body: func() []byte {
-				dtoBytes, _ := json.Marshal(api.CreateURLRequest{URL: "https://ya.ru/"})
-				return dtoBytes
-			},
-			contentType: "application/json",
+			body: func() []byte { return []byte("https://ya.ru/") },
 			storageCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
@@ -50,62 +42,46 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 		},
 		{
 			name: "Success Unique",
-			body: func() []byte {
-				dtoBytes, _ := json.Marshal(api.CreateURLRequest{URL: "https://ya.ru/"})
-				return dtoBytes
-			},
-			contentType: "application/json",
+			body: func() []byte { return []byte("https://ya.ru/") },
 			storageCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{
 						ID:          "42",
 						ShortURL:    "42",
-						OriginalURL: "https://ya2.ru/",
+						OriginalURL: "https://ya.ru/",
 					}, true, nil)
 			},
 			wantStatusCode: http.StatusCreated,
 			wantBody: func() string {
-				resBytes, _ := json.Marshal(api.CreateURLResponse{
-					Result: fmt.Sprintf("%s42", config.BaseURL()),
-				})
-				return fmt.Sprintf("%s\n", resBytes)
+				return fmt.Sprintf("%s42", config.BaseURL())
 			},
 		},
 		{
 			name: "Success NotUnique",
-			body: func() []byte {
-				dtoBytes, _ := json.Marshal(api.CreateURLRequest{URL: "https://ya.ru/"})
-				return dtoBytes
-			},
-			contentType: "application/json",
+			body: func() []byte { return []byte("https://ya.ru/") },
 			storageCfg: func() {
 				s.attr.urlsMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{
 						ID:          "42",
 						ShortURL:    "42",
-						OriginalURL: "https://ya3.ru/",
+						OriginalURL: "https://ya.ru/",
 					}, false, nil)
 			},
 			wantStatusCode: http.StatusConflict,
 			wantBody: func() string {
-				resBytes, _ := json.Marshal(api.CreateURLResponse{
-					Result: fmt.Sprintf("%s42", config.BaseURL()),
-				})
-				return fmt.Sprintf("%s\n", resBytes)
+				return fmt.Sprintf("%s42", config.BaseURL())
 			},
 		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.storageCfg()
 			resp, body := test.Request(t, s.attr.ts, &test.RequestArgs{
-				Method:      "POST",
-				Path:        "/api/shorten",
-				ContentType: tt.contentType,
-				Body:        tt.body(),
+				Method: "POST",
+				Path:   "/",
+				Body:   tt.body(),
 			})
 			err := resp.Body.Close()
 			assert.NoError(t, err)
@@ -116,7 +92,7 @@ func (s *SuiteHandlers) Test_CreateURL_JSON() {
 	}
 }
 
-func Benchmark_Handler_CreateURLJSON(b *testing.B) {
+func Benchmark_Handler_CreateURLTextPlain(b *testing.B) {
 	t := testing.T{}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -131,9 +107,7 @@ func Benchmark_Handler_CreateURLJSON(b *testing.B) {
 	router := chi.NewRouter()
 	h := New(log, storage, urlsService)
 	mw := middlewares.New(log)
-	router.
-		With(mw.JWT).
-		Post("/api/shorten", h.CreateURLJSON)
+	router.With(mw.JWT).Post("/", h.CreateURLTextPlain)
 	ts := httptest.NewServer(router)
 	defer ts.Close()
 
@@ -145,14 +119,13 @@ func Benchmark_Handler_CreateURLJSON(b *testing.B) {
 			ShortURL:    "42",
 			OriginalURL: "https://ya.ru/",
 			UserID:      "42",
-		}, false, nil)
+		}, true, nil)
 		b.StartTimer()
 
-		resp, _ := test.Request(&testing.T{}, ts, &test.RequestArgs{
-			Method:      "POST",
-			Path:        "/api/shorten",
-			ContentType: "application/json",
-			Body:        []byte(`{"url":"https://ya.ru/"}`),
+		resp, _ := test.Request(&t, ts, &test.RequestArgs{
+			Method: "POST",
+			Path:   "/",
+			Body:   []byte("https://ya.ru/"),
 		})
 		err = resp.Body.Close()
 		assert.NoError(b, err)

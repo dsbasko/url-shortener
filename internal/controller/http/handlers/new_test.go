@@ -12,13 +12,13 @@ import (
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	mockHandlers "github.com/dsbasko/yandex-go-shortener/internal/controller/rest/handlers/mocks"
-	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
-	mockURLs "github.com/dsbasko/yandex-go-shortener/internal/service/urls/mocks"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
+	"github.com/dsbasko/url-shortener/internal/config"
+	mockHandlers "github.com/dsbasko/url-shortener/internal/controller/http/handlers/mocks"
+	"github.com/dsbasko/url-shortener/internal/controller/http/middlewares"
+	"github.com/dsbasko/url-shortener/internal/service/jwt"
+	"github.com/dsbasko/url-shortener/internal/service/urls"
+	mockURLs "github.com/dsbasko/url-shortener/internal/service/urls/mocks"
+	"github.com/dsbasko/url-shortener/pkg/logger"
 )
 
 type SuiteHandlers struct {

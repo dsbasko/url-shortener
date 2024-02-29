@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/entity"
 )
 
 // DeleteURLs returns a URL by original URL.

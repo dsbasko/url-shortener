@@ -12,12 +12,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
-	mockStorage "github.com/dsbasko/yandex-go-shortener/internal/repository/storage/mocks"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
-	"github.com/dsbasko/yandex-go-shortener/pkg/test"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/entity"
+	mockStorage "github.com/dsbasko/url-shortener/internal/repository/storage/mocks"
+	"github.com/dsbasko/url-shortener/internal/service/urls"
+	"github.com/dsbasko/url-shortener/pkg/logger"
+	"github.com/dsbasko/url-shortener/pkg/test"
 )
 
 func (s *SuiteHandlers) Test_Redirect() {

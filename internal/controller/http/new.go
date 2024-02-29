@@ -1,4 +1,4 @@
-package rest
+package http
 
 import (
 	"context"
@@ -9,12 +9,12 @@ import (
 	"github.com/go-chi/chi/v5"
 	mwChi "github.com/go-chi/chi/v5/middleware"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/handlers"
-	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest/middlewares"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
-	"github.com/dsbasko/yandex-go-shortener/pkg/graceful"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/controller/http/handlers"
+	"github.com/dsbasko/url-shortener/internal/controller/http/middlewares"
+	"github.com/dsbasko/url-shortener/internal/service/urls"
+	"github.com/dsbasko/url-shortener/pkg/graceful"
+	"github.com/dsbasko/url-shortener/pkg/logger"
 )
 
 // New creates a new http server.

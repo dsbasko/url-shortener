@@ -9,11 +9,11 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
-	"github.com/dsbasko/yandex-go-shortener/pkg/api"
-	"github.com/dsbasko/yandex-go-shortener/pkg/errors"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/service/jwt"
+	"github.com/dsbasko/url-shortener/pkg/api"
+	"github.com/dsbasko/url-shortener/pkg/errors"
 )
 
 func (s *SuiteURLs) Test_CreateURL() {

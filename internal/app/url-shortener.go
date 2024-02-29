@@ -3,16 +3,16 @@ package app
 import (
 	"context"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/controller/rest"
-	storages "github.com/dsbasko/yandex-go-shortener/internal/repository/storage"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/urls"
-	"github.com/dsbasko/yandex-go-shortener/pkg/graceful"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
+	"github.com/dsbasko/url-shortener/internal/config"
+	httpController "github.com/dsbasko/url-shortener/internal/controller/http"
+	storages "github.com/dsbasko/url-shortener/internal/repository/storage"
+	"github.com/dsbasko/url-shortener/internal/service/urls"
+	"github.com/dsbasko/url-shortener/pkg/graceful"
+	"github.com/dsbasko/url-shortener/pkg/logger"
 )
 
-// RunREST runs the REST server
-func RunREST(buildVersion, buildDate, buildCommit string) error {
+// RunURLShortener runs the REST server
+func RunURLShortener(buildVersion, buildDate, buildCommit string) error {
 	ctx, cancel := graceful.Context(context.Background(), graceful.DefaultSignals...)
 	defer cancel()
 
@@ -31,7 +31,7 @@ func RunREST(buildVersion, buildDate, buildCommit string) error {
 	}()
 
 	urlService := urls.New(ctx, log, storage, storage, storage)
-	rest.New(ctx, log, storage, urlService)
+	httpController.New(ctx, log, storage, urlService)
 
 	graceful.Wait()
 	log.Infof("app has been stopped gracefully [%v]", graceful.Count())

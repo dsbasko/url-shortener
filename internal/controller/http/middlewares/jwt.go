@@ -7,8 +7,8 @@ import (
 
 	mwChi "github.com/go-chi/chi/v5/middleware"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
+	"github.com/dsbasko/url-shortener/internal/service/jwt"
+	"github.com/dsbasko/url-shortener/pkg/logger"
 )
 
 // JWT adds jwt token to request context.

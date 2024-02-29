@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
+	"github.com/dsbasko/url-shortener/internal/service/jwt"
 )
 
 // DeleteURLs deletes urls by user id.

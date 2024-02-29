@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
-	mockUrls "github.com/dsbasko/yandex-go-shortener/internal/service/urls/mocks"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/service/jwt"
+	mockUrls "github.com/dsbasko/url-shortener/internal/service/urls/mocks"
+	"github.com/dsbasko/url-shortener/pkg/logger"
 )
 
 type SuiteURLs struct {

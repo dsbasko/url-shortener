@@ -4,7 +4,7 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/entity"
 )
 
 // Stats returns the stats of the URL.

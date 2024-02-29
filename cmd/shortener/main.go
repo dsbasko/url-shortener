@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/app"
+	"github.com/dsbasko/url-shortener/internal/app"
 )
 
 var (
@@ -14,7 +14,7 @@ var (
 )
 
 func main() {
-	if err := app.RunREST(buildVersion, buildDate, buildCommit); err != nil {
+	if err := app.RunURLShortener(buildVersion, buildDate, buildCommit); err != nil {
 		log.Panic(err.Error())
 	}
 }

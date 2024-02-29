@@ -3,8 +3,8 @@ package urls
 import (
 	"context"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
-	"github.com/dsbasko/yandex-go-shortener/pkg/graceful"
+	"github.com/dsbasko/url-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/pkg/graceful"
 )
 
 // Deleter is an interface for deleting URLs.

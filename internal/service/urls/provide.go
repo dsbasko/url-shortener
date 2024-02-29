@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/entity"
 )
 
 // Provider is an interface for providing URLs.

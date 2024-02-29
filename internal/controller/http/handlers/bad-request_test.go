@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dsbasko/yandex-go-shortener/pkg/test"
+	"github.com/dsbasko/url-shortener/pkg/test"
 
 	"github.com/stretchr/testify/assert"
 )

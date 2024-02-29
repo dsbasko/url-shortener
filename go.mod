@@ -1,4 +1,4 @@
-module github.com/dsbasko/yandex-go-shortener
+module github.com/dsbasko/url-shortener
 
 go 1.21
 

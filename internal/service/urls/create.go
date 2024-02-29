@@ -5,10 +5,10 @@ import (
 	"fmt"
 	goURL "net/url"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
-	"github.com/dsbasko/yandex-go-shortener/pkg/api"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/service/jwt"
+	"github.com/dsbasko/url-shortener/pkg/api"
 )
 
 // Creator is a service for creating URLs.
