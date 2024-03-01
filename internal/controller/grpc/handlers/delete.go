@@ -19,11 +19,6 @@ func (s *URLShortenerServer) DeleteURLs(
 	}
 
 	userID := jwt.TokenToUserID(token)
-	err = s.urlService.DeleteURLs(userID, in.Urls)
-	if err != nil {
-		s.log.Errorf("failed to delete urls: %v", err)
-		return nil, err
-	}
-
+	s.urlService.DeleteURLs(userID, in.Urls)
 	return nil, nil
 }

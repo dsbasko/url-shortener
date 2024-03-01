@@ -35,9 +35,5 @@ func (h *Handler) GetURLsByUserID(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(urlsResp); err != nil {
-		log.Errorf("failed to return response body: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	_ = json.NewEncoder(w).Encode(urlsResp)
 }

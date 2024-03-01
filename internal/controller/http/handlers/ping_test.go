@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 
 	"github.com/dsbasko/url-shortener/pkg/test"
 )
@@ -23,7 +23,7 @@ func (s *SuiteHandlers) Test_Ping() {
 		{
 			name: "Error",
 			storageCfg: func() {
-				s.attr.pinger.EXPECT().Ping(gomock.Any()).Return(errors.New(""))
+				s.attr.storage.EXPECT().Ping(gomock.Any()).Return(errors.New(""))
 			},
 			wantStatusCode: http.StatusBadRequest,
 			wantBody:       func() string { return "" },
@@ -31,7 +31,7 @@ func (s *SuiteHandlers) Test_Ping() {
 		{
 			name: "Success",
 			storageCfg: func() {
-				s.attr.pinger.EXPECT().Ping(gomock.Any()).Return(nil)
+				s.attr.storage.EXPECT().Ping(gomock.Any()).Return(nil)
 			},
 			wantStatusCode: http.StatusOK,
 			wantBody:       func() string { return "pong" },

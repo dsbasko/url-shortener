@@ -39,10 +39,5 @@ func (h *Handler) CreateURLJSON(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusConflict)
 	}
-
-	if err = json.NewEncoder(w).Encode(response); err != nil {
-		log.Errorf("failed to return response body: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	_ = json.NewEncoder(w).Encode(response)
 }

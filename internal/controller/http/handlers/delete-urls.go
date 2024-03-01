@@ -29,12 +29,6 @@ func (h *Handler) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.urls.DeleteURLs(userID, deleteURLs)
-	if err != nil {
-		log.Errorf("failed to delete urls: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
+	h.urls.DeleteURLs(userID, deleteURLs)
 	w.WriteHeader(http.StatusAccepted)
 }

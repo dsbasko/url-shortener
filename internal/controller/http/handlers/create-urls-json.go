@@ -31,9 +31,5 @@ func (h *Handler) CreateURLsJSON(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err = json.NewEncoder(w).Encode(createdURLs); err != nil {
-		log.Errorf("failed to return response body: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	_ = json.NewEncoder(w).Encode(createdURLs)
 }

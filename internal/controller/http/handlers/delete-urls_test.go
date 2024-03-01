@@ -51,7 +51,9 @@ func (s *SuiteHandlers) Test_DeleteURLs() {
 			body:        []byte(`["42"]`),
 			contentType: "application/json",
 			storageCfg: func() {
-				s.attr.urlsMutator.EXPECT().DeleteURLs(gomock.Any(), gomock.Any()).Return(nil, nil)
+				s.attr.storage.EXPECT().
+					DeleteURLs(gomock.Any(), gomock.Any()).
+					Return(nil, nil)
 			},
 			cookie:         s.attr.cookie,
 			wantStatusCode: http.StatusAccepted,
@@ -77,10 +79,9 @@ func (s *SuiteHandlers) Test_DeleteURLs() {
 }
 
 func Benchmark_Handler_DeleteURLs(b *testing.B) {
-	t := testing.T{}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	ctrl := gomock.NewController(&t)
+	ctrl := gomock.NewController(&testing.T{})
 	defer ctrl.Finish()
 
 	err := config.Init()

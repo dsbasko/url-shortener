@@ -33,9 +33,34 @@ func (s *SuiteHandlers) Test_Redirect() {
 			name:     "Not Found",
 			shortURL: "42",
 			storageCfg: func() {
-				s.attr.urlsProvider.EXPECT().
+				s.attr.storage.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{}, errors.New("not found"))
+			},
+			wantStatusCode: http.StatusBadRequest,
+		},
+		{
+			name:     "Is Deleted",
+			shortURL: "42",
+			storageCfg: func() {
+				s.attr.storage.EXPECT().
+					GetURLByShortURL(gomock.Any(), gomock.Any()).
+					Return(entity.URL{
+						ID:          "42",
+						ShortURL:    "42",
+						OriginalURL: "https://ya.ru/",
+						DeletedFlag: true,
+					}, nil)
+			},
+			wantStatusCode: http.StatusGone,
+		},
+		{
+			name:     "Empty Original URL",
+			shortURL: "42",
+			storageCfg: func() {
+				s.attr.storage.EXPECT().
+					GetURLByShortURL(gomock.Any(), gomock.Any()).
+					Return(entity.URL{}, nil)
 			},
 			wantStatusCode: http.StatusBadRequest,
 		},
@@ -43,7 +68,7 @@ func (s *SuiteHandlers) Test_Redirect() {
 			name:     "Found",
 			shortURL: "42",
 			storageCfg: func() {
-				s.attr.urlsProvider.EXPECT().
+				s.attr.storage.EXPECT().
 					GetURLByShortURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{
 						ID:          "42",

@@ -33,7 +33,7 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 			name: "Service Error",
 			body: func() []byte { return []byte("https://ya.ru/") },
 			storageCfg: func() {
-				s.attr.urlsMutator.EXPECT().
+				s.attr.storage.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{}, false, s.attr.errService)
 			},
@@ -44,7 +44,7 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 			name: "Success Unique",
 			body: func() []byte { return []byte("https://ya.ru/") },
 			storageCfg: func() {
-				s.attr.urlsMutator.EXPECT().
+				s.attr.storage.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{
 						ID:          "42",
@@ -61,7 +61,7 @@ func (s *SuiteHandlers) Test_CreateURL_TextPlain() {
 			name: "Success NotUnique",
 			body: func() []byte { return []byte("https://ya.ru/") },
 			storageCfg: func() {
-				s.attr.urlsMutator.EXPECT().
+				s.attr.storage.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
 					Return(entity.URL{
 						ID:          "42",

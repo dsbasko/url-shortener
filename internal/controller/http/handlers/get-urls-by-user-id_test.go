@@ -44,7 +44,7 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 		{
 			name: "Service Error",
 			storageCfg: func() {
-				s.attr.urlsProvider.EXPECT().
+				s.attr.storage.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
 					Return(nil, s.attr.errService)
 			},
@@ -57,7 +57,7 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 		{
 			name: "Not Found",
 			storageCfg: func() {
-				s.attr.urlsProvider.EXPECT().
+				s.attr.storage.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
 					Return([]entity.URL{}, nil)
 			},
@@ -70,7 +70,7 @@ func (s *SuiteHandlers) Test_GetURLsByUserID() {
 		{
 			name: "Success",
 			storageCfg: func() {
-				s.attr.urlsProvider.EXPECT().
+				s.attr.storage.EXPECT().
 					GetURLsByUserID(gomock.Any(), gomock.Any()).
 					Return([]entity.URL{
 						{

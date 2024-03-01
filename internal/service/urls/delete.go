@@ -14,12 +14,10 @@ type Deleter interface {
 }
 
 // DeleteURLs deletes urls from storage.
-func (u *URLs) DeleteURLs(userID string, shortURLs []string) error {
+func (u *URLs) DeleteURLs(userID string, shortURLs []string) {
 	u.deleteTask <- map[string][]string{
 		userID: shortURLs,
 	}
-
-	return nil
 }
 
 // deleteWorker is a worker for deleting urls.

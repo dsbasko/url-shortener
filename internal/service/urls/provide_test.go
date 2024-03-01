@@ -28,6 +28,15 @@ func (s *SuiteURLs) Test_GetURL() {
 		want       want
 	}{
 		{
+			name:       "Empty ShortURL",
+			shortURL:   "",
+			storageCfg: func() {},
+			want: want{
+				resp: entity.URL{},
+				err:  ErrInvalidURL,
+			},
+		},
+		{
 			name:     "Not Found",
 			shortURL: "42",
 			storageCfg: func() {

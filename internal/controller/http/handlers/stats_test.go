@@ -42,7 +42,7 @@ func (s *SuiteHandlers) Test_Stats() {
 			name: "Service Error",
 			cfg: func() {
 				config.SetTrustedSubnet("127.0.0.0/24")
-				s.attr.urlsAnalyzer.EXPECT().
+				s.attr.storage.EXPECT().
 					Stats(gomock.Any()).
 					Return(entity.URLStats{}, s.attr.errService)
 			},
@@ -53,7 +53,7 @@ func (s *SuiteHandlers) Test_Stats() {
 			name: "Success",
 			cfg: func() {
 				config.SetTrustedSubnet("127.0.0.0/24")
-				s.attr.urlsAnalyzer.EXPECT().
+				s.attr.storage.EXPECT().
 					Stats(gomock.Any()).
 					Return(entity.URLStats{
 						Users: "42",

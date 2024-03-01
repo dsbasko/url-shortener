@@ -31,10 +31,5 @@ func (h *Handler) CreateURLTextPlain(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusConflict)
 	}
-
-	if _, err = w.Write([]byte(createdURL.ShortURL)); err != nil {
-		log.Errorf("failed to return response body: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	_, _ = w.Write([]byte(createdURL.ShortURL))
 }

@@ -71,6 +71,22 @@ func MustInit() {
 	}
 }
 
+// InitMock initializes the configuration with default values.
+func InitMock() {
+	cfg = config{
+		Env:                 DefEnv,
+		Controller:          DefController,
+		ServerAddress:       DefServerAddress,
+		BaseURL:             DefBaseURL,
+		ShortURLLen:         DefShortURLLen,
+		RESTReadTimeout:     DefRESTReadTimeout,
+		RESTWriteTimeout:    DefRESTWriteTimeout,
+		DatabaseMaxConnects: DefDatabaseMaxConns,
+		JWTSecret:           DefJWTSecret,
+		TrustedSubnet:       DefTrustedSubnet,
+	}
+}
+
 // Env returns run mode (dev|prod).
 func Env() string {
 	return cfg.Env

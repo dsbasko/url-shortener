@@ -13,11 +13,10 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/dsbasko/url-shortener/internal/config"
-	mockHandlers "github.com/dsbasko/url-shortener/internal/controller/http/handlers/mocks"
 	"github.com/dsbasko/url-shortener/internal/controller/http/middlewares"
+	mockStorage "github.com/dsbasko/url-shortener/internal/repository/storage/mocks"
 	"github.com/dsbasko/url-shortener/internal/service/jwt"
 	"github.com/dsbasko/url-shortener/internal/service/urls"
-	mockURLs "github.com/dsbasko/url-shortener/internal/service/urls/mocks"
 	"github.com/dsbasko/url-shortener/pkg/logger"
 )
 
@@ -26,11 +25,8 @@ type SuiteHandlers struct {
 
 	attr struct {
 		log          *logger.Logger
-		pinger       *mockHandlers.MockPinger
 		urls         urls.URLs
-		urlsProvider *mockURLs.MockProvider
-		urlsMutator  *mockURLs.MockMutator
-		urlsAnalyzer *mockURLs.MockAnalyzer
+		storage      *mockStorage.MockStorage
 		handler      Handler
 		errService   error
 		errNotFound  error
@@ -46,16 +42,12 @@ func (s *SuiteHandlers) SetupSuite() {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	err := config.Init()
-	assert.NoError(t, err)
+	config.InitMock()
 	s.attr.log = logger.NewMock()
-	s.attr.pinger = mockHandlers.NewMockPinger(ctrl)
-	s.attr.urlsProvider = mockURLs.NewMockProvider(ctrl)
-	s.attr.urlsMutator = mockURLs.NewMockMutator(ctrl)
-	s.attr.urlsAnalyzer = mockURLs.NewMockAnalyzer(ctrl)
-	s.attr.urls = urls.New(ctx, s.attr.log, s.attr.urlsProvider, s.attr.urlsMutator, s.attr.urlsAnalyzer)
+	s.attr.storage = mockStorage.NewMockStorage(ctrl)
+	s.attr.urls = urls.New(ctx, s.attr.log, s.attr.storage, s.attr.storage, s.attr.storage)
 	router := chi.NewRouter()
-	s.attr.handler = New(s.attr.log, s.attr.pinger, s.attr.urls)
+	s.attr.handler = New(s.attr.log, s.attr.storage, s.attr.urls)
 	mw := middlewares.New(s.attr.log)
 	token, err := jwt.GenerateToken()
 	assert.NoError(t, err)
@@ -87,7 +79,7 @@ func (s *SuiteHandlers) Test_New() {
 		assert.NotNil(t, s.attr.handler)
 		assert.Equal(
 			t,
-			Handler{log: s.attr.log, pinger: s.attr.pinger, urls: s.attr.urls},
+			Handler{log: s.attr.log, pinger: s.attr.storage, urls: s.attr.urls},
 			s.attr.handler,
 		)
 	})

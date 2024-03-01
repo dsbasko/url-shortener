@@ -35,6 +35,16 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 		wantBody       []api.CreateURLsResponse
 	}{
 		{
+			name: "Wrong Body Format",
+			body: func() []byte {
+				return []byte(`https://ya.ru/`)
+			},
+			contentType:    "application/json",
+			storageCfg:     func() {},
+			wantStatusCode: http.StatusBadRequest,
+			wantBody:       nil,
+		},
+		{
 			name: "Service Error",
 			body: func() []byte {
 				dtoBytes, _ := json.Marshal([]api.CreateURLsRequest{
@@ -47,7 +57,7 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 			},
 			contentType: "application/json",
 			storageCfg: func() {
-				s.attr.urlsMutator.EXPECT().
+				s.attr.storage.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
 					Return(nil, s.attr.errService)
 			},
@@ -67,7 +77,7 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 			},
 			contentType: "application/json",
 			storageCfg: func() {
-				s.attr.urlsMutator.EXPECT().
+				s.attr.storage.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
 					Return([]entity.URL{}, nil)
 			},
@@ -96,7 +106,7 @@ func (s *SuiteHandlers) Test_CreateURLs_JSON() {
 			},
 			contentType: "application/json",
 			storageCfg: func() {
-				s.attr.urlsMutator.EXPECT().
+				s.attr.storage.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
 					Return([]entity.URL{}, nil)
 			},
