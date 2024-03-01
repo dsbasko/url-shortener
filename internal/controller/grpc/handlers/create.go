@@ -48,7 +48,7 @@ func (s *URLShortenerServer) CreateURLs(
 		return &resp, status.Errorf(codes.Internal, "%v", err)
 	}
 
-	var result []*pb.CreateURLsResponse_Data
+	result := make([]*pb.CreateURLsResponse_Data, 0, len(createdURLs))
 	for _, createdURL := range createdURLs {
 		result = append(result, &pb.CreateURLsResponse_Data{
 			CorrelationId: createdURL.CorrelationID,

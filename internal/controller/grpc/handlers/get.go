@@ -47,7 +47,7 @@ func (s *URLShortenerServer) GetURLsByUserID(
 		return &resp, err
 	}
 
-	var result []*pb.URLEntity
+	result := make([]*pb.URLEntity, 0, len(foundURLs))
 	for _, foundURL := range foundURLs {
 		result = append(result, &pb.URLEntity{
 			Id:          foundURL.ID,
