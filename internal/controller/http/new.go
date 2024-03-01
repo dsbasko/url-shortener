@@ -17,8 +17,8 @@ import (
 	"github.com/dsbasko/url-shortener/pkg/logger"
 )
 
-// New creates a new http server.
-func New(
+// Run creates a new http server.
+func Run(
 	ctx context.Context,
 	log *logger.Logger,
 	pinger handlers.Pinger,
@@ -35,7 +35,7 @@ func New(
 	router.Use(mw.JWT)
 	router.Use(mw.CompressEncoding)
 
-	if config.IsEnablePPROF() {
+	if config.IsEnabledPPROF() {
 		router.Mount("/debug", mwChi.Profiler())
 	}
 
@@ -99,7 +99,7 @@ func gracefulShutdown(ctx context.Context, log *logger.Logger, server *http.Serv
 	<-ctx.Done()
 
 	server.SetKeepAlivesEnabled(false)
-	log.Infof("shutdown rest server by signal")
+	log.Infof("shutdown http server by signal")
 
 	if err := server.Shutdown(ctx); err != nil {
 		log.Errorf("a signal has been received to terminate the http server: %v", err)

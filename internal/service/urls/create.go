@@ -5,10 +5,10 @@ import (
 	"fmt"
 	goURL "net/url"
 
+	api "github.com/dsbasko/url-shortener/api/http"
 	"github.com/dsbasko/url-shortener/internal/config"
 	"github.com/dsbasko/url-shortener/internal/entity"
 	"github.com/dsbasko/url-shortener/internal/service/jwt"
-	"github.com/dsbasko/url-shortener/pkg/api"
 )
 
 // Creator is a service for creating URLs.

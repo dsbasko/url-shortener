@@ -5,6 +5,9 @@ const (
 	// DefEnv is default environment.
 	DefEnv = "prod"
 
+	// DefController is default controller type.
+	DefController = "http"
+
 	// DefServerAddress is default http rest server address.
 	DefServerAddress = "localhost:8080"
 

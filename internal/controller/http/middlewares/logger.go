@@ -80,7 +80,7 @@ func (m *Middlewares) Logger(next http.Handler) http.Handler {
 			}
 
 			args = append(args, "response_body", responseBuf.String())
-			m.log.Infow("request", args...)
+			m.log.Infow("request is done", args...)
 		}()
 
 		next.ServeHTTP(ww, r)

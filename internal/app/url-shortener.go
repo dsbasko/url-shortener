@@ -2,8 +2,10 @@ package app
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/dsbasko/url-shortener/internal/config"
+	grpcController "github.com/dsbasko/url-shortener/internal/controller/grpc"
 	httpController "github.com/dsbasko/url-shortener/internal/controller/http"
 	storages "github.com/dsbasko/url-shortener/internal/repository/storage"
 	"github.com/dsbasko/url-shortener/internal/service/urls"
@@ -31,10 +33,16 @@ func RunURLShortener(buildVersion, buildDate, buildCommit string) error {
 	}()
 
 	urlService := urls.New(ctx, log, storage, storage, storage)
-	httpController.New(ctx, log, storage, urlService)
+
+	switch config.Controller() {
+	case "grpc":
+		grpcController.Run(ctx, log, storage, urlService)
+	case "http":
+		httpController.Run(ctx, log, storage, urlService)
+	default:
+		return fmt.Errorf("unknown controller: %s", config.Controller())
+	}
 
 	graceful.Wait()
-	log.Infof("app has been stopped gracefully [%v]", graceful.Count())
-
 	return nil
 }

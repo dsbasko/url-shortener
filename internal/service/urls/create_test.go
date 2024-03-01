@@ -9,10 +9,10 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
+	api "github.com/dsbasko/url-shortener/api/http"
 	"github.com/dsbasko/url-shortener/internal/config"
 	"github.com/dsbasko/url-shortener/internal/entity"
 	"github.com/dsbasko/url-shortener/internal/service/jwt"
-	"github.com/dsbasko/url-shortener/pkg/api"
 	"github.com/dsbasko/url-shortener/pkg/errors"
 )
 

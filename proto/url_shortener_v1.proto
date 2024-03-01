@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package url_shortener;
+
+option go_package = "github.com/dsbasko/url-shortener/pkg/api/proto/url_shortener_v1/pb_url_shortener_v1;pb_url_shortener_v1";
+
+service URLShortenerV1 {
+  rpc Ping(PingRequest) returns (PingResponse) {}
+  rpc GetOriginalURL(GetOriginalURLRequest) returns (GetOriginalURLResponse) {}
+  rpc GetURLsByUserID(GetURLsByUserIDRequest) returns (GetURLsByUserIDResponse) {}
+  rpc CreateURL(CreateURLRequest) returns (CreateURLResponse) {}
+  rpc CreateURLs(CreateURLsRequest) returns (CreateURLsResponse) {}
+  rpc DeleteURLs(DeleteURLsRequest) returns (DeleteURLsResponse) {}
+  rpc Stat(StatRequest) returns (StatResponse) {}
+}
+
+/* ---------
+--- Ping ---
+--------- */
+message PingRequest {}
+message PingResponse {
+  string message = 1;
+}
+
+/* ------------------------------
+--- Get Original by Short URL ---
+------------------------------ */
+message GetOriginalURLRequest {
+  string short_url = 1;
+}
+message GetOriginalURLResponse {
+  string original_url = 1;
+}
+
+/* -----------------------
+--- Get URLs by UserID ---
+----------------------- */
+message GetURLsByUserIDRequest {
+  string user_id = 1;
+}
+message GetURLsByUserIDResponse {
+  repeated URLEntity result = 1;
+}
+
+/* ---------------
+--- Create URL ---
+--------------- */
+message CreateURLRequest {
+  string url = 1;
+}
+
+message CreateURLResponse {
+  string result = 1;
+}
+
+/* ----------------
+--- Create URLs ---
+---------------- */
+message CreateURLsRequest {
+  message Dto {
+    string correlation_id = 1;
+    string original_url = 2;
+  }
+
+  repeated Dto dto = 1;
+}
+
+message CreateURLsResponse {
+  message Data {
+    string correlation_id = 1;
+    string short_url = 2;
+  }
+
+  repeated Data result = 1;
+}
+
+/* ----------------
+--- Delete URLs ---
+---------------- */
+message DeleteURLsRequest {
+  repeated string urls = 1;
+}
+message DeleteURLsResponse {}
+
+/* --------------
+--- Statistic ---
+-------------- */
+message StatRequest {}
+message StatResponse {
+  string urls = 1;
+  string users = 2;
+}
+
+/* -------------
+--- Entities ---
+------------- */
+message URLEntity {
+  string id = 1;
+  string user_id = 2;
+  string short_url = 3;
+  string original_url = 4;
+  bool is_deleted = 5;
+}

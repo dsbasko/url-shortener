@@ -13,7 +13,7 @@ import (
 
 // JWT adds jwt token to request context.
 func (m *Middlewares) JWT(next http.Handler) http.Handler {
-	m.log.Debug("Cookie request enrichment with an identifier is enabled")
+	m.log.Debug("jwt middleware is enabled")
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log := m.log.With("request_id", mwChi.GetReqID(r.Context()))

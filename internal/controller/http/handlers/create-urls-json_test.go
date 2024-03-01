@@ -12,13 +12,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
+	api "github.com/dsbasko/url-shortener/api/http"
 	"github.com/dsbasko/url-shortener/internal/config"
 	"github.com/dsbasko/url-shortener/internal/controller/http/middlewares"
 	"github.com/dsbasko/url-shortener/internal/entity"
 	mockStorage "github.com/dsbasko/url-shortener/internal/repository/storage/mocks"
 	"github.com/dsbasko/url-shortener/internal/service/jwt"
 	"github.com/dsbasko/url-shortener/internal/service/urls"
-	"github.com/dsbasko/url-shortener/pkg/api"
 	"github.com/dsbasko/url-shortener/pkg/logger"
 	"github.com/dsbasko/url-shortener/pkg/test"
 )

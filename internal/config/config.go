@@ -12,6 +12,7 @@ import (
 
 type config struct {
 	Env                 string `env:"ENV" flag:"env" json:"env" description:"run mode (prod|dev|local)"`                                                                              //nolint:lll
+	Controller          string `env:"CONTROLLER" flag:"controller" json:"controller" description:"controller (grpc|http)"`                                                            //nolint:lll
 	ConfigPath          string `env:"CONFIG" s-flag:"c" flag:"config" description:"path to config file (json,yaml)"`                                                                  //nolint:lll
 	ServerAddress       string `env:"SERVER_ADDRESS" s-flag:"a" flag:"server-address" json:"server_address" description:"http rest server address"`                                   //nolint:lll
 	BaseURL             string `env:"BASE_URL" s-flag:"b" flag:"base-url" json:"base_url" description:"base url address"`                                                             //nolint:lll
@@ -24,7 +25,7 @@ type config struct {
 	DatabaseMaxConnects int    `env:"DATABASE_MAX_CONNECTIONS" json:"database_max_connections" flag:"database-max-connections" description:"max connections to database"`             //nolint:lll
 	JWTSecret           string `env:"JWT_SECRET" flag:"jwt-secret" json:"jwt_secret" description:"jwt secret"`                                                                        //nolint:lll
 	TrustedSubnet       string `env:"TRUSTED_SUBNET" s-flag:"t" flag:"trusted-subnet" json:"trusted_subnet" description:"jwt secret"`                                                 //nolint:lll
-	IsEnablePPROF       bool   `env:"PPROF_ENABLED" flag:"pprof-enabled" json:"pprof_enabled" description:"enable pprof for rest server"`                                             //nolint:lll
+	IsEnabledPPROF      bool   `env:"PPROF" flag:"pprof" json:"pprof" description:"enable pprof for rest server"`                                                                     //nolint:lll
 }
 
 var (
@@ -38,6 +39,7 @@ func Init() error {
 	once.Do(func() {
 		cfg = config{
 			Env:                 DefEnv,
+			Controller:          DefController,
 			ServerAddress:       DefServerAddress,
 			BaseURL:             DefBaseURL,
 			ShortURLLen:         DefShortURLLen,
@@ -72,6 +74,11 @@ func MustInit() {
 // Env returns run mode (dev|prod).
 func Env() string {
 	return cfg.Env
+}
+
+// Controller returns controller (grpc|http).
+func Controller() string {
+	return cfg.Controller
 }
 
 // CfgPath returns path to config file.
@@ -149,9 +156,9 @@ func JWTSecret() []byte {
 // indicating whether the IP address is within the trusted subnet or not. If an
 // error occurs during the process, it returns an error.
 func IsTrustedSubnet(ipAndPort string) (bool, error) {
-	ip, _, err := net.SplitHostPort(ipAndPort)
-	if err != nil {
-		return false, fmt.Errorf("failed to split host and port: %w", err)
+	ip, _, errSHP := net.SplitHostPort(ipAndPort)
+	if errSHP != nil {
+		return false, fmt.Errorf("failed to split host and port: %w", errSHP)
 	}
 
 	trustedSubnet := cfg.TrustedSubnet
@@ -159,9 +166,9 @@ func IsTrustedSubnet(ipAndPort string) (bool, error) {
 		trustedSubnet = fmt.Sprintf("%s/32", trustedSubnet)
 	}
 
-	_, ipNet, err := net.ParseCIDR(trustedSubnet)
-	if err != nil {
-		return false, fmt.Errorf("failed to parse trusted subnet: %w", err)
+	_, ipNet, errCIDR := net.ParseCIDR(trustedSubnet)
+	if errCIDR != nil {
+		return false, fmt.Errorf("failed to parse trusted subnet: %w", errCIDR)
 	}
 
 	return ipNet.Contains(net.ParseIP(ip)), nil
@@ -174,7 +181,7 @@ func SetTrustedSubnet(trustedSubnet string) {
 	cfg.TrustedSubnet = trustedSubnet
 }
 
-// IsEnablePPROF returns true if pprof is enabled for rest server.
-func IsEnablePPROF() bool {
-	return cfg.IsEnablePPROF
+// IsEnabledPPROF returns true if pprof is enabled for rest server.
+func IsEnabledPPROF() bool {
+	return cfg.IsEnabledPPROF
 }

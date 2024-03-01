@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/dsbasko/url-shortener/pkg/api"
+	api "github.com/dsbasko/url-shortener/api/http"
 )
 
 // CreateURLsJSON creates urls with json body.
