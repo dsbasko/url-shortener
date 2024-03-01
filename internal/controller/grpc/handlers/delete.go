@@ -3,6 +3,9 @@ package handlers
 import (
 	"context"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	pb "github.com/dsbasko/url-shortener/api/proto"
 	"github.com/dsbasko/url-shortener/internal/service/jwt"
 )
@@ -15,7 +18,7 @@ func (s *URLShortenerServer) DeleteURLs(
 	token, err := jwt.GetFromContextGRPC(ctx)
 	if err != nil {
 		s.log.Errorf("failed to get token from context: %v", err)
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
 
 	userID := jwt.TokenToUserID(token)

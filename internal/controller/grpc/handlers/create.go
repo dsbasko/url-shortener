@@ -3,6 +3,9 @@ package handlers
 import (
 	"context"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	api "github.com/dsbasko/url-shortener/api/http"
 	pb "github.com/dsbasko/url-shortener/api/proto"
 )
@@ -17,7 +20,7 @@ func (s *URLShortenerServer) CreateURL(
 	createdURL, _, err := s.urlService.CreateURL(ctx, in.Url)
 	if err != nil {
 		s.log.Errorf("failed to create url from service layer: %v", err)
-		return &resp, err
+		return &resp, status.Errorf(codes.Internal, "%v", err)
 	}
 
 	resp.Result = createdURL.ShortURL
@@ -42,7 +45,7 @@ func (s *URLShortenerServer) CreateURLs(
 	createdURLs, err := s.urlService.CreateURLs(ctx, dto)
 	if err != nil {
 		s.log.Errorf("failed to create url from service layer: %v", err)
-		return &resp, err
+		return &resp, status.Errorf(codes.Internal, "%v", err)
 	}
 
 	var result []*pb.CreateURLsResponse_Data
