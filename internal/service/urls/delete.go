@@ -3,23 +3,21 @@ package urls
 import (
 	"context"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
-	"github.com/dsbasko/yandex-go-shortener/pkg/graceful"
+	"github.com/dsbasko/url-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/pkg/graceful"
 )
 
-// URLDeleter is an interface for deleting URLs.
-type URLDeleter interface {
+// Deleter is an interface for deleting URLs.
+type Deleter interface {
 	// DeleteURLs deletes URLs.
 	DeleteURLs(ctx context.Context, dto []entity.URL) (resp []entity.URL, err error)
 }
 
 // DeleteURLs deletes urls from storage.
-func (u *URLs) DeleteURLs(userID string, shortURLs []string) error {
+func (u *URLs) DeleteURLs(userID string, shortURLs []string) {
 	u.deleteTask <- map[string][]string{
 		userID: shortURLs,
 	}
-
-	return nil
 }
 
 // deleteWorker is a worker for deleting urls.
@@ -46,7 +44,7 @@ func (u *URLs) deleteWorker(ctx context.Context) {
 
 // doDelete deletes urls from storage.
 func (u *URLs) doDelete(task map[string][]string) {
-	var urlDeleter URLDeleter = u.urlMutator
+	var urlDeleter Deleter = u.urlMutator
 
 	urlsToDelete := make([]entity.URL, 0, len(task))
 	for userID, shortURL := range task {
@@ -60,7 +58,7 @@ func (u *URLs) doDelete(task map[string][]string) {
 
 	deletedURLs, err := urlDeleter.DeleteURLs(context.Background(), urlsToDelete)
 	if err != nil {
-		u.log.Errorw(err.Error())
+		u.log.Error(err)
 		return
 	}
 

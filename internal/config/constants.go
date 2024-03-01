@@ -5,6 +5,9 @@ const (
 	// DefEnv is default environment.
 	DefEnv = "prod"
 
+	// DefController is default controller type.
+	DefController = "http"
+
 	// DefServerAddress is default http rest server address.
 	DefServerAddress = "localhost:8080"
 
@@ -25,4 +28,7 @@ const (
 
 	// DefJWTSecret is default secret for JWT auth.
 	DefJWTSecret = "allons-y"
+
+	// DefTrustedSubnet is default trusted subnet for stats endpoint.
+	DefTrustedSubnet = "0.0.0.0/32"
 )

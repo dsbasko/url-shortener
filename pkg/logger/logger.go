@@ -1,3 +1,4 @@
+// Package logger provides logger.
 package logger
 
 import (
@@ -37,12 +38,13 @@ func New(env, serviceName string) (*Logger, error) {
 		encoderCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
 
 		zapConfig = zap.Config{
-			Level:            zap.NewAtomicLevelAt(zap.DebugLevel),
-			Development:      true,
-			Encoding:         "console",
-			EncoderConfig:    encoderCfg,
-			OutputPaths:      []string{os.Stdout.Name()},
-			ErrorOutputPaths: []string{os.Stderr.Name()},
+			Level:             zap.NewAtomicLevelAt(zap.DebugLevel),
+			Development:       true,
+			Encoding:          "console",
+			EncoderConfig:     encoderCfg,
+			OutputPaths:       []string{os.Stdout.Name()},
+			ErrorOutputPaths:  []string{os.Stderr.Name()},
+			DisableStacktrace: true,
 		}
 	}
 
@@ -68,6 +70,32 @@ func MustNew(env, serviceName string) *Logger {
 	if err != nil {
 		panic(fmt.Errorf("failed to load the logger: %w", err))
 	}
+
+	return logger
+}
+
+// NewMock create a new mock logger.
+func NewMock() *Logger {
+	var logger *zap.SugaredLogger
+	zapConfig := zap.Config{
+		Level:            zap.NewAtomicLevelAt(zap.DPanicLevel),
+		Encoding:         "console",
+		OutputPaths:      []string{},
+		ErrorOutputPaths: []string{},
+	}
+
+	zapLogger, err := zapConfig.Build()
+	if err != nil {
+		return nil
+	}
+
+	logger = zapLogger.Sugar()
+	defer func() {
+		err = logger.Sync()
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}()
 
 	return logger
 }

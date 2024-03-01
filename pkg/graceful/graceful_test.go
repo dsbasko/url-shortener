@@ -73,7 +73,7 @@ func Test_Reset(t *testing.T) {
 }
 
 func Test_CleanFn(t *testing.T) {
-	t.Run("Positive", func(t *testing.T) {
+	t.Run("Positive Function", func(t *testing.T) {
 		defer Reset()
 		Add()
 		CleanFn(0, func() {})

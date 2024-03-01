@@ -7,8 +7,8 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/pkg/logger"
 )
 
 // Storage a postgresql storage.

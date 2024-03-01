@@ -9,11 +9,11 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
-	"github.com/dsbasko/yandex-go-shortener/pkg/api"
-	"github.com/dsbasko/yandex-go-shortener/pkg/errors"
+	api "github.com/dsbasko/url-shortener/api/http"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/service/jwt"
+	"github.com/dsbasko/url-shortener/pkg/errors"
 )
 
 func (s *SuiteURLs) Test_CreateURL() {
@@ -56,11 +56,11 @@ func (s *SuiteURLs) Test_CreateURL() {
 			storageCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entity.URL{}, false, s.attr.errStore)
+					Return(entity.URL{}, false, s.attr.errStorage)
 			},
 			want: want{
 				resp: entity.URL{},
-				err:  s.attr.errStore,
+				err:  s.attr.errStorage,
 			},
 		},
 		{
@@ -122,7 +122,7 @@ func (s *SuiteURLs) Test_CreateURL() {
 			storageCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURL(gomock.Any(), gomock.Any()).
-					Return(entity.URL{}, false, s.attr.errStore)
+					Return(entity.URL{}, false, s.attr.errStorage)
 			},
 			want: want{
 				resp: entity.URL{},
@@ -200,11 +200,11 @@ func (s *SuiteURLs) Test_CreateURLs() {
 			storageCfg: func() {
 				s.attr.urlMutator.EXPECT().
 					CreateURLs(gomock.Any(), gomock.Any()).
-					Return(nil, s.attr.errStore)
+					Return(nil, s.attr.errStorage)
 			},
 			want: want{
 				resp: []api.CreateURLsResponse{},
-				err:  s.attr.errStore,
+				err:  s.attr.errStorage,
 			},
 		},
 		{

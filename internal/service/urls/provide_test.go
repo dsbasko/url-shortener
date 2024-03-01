@@ -8,9 +8,9 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
-	"github.com/dsbasko/yandex-go-shortener/pkg/errors"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/pkg/errors"
 )
 
 func (s *SuiteURLs) Test_GetURL() {
@@ -27,6 +27,15 @@ func (s *SuiteURLs) Test_GetURL() {
 		storageCfg func()
 		want       want
 	}{
+		{
+			name:       "Empty ShortURL",
+			shortURL:   "",
+			storageCfg: func() {},
+			want: want{
+				resp: entity.URL{},
+				err:  ErrInvalidURL,
+			},
+		},
 		{
 			name:     "Not Found",
 			shortURL: "42",

@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/entity"
 )
 
-// URLProvider is an interface for providing URLs.
-type URLProvider interface {
+// Provider is an interface for providing URLs.
+type Provider interface {
 	// GetURLByOriginalURL gets URL by original URL.
 	GetURLByOriginalURL(ctx context.Context, originalURL string) (resp entity.URL, err error)
 
@@ -49,6 +49,3 @@ func (u *URLs) GetURLsByUserID(ctx context.Context, userID string) ([]entity.URL
 
 	return resp, nil
 }
-
-// Generate mocks for tests.
-//go:generate ../../../bin/mockgen -destination=./mocks/url-provider.go -package=mock_urls github.com/dsbasko/yandex-go-shortener/internal/service/urls URLProvider

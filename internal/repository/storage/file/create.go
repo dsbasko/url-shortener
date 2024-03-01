@@ -8,7 +8,7 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/entity"
 )
 
 // CreateURL creates a new URL.

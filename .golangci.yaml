@@ -35,7 +35,7 @@ linters-settings:
       - pattern: 'interface{}'
         replacement: 'any'
   goimports:
-    local-prefixes: github.com/dsbasko/yandex-go-shortener
+    local-prefixes: github.com/dsbasko/url-shortener
   gomnd:
     checks:
       - argument

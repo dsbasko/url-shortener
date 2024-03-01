@@ -4,8 +4,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
+	"github.com/dsbasko/url-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/pkg/logger"
 )
 
 // Storage a memory storage.

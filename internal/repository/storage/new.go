@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
-	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/file"
-	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/memory"
-	"github.com/dsbasko/yandex-go-shortener/internal/repository/storage/psql"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/repository/storage/file"
+	"github.com/dsbasko/url-shortener/internal/repository/storage/memory"
+	"github.com/dsbasko/url-shortener/internal/repository/storage/psql"
+	"github.com/dsbasko/url-shortener/pkg/logger"
 )
 
 // Storage is an interface for storage.
@@ -37,15 +37,18 @@ type Storage interface {
 
 	// DeleteURLs deletes URLs.
 	DeleteURLs(ctx context.Context, dto []entity.URL) (resp []entity.URL, err error)
+
+	// Stats returns the stats of the URL.
+	Stats(ctx context.Context) (resp entity.URLStats, err error)
 }
 
 // New creates a new instance of the storage.
 func New(ctx context.Context, log *logger.Logger) (Storage, error) {
-	if len(config.DatabaseDSN()) > 0 {
+	if config.DatabaseDSN() != "" {
 		return psql.New(ctx, log)
 	}
 
-	if len(config.StoragePath()) > 0 {
+	if config.StoragePath() != "" {
 		return file.New(ctx, log)
 	}
 
@@ -63,4 +66,4 @@ func MustNew(ctx context.Context, log *logger.Logger) Storage {
 }
 
 // Generate mocks for tests.
-//go:generate ../../../bin/mockgen -destination=./mocks/storage.go -package=mock_storage github.com/dsbasko/yandex-go-shortener/internal/repository/storage Storage
+//go:generate ../../../bin/mockgen -destination=./mocks/storage.go -package=mock_storage github.com/dsbasko/url-shortener/internal/repository/storage Storage

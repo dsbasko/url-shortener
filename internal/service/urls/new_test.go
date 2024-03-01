@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
-	mockUrls "github.com/dsbasko/yandex-go-shortener/internal/service/urls/mocks"
-	"github.com/dsbasko/yandex-go-shortener/pkg/logger"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/service/jwt"
+	mockUrls "github.com/dsbasko/url-shortener/internal/service/urls/mocks"
+	"github.com/dsbasko/url-shortener/pkg/logger"
 )
 
 type SuiteURLs struct {
@@ -20,10 +20,11 @@ type SuiteURLs struct {
 
 	attr struct {
 		log          *logger.Logger
-		urlProvider  *mockUrls.MockURLProvider
-		urlMutator   *mockUrls.MockURLMutator
+		urlProvider  *mockUrls.MockProvider
+		urlMutator   *mockUrls.MockMutator
+		urlAnalyzer  *mockUrls.MockAnalyzer
 		service      URLs
-		errStore     error
+		errStorage   error
 		errNotFound  error
 		ctxWithToken context.Context
 		deleteTasks  chan map[string][]string
@@ -40,10 +41,11 @@ func (s *SuiteURLs) SetupSuite() {
 	err := config.Init()
 	assert.NoError(t, err)
 	s.attr.log = logger.NewMock()
-	s.attr.urlProvider = mockUrls.NewMockURLProvider(ctrl)
-	s.attr.urlMutator = mockUrls.NewMockURLMutator(ctrl)
-	s.attr.service = New(ctx, s.attr.log, s.attr.urlProvider, s.attr.urlMutator)
-	s.attr.errStore = fmt.Errorf("storage error")
+	s.attr.urlProvider = mockUrls.NewMockProvider(ctrl)
+	s.attr.urlMutator = mockUrls.NewMockMutator(ctrl)
+	s.attr.urlAnalyzer = mockUrls.NewMockAnalyzer(ctrl)
+	s.attr.service = New(ctx, s.attr.log, s.attr.urlProvider, s.attr.urlMutator, s.attr.urlAnalyzer)
+	s.attr.errStorage = fmt.Errorf("storage error")
 	s.attr.errNotFound = fmt.Errorf("not found")
 
 	token, err := jwt.GenerateToken()

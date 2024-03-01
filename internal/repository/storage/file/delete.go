@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/entity"
 )
 
 // DeleteURLs returns a URL by original URL.
@@ -27,14 +27,12 @@ func (s *Storage) DeleteURLs(
 	scanner := bufio.NewScanner(s.file)
 
 	for scanner.Scan() {
-		select {
-		case <-ctx.Done():
-			return []entity.URL{}, ctx.Err()
-		default:
-		}
-
 		if scanner.Err() != nil {
 			return []entity.URL{}, fmt.Errorf("failed to scan file: %w", scanner.Err())
+		}
+
+		if ctx.Err() != nil {
+			return []entity.URL{}, ctx.Err()
 		}
 
 		dataText := scanner.Text()

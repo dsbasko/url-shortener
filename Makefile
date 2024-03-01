@@ -1,20 +1,28 @@
-.PHONY: start-dev-mem start-dev-file start-dev-psql start-prod test test-cover lint install-deps
+.PHONY: all
 .SILENT:
 
-start-dev-mem:
+start-http-dev-mem:
 	clear; \
 	ENV="dev" \
 	CONFIG="config/shortener.json" \
 	go run ./cmd/shortener
 
-start-dev-file:
+start-http-prod:
+	clear; \
+	ENV="prod" \
+	CONFIG="config/shortener.json" \
+	ENABLE_HTTPS="true" \
+	SERVER_ADDRESS="localhost:3000" \
+	go run ./cmd/shortener
+
+start-http-dev-file:
 	clear; \
 	ENV="dev" \
 	CONFIG="config/shortener.json" \
 	FILE_STORAGE_PATH="/tmp/short-url-db.json" \
 	go run ./cmd/shortener
 
-start-dev-psql:
+start-http-dev-psql:
 	clear; \
 	ENV="dev" \
 	CONFIG="config/shortener.json" \
@@ -22,9 +30,34 @@ start-dev-psql:
 	DATABASE_DSN="postgres://$(PSQL_USER):$(PSQL_PASS)@localhost:$(PSQL_PORT)/$(PSQL_DB)?sslmode=disable" \
 	go run ./cmd/shortener
 
-start-prod:
+start-grpc-dev-mem:
+	clear; \
+	ENV="dev" \
+	CONTROLLER="grpc" \
+	CONFIG="config/shortener.json" \
+	go run ./cmd/shortener
+
+start-grpc-dev-file:
+	clear; \
+	ENV="dev" \
+	CONTROLLER="grpc" \
+	CONFIG="config/shortener.json" \
+	FILE_STORAGE_PATH="/tmp/short-url-db.json" \
+	go run ./cmd/shortener
+
+start-grpc-dev-psql:
+	clear; \
+	ENV="dev" \
+	CONTROLLER="grpc" \
+	CONFIG="config/shortener.json" \
+	REST_WRITE_TIMEOUT="100000" \
+	DATABASE_DSN="postgres://$(PSQL_USER):$(PSQL_PASS)@localhost:$(PSQL_PORT)/$(PSQL_DB)?sslmode=disable" \
+	go run ./cmd/shortener
+
+start-grpc-prod:
 	clear; \
 	ENV="prod" \
+	CONTROLLER="grpc" \
 	CONFIG="config/shortener.json" \
 	ENABLE_HTTPS="true" \
 	SERVER_ADDRESS="localhost:3000" \
@@ -49,24 +82,40 @@ lint:
 install-deps:
 	@GOBIN=$(LOCAL_BIN_PATH) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
 	@GOBIN=$(LOCAL_BIN_PATH) go install go.uber.org/mock/mockgen@latest
-	@GOBIN=$(LOCAL_BIN_PATH)  go install golang.org/x/perf/cmd/benchstat@latest
+	@GOBIN=$(LOCAL_BIN_PATH) go install golang.org/x/perf/cmd/benchstat@latest
+	@GOBIN=$(LOCAL_BIN_PATH) go install github.com/nikolaydubina/go-cover-treemap@latest
+	@GOBIN=$(LOCAL_BIN_PATH) go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	@GOBIN=$(LOCAL_BIN_PATH) go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 	@go mod tidy
 
 build-staticlint:
 	@go build -o $(LOCAL_BIN_PATH)/staticlint ./cmd/staticlint/main.go
 
-test:
-	@go test ./... --cover
-
 test-cover:
 	@go test --coverprofile=coverage.out ./... > /dev/null
 	@go tool cover -func=coverage.out | grep total | grep -oE '[0-9]+(\.[0-9]+)?%'
 
+test-cover-svg:
+	@clear;
+	@go test --coverprofile=coverage.out ./... > /dev/null;
+	@$(LOCAL_BIN_PATH)/go-cover-treemap -coverprofile coverage.out > coverage.svg
+	@xdg-open ./coverage.svg
+
+test-cover-html:
+	@clear;
+	@go test --coverprofile=coverage.out ./... > /dev/null;
+	@go tool cover -html="coverage.out"
+
 test-bench:
 	@go test ./internal/controller/rest/handlers -bench=. -benchmem -cpuprofile=profiles/cpu-last.pprof -memprofile=profiles/mem-last.pprof
 
-test-bench-show:
+test-bench-show-cpu:
+	@go test ./internal/controller/rest/handlers -bench=. -benchmem -cpuprofile=profiles/cpu-last.pprof
 	@go tool pprof -http=":9090" handler.test profiles/cpu-last.pprof
+
+test-bench-show-mem:
+	@go test ./internal/controller/rest/handlers -bench=. -benchmem -memprofile=profiles/mem-last.pprof
+	@go tool pprof -http=":9090" handler.test profiles/mem-last.pprof
 
 auto-tests:
 	@clear
@@ -77,6 +126,15 @@ auto-tests:
 
 gen-cert:
 	@go run ./cmd/cert-gen
+
+gen-proto:
+	@mkdir -p api/proto
+	@protoc \
+		--go_out=api --go_opt=paths=source_relative \
+		--plugin=protoc-gen-go=$(LOCAL_BIN_PATH)/protoc-gen-go \
+		--go-grpc_out=api --go-grpc_opt=paths=source_relative \
+		--plugin=protoc-gen-go-grpc=$(LOCAL_BIN_PATH)/protoc-gen-go-grpc \
+		proto/url_shortener_v1.proto
 
 # -------
 # Configs

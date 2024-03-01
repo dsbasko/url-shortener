@@ -5,14 +5,14 @@ import (
 	"fmt"
 	goURL "net/url"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/config"
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
-	"github.com/dsbasko/yandex-go-shortener/internal/service/jwt"
-	"github.com/dsbasko/yandex-go-shortener/pkg/api"
+	api "github.com/dsbasko/url-shortener/api/http"
+	"github.com/dsbasko/url-shortener/internal/config"
+	"github.com/dsbasko/url-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/service/jwt"
 )
 
-// URLCreator is a service for creating URLs.
-type URLCreator interface {
+// Creator is a service for creating URLs.
+type Creator interface {
 	// CreateURL creates a new URL.
 	CreateURL(ctx context.Context, dto entity.URL) (resp entity.URL, unique bool, err error)
 
@@ -26,7 +26,7 @@ func (u *URLs) CreateURL(
 	originalURL string,
 ) (resp entity.URL, unique bool, err error) {
 	var dto entity.URL
-	var urlCreator URLCreator = u.urlMutator
+	var urlCreator Creator = u.urlMutator
 
 	if _, err = goURL.ParseRequestURI(originalURL); err != nil {
 		return entity.URL{}, false, fmt.Errorf("failed to parse url: %w", ErrInvalidURL)
@@ -57,7 +57,7 @@ func (u *URLs) CreateURLs(
 	ctx context.Context,
 	dto []api.CreateURLsRequest,
 ) ([]api.CreateURLsResponse, error) {
-	var urlCreator URLCreator = u.urlMutator
+	var urlCreator Creator = u.urlMutator
 
 	token, err := jwt.GetFromContext(ctx)
 	if err != nil {

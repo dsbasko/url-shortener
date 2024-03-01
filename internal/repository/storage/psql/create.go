@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"github.com/dsbasko/yandex-go-shortener/internal/entity"
+	"github.com/dsbasko/url-shortener/internal/entity"
 )
 
 // CreateURL creates a URL.
